@@ -189,7 +189,7 @@
     
     <script>
         const API_BASE_URL = 'http://127.0.0.1:8000/api';
-        let authToken = localStorage.getItem('seller_token');
+        let authToken = localStorage.getItem('token');
         let allOrders = [];
         
         function showToast(message, isError = false) {
@@ -389,7 +389,7 @@
                     headers: { 'Authorization': `Bearer ${authToken}`, 'Accept': 'application/json' }
                 });
             } catch (e) {}
-            localStorage.removeItem('seller_token');
+            localStorage.removeItem('token');
             localStorage.removeItem('seller_user');
             window.location.href = 'login.html';
         });
