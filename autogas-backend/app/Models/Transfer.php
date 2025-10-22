@@ -66,6 +66,14 @@ class Transfer extends Model
         return $this->belongsTo(Product::class);
     }
 
+    /**
+     * Shipment (yuk jo'natish)
+     */
+    public function shipment()
+    {
+        return $this->hasOne(Shipment::class);
+    }
+
     // Helper Methods
 
     /**

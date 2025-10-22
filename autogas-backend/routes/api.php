@@ -12,6 +12,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\TransferController;
 use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\ShipmentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -160,5 +161,30 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/transactions/statistics', [TransactionController::class, 'statistics']);
         Route::get('/transactions/{transaction}', [TransactionController::class, 'show']);
         Route::post('/transactions/adjust-balance', [TransactionController::class, 'adjustBalance']);
+    });
+
+    // --- SHIPMENT yo'llari (Yuk jo'natish tracking) ---
+
+    // Public tracking (authentication yo'q)
+    Route::get('/shipments/track', [ShipmentController::class, 'trackByCode']);
+
+    // Kontragentlar uchun
+    Route::middleware('role:kontragent')->group(function () {
+        Route::get('/shipments', [ShipmentController::class, 'index']);
+        Route::post('/shipments', [ShipmentController::class, 'store']);
+        Route::get('/shipments/{shipment}', [ShipmentController::class, 'show']);
+        Route::post('/shipments/{shipment}/update-status', [ShipmentController::class, 'updateStatus']);
+        Route::post('/shipments/{shipment}/update-location', [ShipmentController::class, 'updateLocation']);
+        Route::post('/shipments/{shipment}/add-note', [ShipmentController::class, 'addNote']);
+        Route::post('/shipments/{shipment}/report-issue', [ShipmentController::class, 'reportIssue']);
+    });
+
+    // Admin va Owner uchun
+    Route::middleware('role:admin,owner')->prefix('admin')->group(function () {
+        Route::get('/shipments', [ShipmentController::class, 'index']);
+        Route::get('/shipments/statistics', [ShipmentController::class, 'statistics']);
+        Route::get('/shipments/{shipment}', [ShipmentController::class, 'show']);
+        Route::post('/shipments/{shipment}/update-status', [ShipmentController::class, 'updateStatus']);
+        Route::post('/shipments/{shipment}/update-location', [ShipmentController::class, 'updateLocation']);
     });
 });
