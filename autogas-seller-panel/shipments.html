@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yuk Jo'natish - Kontragent Panel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h1 class="text-2xl font-bold">AGU Kontragent Panel</h1>
+                    <p class="text-sm opacity-90" id="user-info">Yuklanmoqda...</p>
+                </div>
+                <div class="flex space-x-4">
+                    <a href="dashboard.html" class="hover:bg-white hover:bg-opacity-20 px-4 py-2 rounded transition">
+                        <i class="fas fa-home mr-2"></i>Dashboard
+                    </a>
+                    <a href="transfers.html" class="hover:bg-white hover:bg-opacity-20 px-4 py-2 rounded transition">
+                        <i class="fas fa-exchange-alt mr-2"></i>Transferlar
+                    </a>
+                    <a href="shipments.html" class="bg-white bg-opacity-20 px-4 py-2 rounded transition">
+                        <i class="fas fa-shipping-fast mr-2"></i>Yuk Jo'natish
+                    </a>
+                    <a href="transactions.html" class="hover:bg-white hover:bg-opacity-20 px-4 py-2 rounded transition">
+                        <i class="fas fa-dollar-sign mr-2"></i>Tranzaksiyalar
+                    </a>
+                    <button onclick="logout()" class="bg-red-500 hover:bg-red-600 px-4 py-2 rounded transition">
+                        <i class="fas fa-sign-out-alt mr-2"></i>Chiqish
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto px-6 py-8">
+        <!-- Header & Actions -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-3xl font-bold text-gray-800">
+                    <i class="fas fa-shipping-fast text-blue-600 mr-3"></i>
+                    Yuk Jo'natish Tracking
+                </h2>
+                <button onclick="openCreateModal()" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-lg hover:shadow-lg transition transform hover:-translate-y-1">
+                    <i class="fas fa-plus mr-2"></i>Yangi Shipment
+                </button>
+            </div>
+
+            <!-- Quick Tracking -->
+            <div class="flex items-center space-x-4 mt-4">
+                <input type="text" id="quick-track" placeholder="Tracking kodni kiriting..." class="flex-1 px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500" />
+                <button onclick="quickTrack()" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700">
+                    <i class="fas fa-search mr-2"></i>Qidirish
+                </button>
+            </div>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-6 mb-6">
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm">Tayyorlanmoqda</p>
+                        <p class="text-2xl font-bold text-yellow-600" id="stat-preparing">0</p>
+                    </div>
+                    <i class="fas fa-box text-3xl text-yellow-600 opacity-50"></i>
+                </div>
+            </div>
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm">Olib ketildi</p>
+                        <p class="text-2xl font-bold text-orange-600" id="stat-picked">0</p>
+                    </div>
+                    <i class="fas fa-hand-holding-box text-3xl text-orange-600 opacity-50"></i>
+                </div>
+            </div>
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm">Yo'lda</p>
+                        <p class="text-2xl font-bold text-blue-600" id="stat-transit">0</p>
+                    </div>
+                    <i class="fas fa-truck text-3xl text-blue-600 opacity-50"></i>
+                </div>
+            </div>
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm">Topshirildi</p>
+                        <p class="text-2xl font-bold text-green-600" id="stat-delivered">0</p>
+                    </div>
+                    <i class="fas fa-check-circle text-3xl text-green-600 opacity-50"></i>
+                </div>
+            </div>
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm">Muammoli</p>
+                        <p class="text-2xl font-bold text-red-600" id="stat-issues">0</p>
+                    </div>
+                    <i class="fas fa-exclamation-triangle text-3xl text-red-600 opacity-50"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">Filtrlar</h3>
+            <div class="flex space-x-4">
+                <select id="status-filter" class="px-4 py-2 border rounded-lg" onchange="loadShipments()">
+                    <option value="">Barcha holat</option>
+                    <option value="preparing">Tayyorlanmoqda</option>
+                    <option value="picked_up">Olib ketildi</option>
+                    <option value="in_transit">Yo'lda</option>
+                    <option value="arrived">Manzilga yetdi</option>
+                    <option value="delivered">Topshirildi</option>
+                    <option value="returned">Qaytarildi</option>
+                </select>
+
+                <label class="flex items-center space-x-2">
+                    <input type="checkbox" id="issues-filter" onchange="loadShipments()" class="rounded" />
+                    <span class="text-sm text-gray-700">Faqat muammoli</span>
+                </label>
+
+                <label class="flex items-center space-x-2">
+                    <input type="checkbox" id="active-filter" checked onchange="loadShipments()" class="rounded" />
+                    <span class="text-sm text-gray-700">Faqat faol</span>
+                </label>
+            </div>
+        </div>
+
+        <!-- Shipments List -->
+        <div id="loading" class="bg-white rounded-lg shadow-md p-8 text-center">
+            <i class="fas fa-spinner fa-spin text-4xl text-blue-600"></i>
+            <p class="mt-4 text-gray-600">Yuklanmoqda...</p>
+        </div>
+
+        <div id="shipments-container" class="hidden space-y-6">
+            <!-- Shipments will be loaded here -->
+        </div>
+
+        <div id="empty-state" class="hidden bg-white rounded-lg shadow-md p-12 text-center">
+            <i class="fas fa-inbox text-6xl text-gray-300 mb-4"></i>
+            <p class="text-xl text-gray-500">Shipmentlar topilmadi</p>
+        </div>
+    </div>
+
+    <!-- Create Shipment Modal -->
+    <div id="create-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-y-auto">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl mx-4 my-8">
+            <div class="p-6 border-b">
+                <h3 class="text-2xl font-bold text-gray-800">Yangi Shipment Yaratish</h3>
+            </div>
+            <form id="create-form" class="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Transfer</label>
+                    <select id="transfer-select" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                        <option value="">Tanlang...</option>
+                    </select>
+                    <p class="text-xs text-gray-500 mt-1">Faqat tasdiqlangan transferlar</p>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Tashuvchi nomi</label>
+                        <input type="text" id="carrier-name" class="w-full px-4 py-2 border rounded-lg" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Tashuvchi telefoni</label>
+                        <input type="text" id="carrier-phone" class="w-full px-4 py-2 border rounded-lg" />
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Transport raqami</label>
+                    <input type="text" id="vehicle-number" class="w-full px-4 py-2 border rounded-lg" />
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Boshlang'ich manzil</label>
+                        <input type="text" id="origin-address" class="w-full px-4 py-2 border rounded-lg" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Maqsad manzil</label>
+                        <input type="text" id="dest-address" class="w-full px-4 py-2 border rounded-lg" />
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Taxminiy olib ketish</label>
+                        <input type="datetime-local" id="est-pickup" class="w-full px-4 py-2 border rounded-lg" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Taxminiy yetkazish</label>
+                        <input type="datetime-local" id="est-delivery" class="w-full px-4 py-2 border rounded-lg" />
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Og'irlik (kg)</label>
+                        <input type="number" id="weight" step="0.01" class="w-full px-4 py-2 border rounded-lg" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">O'lchamlar</label>
+                        <input type="text" id="dimensions" placeholder="40x30x20" class="w-full px-4 py-2 border rounded-lg" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Quti soni</label>
+                        <input type="number" id="package-count" value="1" min="1" class="w-full px-4 py-2 border rounded-lg" />
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Maxsus ko'rsatmalar</label>
+                    <textarea id="instructions" rows="2" class="w-full px-4 py-2 border rounded-lg"></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Izohlar</label>
+                    <textarea id="notes" rows="2" class="w-full px-4 py-2 border rounded-lg"></textarea>
+                </div>
+
+                <div class="flex justify-end space-x-4 pt-4">
+                    <button type="button" onclick="closeCreateModal()" class="px-6 py-2 border rounded-lg hover:bg-gray-100">
+                        Bekor qilish
+                    </button>
+                    <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                        <i class="fas fa-save mr-2"></i>Yaratish
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Shipment Details Modal -->
+    <div id="details-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-y-auto">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-4xl mx-4 my-8">
+            <div class="p-6 border-b flex justify-between items-center">
+                <h3 class="text-2xl font-bold text-gray-800">Shipment Tafsilotlari</h3>
+                <button onclick="closeDetailsModal()" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times text-2xl"></i>
+                </button>
+            </div>
+            <div id="details-content" class="p-6 max-h-[70vh] overflow-y-auto">
+                <!-- Details will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="hidden fixed top-5 right-5 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg z-50">
+        <span id="toast-message"></span>
+    </div>
+
+    <script>
+        const API_BASE = 'http://127.0.0.1:8000/api';
+        let authToken = localStorage.getItem('authToken');
+        let currentUser = null;
+        let allShipments = [];
+
+        if (!authToken) {
+            window.location.href = 'login.html';
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadUserInfo();
+            await loadApprovedTransfers();
+            await loadShipments();
+        });
+
+        async function loadUserInfo() {
+            try {
+                const response = await fetch(`${API_BASE}/user`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    currentUser = await response.json();
+                    document.getElementById('user-info').textContent = `${currentUser.name} (${currentUser.region || 'N/A'})`;
+                }
+            } catch (error) {
+                console.error('User info error:', error);
+            }
+        }
+
+        async function loadApprovedTransfers() {
+            try {
+                const response = await fetch(`${API_BASE}/transfers/my?status=approved`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    const select = document.getElementById('transfer-select');
+                    select.innerHTML = '<option value="">Tanlang...</option>';
+
+                    data.transfers.data.forEach(t => {
+                        const option = document.createElement('option');
+                        option.value = t.id;
+                        option.textContent = `${t.tracking_number} - ${t.product.name} (${t.quantity} dona) - ${t.from_region} → ${t.to_region}`;
+                        select.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('Load transfers error:', error);
+            }
+        }
+
+        async function loadShipments() {
+            document.getElementById('loading').classList.remove('hidden');
+            document.getElementById('shipments-container').classList.add('hidden');
+            document.getElementById('empty-state').classList.add('hidden');
+
+            try {
+                let url = `${API_BASE}/shipments?`;
+
+                const status = document.getElementById('status-filter').value;
+                const hasIssues = document.getElementById('issues-filter').checked;
+                const activeOnly = document.getElementById('active-filter').checked;
+
+                if (status) url += `status=${status}&`;
+                if (hasIssues) url += `has_issues=true&`;
+                if (activeOnly) url += `active_only=true&`;
+
+                const response = await fetch(url, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    allShipments = data.shipments.data;
+                    displayShipments(allShipments);
+                    updateStatistics(allShipments);
+                } else {
+                    showToast('Xatolik yuz berdi', true);
+                }
+            } catch (error) {
+                console.error('Load shipments error:', error);
+                showToast('Serverga ulanishda xatolik', true);
+            } finally {
+                document.getElementById('loading').classList.add('hidden');
+            }
+        }
+
+        function displayShipments(shipments) {
+            const container = document.getElementById('shipments-container');
+            container.innerHTML = '';
+
+            if (shipments.length === 0) {
+                document.getElementById('empty-state').classList.remove('hidden');
+                return;
+            }
+
+            document.getElementById('shipments-container').classList.remove('hidden');
+
+            shipments.forEach(s => {
+                const card = document.createElement('div');
+                card.className = 'bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition';
+
+                const statusBadge = getStatusBadge(s.status);
+                const progressBar = getProgressBar(s);
+                const issueBadge = s.has_issues ? '<span class="px-3 py-1 bg-red-100 text-red-800 rounded-full text-xs font-semibold ml-2"><i class="fas fa-exclamation-triangle mr-1"></i>Muammo</span>' : '';
+
+                card.innerHTML = `
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <div class="flex items-center">
+                                <h3 class="text-xl font-bold text-gray-800">${s.tracking_code}</h3>
+                                ${statusBadge}
+                                ${issueBadge}
+                            </div>
+                            <p class="text-sm text-gray-600 mt-1">
+                                ${s.transfer.product.name} - ${s.transfer.quantity} dona
+                            </p>
+                        </div>
+                        <button onclick="viewDetails(${s.id})" class="text-blue-600 hover:text-blue-800">
+                            <i class="fas fa-eye text-xl"></i>
+                        </button>
+                    </div>
+
+                    ${progressBar}
+
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+                        <div>
+                            <p class="text-xs text-gray-500">Qayerdan</p>
+                            <p class="font-semibold">${s.origin_city || s.transfer.from_region}</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-500">Qayerga</p>
+                            <p class="font-semibold">${s.destination_city || s.transfer.to_region}</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-500">Tashuvchi</p>
+                            <p class="font-semibold">${s.carrier_name || '-'}</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-500">Hozirgi joy</p>
+                            <p class="font-semibold">${s.current_location || '-'}</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 flex justify-end space-x-2">
+                        ${getActionButtons(s)}
+                    </div>
+                `;
+
+                container.appendChild(card);
+            });
+        }
+
+        function getStatusBadge(status) {
+            const badges = {
+                preparing: '<span class="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-semibold"><i class="fas fa-box mr-1"></i>Tayyorlanmoqda</span>',
+                picked_up: '<span class="px-3 py-1 bg-orange-100 text-orange-800 rounded-full text-xs font-semibold"><i class="fas fa-hand-holding-box mr-1"></i>Olib ketildi</span>',
+                in_transit: '<span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-semibold"><i class="fas fa-truck mr-1"></i>Yo\'lda</span>',
+                arrived: '<span class="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-xs font-semibold"><i class="fas fa-map-marker-alt mr-1"></i>Manzilga yetdi</span>',
+                delivered: '<span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-semibold"><i class="fas fa-check-circle mr-1"></i>Topshirildi</span>',
+                returned: '<span class="px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-xs font-semibold"><i class="fas fa-undo mr-1"></i>Qaytarildi</span>',
+                cancelled: '<span class="px-3 py-1 bg-red-100 text-red-800 rounded-full text-xs font-semibold"><i class="fas fa-ban mr-1"></i>Bekor qilindi</span>'
+            };
+            return badges[status] || status;
+        }
+
+        function getProgressBar(shipment) {
+            const percentage = getProgressPercentage(shipment.status);
+            const color = percentage === 100 ? 'bg-green-500' : 'bg-blue-500';
+
+            return `
+                <div class="mt-4">
+                    <div class="flex justify-between text-xs text-gray-600 mb-1">
+                        <span>Progress</span>
+                        <span>${percentage}%</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div class="${color} h-2 rounded-full transition-all duration-500" style="width: ${percentage}%"></div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function getProgressPercentage(status) {
+            const percentages = {
+                preparing: 10,
+                picked_up: 30,
+                in_transit: 60,
+                arrived: 90,
+                delivered: 100,
+                returned: 100,
+                cancelled: 0
+            };
+            return percentages[status] || 0;
+        }
+
+        function getActionButtons(shipment) {
+            let buttons = '';
+
+            if (shipment.status === 'preparing') {
+                buttons += `<button onclick="updateStatus(${shipment.id}, 'picked_up')" class="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 text-sm"><i class="fas fa-hand-holding-box mr-1"></i>Olib ketildi</button>`;
+            }
+
+            if (shipment.status === 'picked_up' || shipment.status === 'in_transit') {
+                buttons += `<button onclick="openLocationModal(${shipment.id})" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm"><i class="fas fa-map-marker-alt mr-1"></i>Lokatsiya</button>`;
+            }
+
+            if (shipment.status === 'arrived') {
+                buttons += `<button onclick="updateStatus(${shipment.id}, 'delivered')" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm"><i class="fas fa-check-circle mr-1"></i>Topshirildi</button>`;
+            }
+
+            if (!['delivered', 'returned', 'cancelled'].includes(shipment.status)) {
+                buttons += `<button onclick="openIssueModal(${shipment.id})" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 text-sm"><i class="fas fa-exclamation-triangle mr-1"></i>Muammo</button>`;
+            }
+
+            return buttons;
+        }
+
+        function updateStatistics(shipments) {
+            const stats = {
+                preparing: 0,
+                picked_up: 0,
+                in_transit: 0,
+                delivered: 0,
+                has_issues: 0
+            };
+
+            shipments.forEach(s => {
+                if (s.status === 'preparing') stats.preparing++;
+                if (s.status === 'picked_up') stats.picked_up++;
+                if (s.status === 'in_transit') stats.in_transit++;
+                if (s.status === 'delivered') stats.delivered++;
+                if (s.has_issues) stats.has_issues++;
+            });
+
+            document.getElementById('stat-preparing').textContent = stats.preparing;
+            document.getElementById('stat-picked').textContent = stats.picked_up;
+            document.getElementById('stat-transit').textContent = stats.in_transit;
+            document.getElementById('stat-delivered').textContent = stats.delivered;
+            document.getElementById('stat-issues').textContent = stats.has_issues;
+        }
+
+        async function viewDetails(id) {
+            try {
+                const response = await fetch(`${API_BASE}/shipments/${id}`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    displayDetails(data.shipment);
+                }
+            } catch (error) {
+                showToast('Xatolik yuz berdi', true);
+            }
+        }
+
+        function displayDetails(shipment) {
+            const content = document.getElementById('details-content');
+
+            content.innerHTML = `
+                <div class="space-y-6">
+                    <!-- Header -->
+                    <div class="border-b pb-4">
+                        <h4 class="text-2xl font-bold text-gray-800">${shipment.tracking_code}</h4>
+                        <p class="text-gray-600 mt-1">${shipment.transfer.product.name} - ${shipment.transfer.quantity} dona</p>
+                    </div>
+
+                    <!-- Info Grid -->
+                    <div class="grid grid-cols-2 gap-6">
+                        <div>
+                            <h5 class="font-semibold text-gray-700 mb-3">Asosiy Ma'lumotlar</h5>
+                            <div class="space-y-2 text-sm">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Holat:</span>
+                                    <span class="font-semibold">${getStatusBadge(shipment.status)}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Tashuvchi:</span>
+                                    <span class="font-semibold">${shipment.carrier_name || '-'}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Transport:</span>
+                                    <span class="font-semibold">${shipment.vehicle_number || '-'}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Og'irlik:</span>
+                                    <span class="font-semibold">${shipment.weight ? shipment.weight + ' kg' : '-'}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h5 class="font-semibold text-gray-700 mb-3">Manzil</h5>
+                            <div class="space-y-2 text-sm">
+                                <div>
+                                    <span class="text-gray-600">Qayerdan:</span>
+                                    <p class="font-semibold">${shipment.origin_address || '-'}, ${shipment.origin_city}</p>
+                                </div>
+                                <div>
+                                    <span class="text-gray-600">Qayerga:</span>
+                                    <p class="font-semibold">${shipment.destination_address || '-'}, ${shipment.destination_city}</p>
+                                </div>
+                                <div>
+                                    <span class="text-gray-600">Hozirgi joy:</span>
+                                    <p class="font-semibold">${shipment.current_location || '-'}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Timeline -->
+                    <div>
+                        <h5 class="font-semibold text-gray-700 mb-3">Tarix (Timeline)</h5>
+                        <div class="space-y-4">
+                            ${shipment.events.map(event => `
+                                <div class="flex items-start space-x-4 border-l-2 border-blue-500 pl-4">
+                                    <i class="fas ${getEventIcon(event.event_type)} text-blue-600 mt-1"></i>
+                                    <div class="flex-1">
+                                        <p class="font-semibold text-gray-800">${event.description}</p>
+                                        ${event.location ? `<p class="text-sm text-gray-600"><i class="fas fa-map-marker-alt mr-1"></i>${event.location}</p>` : ''}
+                                        ${event.notes ? `<p class="text-sm text-gray-600 italic">${event.notes}</p>` : ''}
+                                        <p class="text-xs text-gray-500 mt-1">${new Date(event.created_at).toLocaleString('uz-UZ')}</p>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('details-modal').classList.remove('hidden');
+        }
+
+        function getEventIcon(eventType) {
+            const icons = {
+                status_changed: 'fa-sync-alt',
+                location_updated: 'fa-map-marker-alt',
+                note_added: 'fa-sticky-note',
+                issue_reported: 'fa-exclamation-triangle'
+            };
+            return icons[eventType] || 'fa-info-circle';
+        }
+
+        function closeDetailsModal() {
+            document.getElementById('details-modal').classList.add('hidden');
+        }
+
+        function openCreateModal() {
+            document.getElementById('create-modal').classList.remove('hidden');
+        }
+
+        function closeCreateModal() {
+            document.getElementById('create-modal').classList.add('hidden');
+            document.getElementById('create-form').reset();
+        }
+
+        document.getElementById('create-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const formData = {
+                transfer_id: parseInt(document.getElementById('transfer-select').value),
+                carrier_name: document.getElementById('carrier-name').value,
+                carrier_phone: document.getElementById('carrier-phone').value,
+                vehicle_number: document.getElementById('vehicle-number').value,
+                origin_address: document.getElementById('origin-address').value,
+                destination_address: document.getElementById('dest-address').value,
+                estimated_pickup_at: document.getElementById('est-pickup').value,
+                estimated_delivery_at: document.getElementById('est-delivery').value,
+                weight: document.getElementById('weight').value,
+                package_dimensions: document.getElementById('dimensions').value,
+                package_count: parseInt(document.getElementById('package-count').value),
+                special_instructions: document.getElementById('instructions').value,
+                notes: document.getElementById('notes').value
+            };
+
+            try {
+                const response = await fetch(`${API_BASE}/shipments`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showToast('Shipment muvaffaqiyatli yaratildi!', false);
+                    closeCreateModal();
+                    loadShipments();
+                } else {
+                    showToast(data.message || 'Xatolik yuz berdi', true);
+                }
+            } catch (error) {
+                showToast('Serverga ulanishda xatolik', true);
+            }
+        });
+
+        async function updateStatus(id, newStatus) {
+            if (!confirm(`Holatni o'zgartirmoqchimisiz?`)) return;
+
+            try {
+                const response = await fetch(`${API_BASE}/shipments/${id}/update-status`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ status: newStatus })
+                });
+
+                const data = await response.json();
+                if (response.ok) {
+                    showToast('Holat muvaffaqiyatli yangilandi!', false);
+                    loadShipments();
+                } else {
+                    showToast(data.message, true);
+                }
+            } catch (error) {
+                showToast('Xatolik yuz berdi', true);
+            }
+        }
+
+        function openLocationModal(id) {
+            const location = prompt('Hozirgi joylashuvni kiriting:');
+            if (!location) return;
+
+            updateLocation(id, location);
+        }
+
+        async function updateLocation(id, location) {
+            try {
+                const response = await fetch(`${API_BASE}/shipments/${id}/update-location`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ location })
+                });
+
+                const data = await response.json();
+                if (response.ok) {
+                    showToast('Lokatsiya yangilandi!', false);
+                    loadShipments();
+                } else {
+                    showToast(data.message, true);
+                }
+            } catch (error) {
+                showToast('Xatolik yuz berdi', true);
+            }
+        }
+
+        function openIssueModal(id) {
+            const issue = prompt('Muammo tavsifini kiriting:');
+            if (!issue) return;
+
+            reportIssue(id, issue);
+        }
+
+        async function reportIssue(id, issue) {
+            try {
+                const response = await fetch(`${API_BASE}/shipments/${id}/report-issue`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ issue })
+                });
+
+                const data = await response.json();
+                if (response.ok) {
+                    showToast('Muammo xabar qilindi!', false);
+                    loadShipments();
+                } else {
+                    showToast(data.message, true);
+                }
+            } catch (error) {
+                showToast('Xatolik yuz berdi', true);
+            }
+        }
+
+        async function quickTrack() {
+            const code = document.getElementById('quick-track').value.trim();
+            if (!code) {
+                showToast('Tracking kodni kiriting', true);
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/shipments/track?tracking_code=${code}`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Accept': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+                if (response.ok) {
+                    displayDetails(data.shipment);
+                } else {
+                    showToast(data.message, true);
+                }
+            } catch (error) {
+                showToast('Xatolik yuz berdi', true);
+            }
+        }
+
+        function showToast(message, isError = false) {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toast-message');
+            toastMessage.textContent = message;
+            toast.className = `fixed top-5 right-5 px-6 py-3 rounded-lg shadow-lg z-50 ${isError ? 'bg-red-600' : 'bg-green-600'} text-white`;
+            toast.classList.remove('hidden');
+            setTimeout(() => toast.classList.add('hidden'), 4000);
+        }
+
+        function logout() {
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('user');
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+</html>
