@@ -11,6 +11,7 @@ use App\Http\Controllers\WishlistController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\TransferController;
+use App\Http\Controllers\TransactionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -141,5 +142,23 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/transfers/{transfer}', [TransferController::class, 'show']);
         Route::post('/transfers/{transfer}/ship', [TransferController::class, 'ship']);
         Route::post('/transfers/{transfer}/deliver', [TransferController::class, 'deliver']);
+    });
+
+    // --- TRANSACTION yo'llari (Pul tranzaksiyalari) ---
+
+    // Kontragentlar uchun
+    Route::middleware('role:kontragent')->group(function () {
+        Route::get('/transactions/my', [TransactionController::class, 'myTransactions']);
+        Route::post('/transactions/transfer', [TransactionController::class, 'transfer']);
+        Route::get('/transactions/balance', [TransactionController::class, 'balance']);
+        Route::get('/transactions/debts', [TransactionController::class, 'debts']);
+    });
+
+    // Admin va Owner uchun
+    Route::middleware('role:admin,owner')->prefix('admin')->group(function () {
+        Route::get('/transactions', [TransactionController::class, 'index']);
+        Route::get('/transactions/statistics', [TransactionController::class, 'statistics']);
+        Route::get('/transactions/{transaction}', [TransactionController::class, 'show']);
+        Route::post('/transactions/adjust-balance', [TransactionController::class, 'adjustBalance']);
     });
 });
