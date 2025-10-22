@@ -7,45 +7,15 @@
 
     <!-- AGU Branding -->
     <script src="components/agu-branding.js"></script>
+    <!-- AGU Navbar -->
+    <script src="components/agu-navbar.js"></script>
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="bg-gray-50">
-    <!-- Navigation -->
-    <nav class="bg-gradient-to-r from-blue-900 via-gray-800 to-red-900 shadow-lg">
-        <div class="container mx-auto px-6 py-4">
-            <div class="flex items-center justify-between">
-                <a href="dashboard.html" class="flex items-center space-x-3 hover:opacity-80 transition-opacity">
-                    <div class="text-3xl font-extrabold">
-                        <span style="color: #E30613">AG</span><span style="color: #fff">U</span><sup style="font-size: 0.5em; color: #fff">®</sup>
-                    </div>
-                    <div>
-                        <div class="text-white font-semibold text-sm">Auto Gas Uzbekistan</div>
-                        <div class="text-gray-300 text-xs">Kontragent Panel</div>
-                    </div>
-                </a>
-                <div class="flex items-center space-x-6">
-                    <a href="dashboard.html" class="text-gray-300 hover:text-white transition-colors">
-                        <i class="fas fa-home mr-1"></i>Bosh sahifa
-                    </a>
-                    <a href="warehouses.html" class="text-white font-semibold">
-                        <i class="fas fa-warehouse mr-1"></i>Omborlar
-                    </a>
-                    <a href="inventory.html" class="text-gray-300 hover:text-white transition-colors">
-                        <i class="fas fa-boxes mr-1"></i>Inventar
-                    </a>
-                    <a href="transfers.html" class="text-gray-300 hover:text-white transition-colors">
-                        <i class="fas fa-exchange-alt mr-1"></i>Transferlar
-                    </a>
-                    <span id="userName" class="text-white font-medium"></span>
-                    <button onclick="logout()" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
-                        <i class="fas fa-sign-out-alt mr-2"></i>Chiqish
-                    </button>
-                </div>
-            </div>
-        </div>
-    </nav>
+    <!-- AGU Navbar -->
+    <div id="agu-navbar"></div>
 
     <!-- Main Container -->
     <div class="container mx-auto px-6 py-8">
