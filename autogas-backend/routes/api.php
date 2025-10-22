@@ -14,6 +14,8 @@ use App\Http\Controllers\TransferController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\ShipmentController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\WarehouseController;
+use App\Http\Controllers\InventoryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -208,4 +210,56 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/notifications/{notification}/read', [NotificationController::class, 'markAsRead']);
     Route::post('/notifications/{notification}/unread', [NotificationController::class, 'markAsUnread']);
     Route::delete('/notifications/{notification}', [NotificationController::class, 'destroy']);
+
+    // --- WAREHOUSE yo'llari (Omborlar) ---
+
+    // Kontragentlar uchun
+    Route::middleware('role:kontragent')->group(function () {
+        Route::get('/warehouses', [WarehouseController::class, 'index']);
+        Route::post('/warehouses', [WarehouseController::class, 'store']);
+        Route::get('/warehouses/{warehouse}', [WarehouseController::class, 'show']);
+        Route::put('/warehouses/{warehouse}', [WarehouseController::class, 'update']);
+        Route::post('/warehouses/{warehouse}/toggle-status', [WarehouseController::class, 'toggleStatus']);
+        Route::delete('/warehouses/{warehouse}', [WarehouseController::class, 'destroy']);
+        Route::get('/warehouses/{warehouse}/statistics', [WarehouseController::class, 'statistics']);
+    });
+
+    // Admin va Owner uchun
+    Route::middleware('role:admin,owner')->prefix('admin')->group(function () {
+        Route::get('/warehouses', [WarehouseController::class, 'index']);
+        Route::get('/warehouses/{warehouse}', [WarehouseController::class, 'show']);
+        Route::get('/warehouses/{warehouse}/statistics', [WarehouseController::class, 'statistics']);
+    });
+
+    // --- INVENTORY yo'llari (Inventarizatsiya) ---
+
+    // Kontragentlar uchun
+    Route::middleware('role:kontragent')->group(function () {
+        Route::get('/inventory', [InventoryController::class, 'index']);
+        Route::post('/inventory', [InventoryController::class, 'store']);
+        Route::get('/inventory/{inventory}', [InventoryController::class, 'show']);
+        Route::put('/inventory/{inventory}', [InventoryController::class, 'update']);
+        Route::delete('/inventory/{inventory}', [InventoryController::class, 'destroy']);
+
+        // Stock management
+        Route::post('/inventory/{inventory}/add-stock', [InventoryController::class, 'addStock']);
+        Route::post('/inventory/{inventory}/remove-stock', [InventoryController::class, 'removeStock']);
+        Route::post('/inventory/{inventory}/adjust-stock', [InventoryController::class, 'adjustStock']);
+        Route::get('/inventory/{inventory}/movements', [InventoryController::class, 'getStockMovements']);
+
+        // Reports
+        Route::get('/inventory/low-stock/list', [InventoryController::class, 'getLowStock']);
+        Route::get('/inventory/out-of-stock/list', [InventoryController::class, 'getOutOfStock']);
+        Route::get('/inventory/statistics/summary', [InventoryController::class, 'statistics']);
+    });
+
+    // Admin va Owner uchun
+    Route::middleware('role:admin,owner')->prefix('admin')->group(function () {
+        Route::get('/inventory', [InventoryController::class, 'index']);
+        Route::get('/inventory/{inventory}', [InventoryController::class, 'show']);
+        Route::get('/inventory/{inventory}/movements', [InventoryController::class, 'getStockMovements']);
+        Route::get('/inventory/low-stock/list', [InventoryController::class, 'getLowStock']);
+        Route::get('/inventory/out-of-stock/list', [InventoryController::class, 'getOutOfStock']);
+        Route::get('/inventory/statistics/summary', [InventoryController::class, 'statistics']);
+    });
 });

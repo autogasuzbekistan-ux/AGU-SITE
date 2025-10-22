@@ -6,6 +6,8 @@ use App\Models\Transfer;
 use App\Models\Product;
 use App\Models\User;
 use App\Models\Notification;
+use App\Models\Inventory;
+use App\Models\Warehouse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
@@ -264,7 +266,42 @@ class TransferController extends Controller
             ], 400);
         }
 
-        $transfer->ship();
+        try {
+            DB::beginTransaction();
+
+            $transfer->ship();
+
+            // Automatic stock adjustment - yuboruvchi omboridan mahsulot chiqarish
+            $senderWarehouse = Warehouse::where('user_id', $transfer->sender_id)
+                ->where('region', $transfer->from_region)
+                ->active()
+                ->first();
+
+            if ($senderWarehouse) {
+                $inventory = Inventory::where('warehouse_id', $senderWarehouse->id)
+                    ->where('product_id', $transfer->product_id)
+                    ->first();
+
+                if ($inventory && $inventory->available_quantity >= $transfer->quantity) {
+                    $inventory->removeStock(
+                        $transfer->quantity,
+                        'transfer_out',
+                        $user->id,
+                        "Transfer: {$transfer->tracking_number}",
+                        $transfer->id,
+                        'transfer'
+                    );
+                }
+            }
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Xatolik: ' . $e->getMessage(),
+            ], 500);
+        }
 
         // Notification - qabul qiluvchiga yuk yo'lda ekanligi haqida xabar
         Notification::createForUser(
@@ -312,7 +349,83 @@ class TransferController extends Controller
             ], 400);
         }
 
-        $transfer->deliver();
+        try {
+            DB::beginTransaction();
+
+            $transfer->deliver();
+
+            // Automatic stock adjustment - qabul qiluvchi omboriga mahsulot qo'shish
+            $receiverWarehouse = Warehouse::where('user_id', $transfer->receiver_id)
+                ->where('region', $transfer->to_region)
+                ->active()
+                ->first();
+
+            if ($receiverWarehouse) {
+                $inventory = Inventory::where('warehouse_id', $receiverWarehouse->id)
+                    ->where('product_id', $transfer->product_id)
+                    ->first();
+
+                if ($inventory) {
+                    // Mavjud inventory ga qo'shish
+                    $inventory->addStock(
+                        $transfer->quantity,
+                        'transfer_in',
+                        $user->id,
+                        "Transfer qabul qilindi: {$transfer->tracking_number}",
+                        $transfer->id,
+                        'transfer'
+                    );
+                } else {
+                    // Yangi inventory yaratish
+                    $inventory = Inventory::create([
+                        'warehouse_id' => $receiverWarehouse->id,
+                        'product_id' => $transfer->product_id,
+                        'user_id' => $transfer->receiver_id,
+                        'quantity' => $transfer->quantity,
+                        'available_quantity' => $transfer->quantity,
+                        'unit' => 'dona',
+                        'min_quantity' => 10,
+                    ]);
+
+                    $inventory->updateTotalValue();
+                    $inventory->save();
+                }
+
+                // Low stock check for sender
+                $senderWarehouse = Warehouse::where('user_id', $transfer->sender_id)
+                    ->where('region', $transfer->from_region)
+                    ->active()
+                    ->first();
+
+                if ($senderWarehouse) {
+                    $senderInventory = Inventory::where('warehouse_id', $senderWarehouse->id)
+                        ->where('product_id', $transfer->product_id)
+                        ->first();
+
+                    if ($senderInventory && $senderInventory->isLowStock()) {
+                        Notification::createForUser(
+                            $transfer->sender_id,
+                            'low_stock',
+                            'Mahsulot kam qoldi',
+                            "Sizning {$senderInventory->product->name} mahsulotingiz kam qoldi. Mavjud: {$senderInventory->available_quantity}",
+                            [
+                                'inventory_id' => $senderInventory->id,
+                                'action_url' => '/inventory',
+                                'priority' => 'medium',
+                            ]
+                        );
+                    }
+                }
+            }
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Xatolik: ' . $e->getMessage(),
+            ], 500);
+        }
 
         // Notification - yuboruvchiga yuk yetkazib berilgani haqida xabar
         Notification::createForUser(
