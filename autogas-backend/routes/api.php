@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\TransferController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\ShipmentController;
+use App\Http\Controllers\NotificationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -187,4 +188,24 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/shipments/{shipment}/update-status', [ShipmentController::class, 'updateStatus']);
         Route::post('/shipments/{shipment}/update-location', [ShipmentController::class, 'updateLocation']);
     });
+
+    // --- NOTIFICATION yo'llari (Bildirishnomalar) ---
+
+    // Barcha autentifikatsiyalangan foydalanuvchilar uchun
+    Route::get('/notifications', [NotificationController::class, 'index']);
+    Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount']);
+    Route::get('/notifications/recent', [NotificationController::class, 'recent']);
+    Route::get('/notifications/statistics', [NotificationController::class, 'statistics']);
+    Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead']);
+    Route::delete('/notifications/delete-read', [NotificationController::class, 'deleteRead']);
+    Route::delete('/notifications/delete-all', [NotificationController::class, 'deleteAll']);
+
+    // Test notification (development)
+    Route::post('/notifications/test', [NotificationController::class, 'sendTestNotification']);
+
+    // Individual notification operations
+    Route::get('/notifications/{notification}', [NotificationController::class, 'show']);
+    Route::post('/notifications/{notification}/read', [NotificationController::class, 'markAsRead']);
+    Route::post('/notifications/{notification}/unread', [NotificationController::class, 'markAsUnread']);
+    Route::delete('/notifications/{notification}', [NotificationController::class, 'destroy']);
 });

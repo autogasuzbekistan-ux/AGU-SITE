@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Shipment;
 use App\Models\Transfer;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -227,8 +228,21 @@ class ShipmentController extends Controller
 
             if ($validated['status'] === 'delivered') {
                 $shipment->markAsDelivered($validated['delivery_notes'] ?? null, $user->id);
+
+                // Notification - jo'natuvchi va qabul qiluvchiga yetkazib berilgani haqida
+                $transfer = $shipment->transfer;
+                if ($transfer) {
+                    Notification::shipmentDelivered($shipment, $transfer->sender_id);
+                    Notification::shipmentDelivered($shipment, $transfer->receiver_id);
+                }
             } elseif ($validated['status'] === 'picked_up') {
                 $shipment->markAsPickedUp($user->id);
+
+                // Notification - qabul qiluvchiga yuk olib ketilganligi haqida
+                $transfer = $shipment->transfer;
+                if ($transfer) {
+                    Notification::shipmentStatusChanged($shipment, $transfer->receiver_id);
+                }
             } else {
                 $shipment->updateStatus(
                     $validated['status'],
@@ -236,6 +250,14 @@ class ShipmentController extends Controller
                     $user->id,
                     $validated['location'] ?? null
                 );
+
+                // Notification - har qanday status o'zgarishida
+                $transfer = $shipment->transfer;
+                if ($transfer) {
+                    // Jo'natuvchiga va qabul qiluvchiga xabar
+                    Notification::shipmentStatusChanged($shipment, $transfer->sender_id);
+                    Notification::shipmentStatusChanged($shipment, $transfer->receiver_id);
+                }
             }
 
             // Lokatsiya yangilash
@@ -324,6 +346,42 @@ class ShipmentController extends Controller
         ]);
 
         $shipment->reportIssue($validated['issue'], $user->id);
+
+        // Notification - jo'natuvchi va qabul qiluvchiga muammo haqida xabar
+        $transfer = $shipment->transfer;
+        if ($transfer) {
+            Notification::createForUser(
+                $transfer->sender_id,
+                'shipment_issue',
+                'Yuk bilan muammo',
+                "Sizning {$shipment->tracking_code} raqamli yukingiz bilan muammo xabar qilindi: {$validated['issue']}",
+                [
+                    'shipment_id' => $shipment->id,
+                    'action_url' => "/shipments/{$shipment->id}",
+                    'priority' => 'urgent',
+                    'data' => [
+                        'tracking_code' => $shipment->tracking_code,
+                        'issue' => $validated['issue'],
+                    ],
+                ]
+            );
+
+            Notification::createForUser(
+                $transfer->receiver_id,
+                'shipment_issue',
+                'Yuk bilan muammo',
+                "Sizning {$shipment->tracking_code} raqamli yukingiz bilan muammo xabar qilindi: {$validated['issue']}",
+                [
+                    'shipment_id' => $shipment->id,
+                    'action_url' => "/shipments/{$shipment->id}",
+                    'priority' => 'urgent',
+                    'data' => [
+                        'tracking_code' => $shipment->tracking_code,
+                        'issue' => $validated['issue'],
+                    ],
+                ]
+            );
+        }
 
         return response()->json([
             'success' => true,

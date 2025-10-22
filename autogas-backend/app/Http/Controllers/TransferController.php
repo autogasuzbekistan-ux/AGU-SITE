@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Transfer;
 use App\Models\Product;
 use App\Models\User;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
@@ -123,6 +124,9 @@ class TransferController extends Controller
                 $transfer->calculateTotalAmount();
             }
 
+            // Notification - qabul qiluvchiga yangi transfer so'rovi haqida xabar
+            Notification::newTransferRequest($transfer->load(['sender', 'receiver']), $validated['receiver_id']);
+
             DB::commit();
 
             return response()->json([
@@ -188,6 +192,9 @@ class TransferController extends Controller
 
         $transfer->approve();
 
+        // Notification - yuboruvchiga transfer tasdiqlangani haqida xabar
+        Notification::transferApproved($transfer, $transfer->sender_id);
+
         return response()->json([
             'success' => true,
             'message' => 'Transfer tasdiqlandi',
@@ -224,6 +231,9 @@ class TransferController extends Controller
 
         $transfer->reject($validated['rejection_reason']);
 
+        // Notification - yuboruvchiga transfer rad etilgani haqida xabar
+        Notification::transferRejected($transfer, $transfer->sender_id, $validated['rejection_reason']);
+
         return response()->json([
             'success' => true,
             'message' => 'Transfer rad etildi',
@@ -256,6 +266,22 @@ class TransferController extends Controller
 
         $transfer->ship();
 
+        // Notification - qabul qiluvchiga yuk yo'lda ekanligi haqida xabar
+        Notification::createForUser(
+            $transfer->receiver_id,
+            'transfer_shipped',
+            'Transfer yo\'lga chiqdi',
+            "Sizning {$transfer->tracking_number} raqamli transferingiz yo'lga chiqarildi va yaqin orada yetib keladi.",
+            [
+                'transfer_id' => $transfer->id,
+                'action_url' => "/transfers/{$transfer->id}",
+                'priority' => 'medium',
+                'data' => [
+                    'tracking_number' => $transfer->tracking_number,
+                ],
+            ]
+        );
+
         return response()->json([
             'success' => true,
             'message' => 'Transfer yo\'lga chiqarildi',
@@ -287,6 +313,23 @@ class TransferController extends Controller
         }
 
         $transfer->deliver();
+
+        // Notification - yuboruvchiga yuk yetkazib berilgani haqida xabar
+        Notification::createForUser(
+            $transfer->sender_id,
+            'transfer_delivered',
+            'Transfer yetkazib berildi',
+            "Sizning {$transfer->tracking_number} raqamli transferingiz muvaffaqiyatli yetkazib berildi!",
+            [
+                'transfer_id' => $transfer->id,
+                'action_url' => "/transfers/{$transfer->id}",
+                'priority' => 'high',
+                'data' => [
+                    'tracking_number' => $transfer->tracking_number,
+                    'delivered_at' => $transfer->delivered_at,
+                ],
+            ]
+        );
 
         return response()->json([
             'success' => true,

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Transaction;
 use App\Models\User;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -161,6 +162,14 @@ class TransactionController extends Controller
             $transaction->sender_balance_after = $user->balance;
             $transaction->receiver_balance_after = $receiver->balance;
             $transaction->complete();
+
+            // Notification - qabul qiluvchiga pul kelganligi haqida xabar
+            Notification::moneyReceived($transaction->fresh()->load(['sender']), $receiver->id);
+
+            // Low balance warning - agar yuboruvchi balansi kam qolsa
+            if ($user->balance < 100000) { // 100,000 so'm dan kam
+                Notification::lowBalanceWarning($user->id, $user->balance);
+            }
 
             DB::commit();
 
@@ -383,6 +392,43 @@ class TransactionController extends Controller
                 'receiver_balance_after' => $validated['type'] === 'deposit' ? $targetUser->balance : null,
                 'completed_at' => now(),
             ]);
+
+            // Notification - foydalanuvchiga balans o'zgarganligi haqida xabar
+            if ($validated['type'] === 'deposit') {
+                Notification::createForUser(
+                    $targetUser->id,
+                    'balance_deposit',
+                    'Balansga pul qo\'shildi',
+                    "Sizning balansingizga {$validated['amount']} so'm qo'shildi. Yangi balans: {$targetUser->balance} so'm",
+                    [
+                        'transaction_id' => $transaction->id,
+                        'action_url' => '/transactions',
+                        'priority' => 'medium',
+                        'data' => [
+                            'amount' => $validated['amount'],
+                            'new_balance' => $targetUser->balance,
+                            'reference_number' => $transaction->reference_number,
+                        ],
+                    ]
+                );
+            } else {
+                Notification::createForUser(
+                    $targetUser->id,
+                    'balance_withdrawal',
+                    'Balansdan pul yechib olindi',
+                    "Sizning balansingizdan {$validated['amount']} so'm yechib olindi. Yangi balans: {$targetUser->balance} so'm",
+                    [
+                        'transaction_id' => $transaction->id,
+                        'action_url' => '/transactions',
+                        'priority' => 'high',
+                        'data' => [
+                            'amount' => $validated['amount'],
+                            'new_balance' => $targetUser->balance,
+                            'reference_number' => $transaction->reference_number,
+                        ],
+                    ]
+                );
+            }
 
             DB::commit();
 
