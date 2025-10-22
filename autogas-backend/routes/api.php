@@ -10,6 +10,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\WishlistController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\Api\AdminController;
+use App\Http\Controllers\TransferController;
 
 /*
 |--------------------------------------------------------------------------
@@ -109,11 +110,36 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::middleware('role:kontragent')->prefix('kontragent')->group(function () {
         // Dashboard va statistika
         Route::get('/dashboard', [AdminController::class, 'getKontragentDashboard']);
-        
+
         // Buyurtmalar (sotuvlar)
         Route::get('/sales', [AdminController::class, 'getMySales']);
-        
+
         // Mahsulot qo'shish (omborga)
         Route::post('/products', [AdminController::class, 'addProductToWarehouse']);
+    });
+
+    // --- TRANSFER yo'llari (Yuk almashinuvi) ---
+
+    // Barcha foydalanuvchilar uchun (tracking)
+    Route::get('/transfers/track', [TransferController::class, 'trackByNumber']);
+
+    // Kontragentlar uchun
+    Route::middleware('role:kontragent')->group(function () {
+        Route::get('/transfers/my', [TransferController::class, 'myTransfers']);
+        Route::post('/transfers', [TransferController::class, 'store']);
+        Route::post('/transfers/{transfer}/approve', [TransferController::class, 'approve']);
+        Route::post('/transfers/{transfer}/reject', [TransferController::class, 'reject']);
+        Route::post('/transfers/{transfer}/ship', [TransferController::class, 'ship']);
+        Route::post('/transfers/{transfer}/deliver', [TransferController::class, 'deliver']);
+        Route::post('/transfers/{transfer}/cancel', [TransferController::class, 'cancel']);
+    });
+
+    // Admin va Owner uchun
+    Route::middleware('role:admin,owner')->prefix('admin')->group(function () {
+        Route::get('/transfers', [TransferController::class, 'index']);
+        Route::get('/transfers/statistics', [TransferController::class, 'statistics']);
+        Route::get('/transfers/{transfer}', [TransferController::class, 'show']);
+        Route::post('/transfers/{transfer}/ship', [TransferController::class, 'ship']);
+        Route::post('/transfers/{transfer}/deliver', [TransferController::class, 'deliver']);
     });
 });
