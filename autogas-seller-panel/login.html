@@ -3,8 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sotuvchi Paneli - Kirish</title>
-    
+    <title>AGU - Kontragent Panel | Kirish</title>
+
+    <!-- AGU Branding -->
+    <script src="components/agu-branding.js"></script>
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
@@ -59,6 +62,62 @@
             margin-top: -8px;
             letter-spacing: 0.5px;
         }
+
+        /* AGU Logo Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        .agu-logo-container {
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .agu-logo:hover {
+            animation: pulse 0.6s ease-in-out;
+        }
+
+        .login-card {
+            animation: fadeInUp 1s ease-out 0.2s both;
+        }
+
+        /* Flame effect for AGU */
+        .flame-effect {
+            position: relative;
+            display: inline-block;
+        }
+
+        .flame-effect::after {
+            content: '';
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            width: 10px;
+            height: 10px;
+            background: radial-gradient(circle, #E30613, transparent);
+            border-radius: 50%;
+            animation: flicker 2s infinite;
+        }
+
+        @keyframes flicker {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.2); }
+        }
     </style>
 </head>
 <body class="gradient-bg min-h-screen flex items-center justify-center">
@@ -69,15 +128,15 @@
     </div>
     
     <!-- Login Card -->
-    <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md mx-4">
-        
+    <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md mx-4 login-card">
+
         <!-- Logo -->
-        <div class="text-center mb-8">
-            <div class="agu-logo">
+        <div class="text-center mb-8 agu-logo-container">
+            <div class="agu-logo flame-effect">
                 <span class="red-part">AG</span><span class="blue-part">U</span><sup class="registered">®</sup>
             </div>
             <div class="subtitle">Auto Gas Uzbekistan</div>
-            <h2 class="text-2xl font-bold mt-4 text-gray-800">Sotuvchi Paneli</h2>
+            <h2 class="text-2xl font-bold mt-4 text-gray-800">Kontragent Panel</h2>
             <p class="text-gray-600 mt-2">Tizimga kirish uchun ma'lumotlaringizni kiriting</p>
         </div>
         
@@ -176,8 +235,8 @@
                 }
                 
                 // Save to localStorage
-                localStorage.setItem('seller_token', data.token);
-                localStorage.setItem('seller_user', JSON.stringify(data.user));
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('user', JSON.stringify(data.user));
                 
                 showToast('Xush kelibsiz, ' + data.user.name + '!', false);
                 
@@ -195,9 +254,9 @@
         
         // Check if already logged in
         window.addEventListener('DOMContentLoaded', () => {
-            const token = localStorage.getItem('seller_token');
-            const user = localStorage.getItem('seller_user');
-            
+            const token = localStorage.getItem('token');
+            const user = localStorage.getItem('user');
+
             if (token && user) {
                 window.location.href = 'dashboard.html';
             }
