@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yuk Jo'natishni Kuzatish - AGU</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-purple-50 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white shadow-lg">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <div class="text-3xl font-bold">
+                        <span class="text-red-600">AG</span><span class="text-blue-600">U</span><sup class="text-sm">®</sup>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold text-gray-800">Auto Gas Uzbekistan</h1>
+                        <p class="text-sm text-gray-600">Yuk Jo'natishni Kuzatish</p>
+                    </div>
+                </div>
+                <a href="login.html" class="text-blue-600 hover:text-blue-800 font-semibold">
+                    <i class="fas fa-sign-in-alt mr-2"></i>Kirish
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container mx-auto px-6 py-12">
+        <!-- Search Section -->
+        <div class="max-w-3xl mx-auto">
+            <div class="bg-white rounded-2xl shadow-2xl p-8 mb-8">
+                <div class="text-center mb-8">
+                    <div class="inline-block p-4 bg-blue-100 rounded-full mb-4">
+                        <i class="fas fa-shipping-fast text-5xl text-blue-600"></i>
+                    </div>
+                    <h2 class="text-3xl font-bold text-gray-800 mb-2">Yukingizni Kuzating</h2>
+                    <p class="text-gray-600">Tracking kodingizni kiriting va yukingiz qayerdaligini bilib oling</p>
+                </div>
+
+                <div class="relative">
+                    <input
+                        type="text"
+                        id="tracking-input"
+                        placeholder="SHIP-XXXXXXXXXX"
+                        class="w-full px-6 py-4 text-lg border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                        onkeypress="if(event.key === 'Enter') trackShipment()"
+                    />
+                    <button
+                        onclick="trackShipment()"
+                        class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-3 rounded-lg hover:shadow-lg transition"
+                    >
+                        <i class="fas fa-search mr-2"></i>Qidirish
+                    </button>
+                </div>
+
+                <p class="text-sm text-gray-500 mt-4 text-center">
+                    <i class="fas fa-info-circle mr-1"></i>
+                    Tracking kodni transfer yaratilganda oldingiz
+                </p>
+            </div>
+
+            <!-- Result Section -->
+            <div id="loading" class="hidden text-center py-12">
+                <i class="fas fa-spinner fa-spin text-6xl text-blue-600 mb-4"></i>
+                <p class="text-xl text-gray-600">Yuklanmoqda...</p>
+            </div>
+
+            <div id="error" class="hidden bg-red-50 border-2 border-red-200 rounded-2xl p-8 text-center">
+                <i class="fas fa-exclamation-circle text-6xl text-red-600 mb-4"></i>
+                <h3 class="text-2xl font-bold text-gray-800 mb-2">Topilmadi</h3>
+                <p class="text-gray-600" id="error-message">Tracking kod noto'g'ri yoki mavjud emas</p>
+                <button onclick="resetSearch()" class="mt-4 text-blue-600 hover:text-blue-800 font-semibold">
+                    <i class="fas fa-redo mr-2"></i>Qayta urinish
+                </button>
+            </div>
+
+            <div id="result" class="hidden space-y-6">
+                <!-- Status Card -->
+                <div class="bg-white rounded-2xl shadow-2xl p-8">
+                    <div class="flex items-center justify-between mb-6">
+                        <div>
+                            <h3 class="text-2xl font-bold text-gray-800" id="tracking-code"></h3>
+                            <p class="text-gray-600" id="product-info"></p>
+                        </div>
+                        <div id="status-badge"></div>
+                    </div>
+
+                    <!-- Progress Bar -->
+                    <div class="mb-6">
+                        <div class="flex justify-between text-sm text-gray-600 mb-2">
+                            <span>Progress</span>
+                            <span id="progress-text">0%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-3">
+                            <div id="progress-bar" class="bg-gradient-to-r from-blue-600 to-purple-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <!-- Route Info -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                        <div class="text-center">
+                            <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                                <i class="fas fa-map-marker-alt text-blue-600 text-xl"></i>
+                            </div>
+                            <p class="text-sm text-gray-600">Qayerdan</p>
+                            <p class="font-bold text-gray-800" id="origin"></p>
+                        </div>
+                        <div class="text-center">
+                            <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                                <i class="fas fa-truck text-purple-600 text-xl"></i>
+                            </div>
+                            <p class="text-sm text-gray-600">Hozirgi joy</p>
+                            <p class="font-bold text-gray-800" id="current-location">-</p>
+                        </div>
+                        <div class="text-center">
+                            <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                                <i class="fas fa-flag-checkered text-green-600 text-xl"></i>
+                            </div>
+                            <p class="text-sm text-gray-600">Qayerga</p>
+                            <p class="font-bold text-gray-800" id="destination"></p>
+                        </div>
+                    </div>
+
+                    <!-- Carrier Info -->
+                    <div id="carrier-info" class="bg-gray-50 rounded-lg p-4">
+                        <h4 class="font-semibold text-gray-800 mb-2">Tashuvchi Ma'lumotlari</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                            <div>
+                                <span class="text-gray-600">Tashuvchi:</span>
+                                <span class="font-semibold ml-2" id="carrier-name">-</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-600">Transport:</span>
+                                <span class="font-semibold ml-2" id="vehicle-number">-</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Issue Alert -->
+                    <div id="issue-alert" class="hidden bg-red-50 border-2 border-red-200 rounded-lg p-4 mt-4">
+                        <div class="flex items-start">
+                            <i class="fas fa-exclamation-triangle text-red-600 text-xl mr-3 mt-1"></i>
+                            <div>
+                                <h4 class="font-semibold text-red-800 mb-1">Muammo Aniqlandi</h4>
+                                <p class="text-sm text-red-700" id="issue-description"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Timeline -->
+                <div class="bg-white rounded-2xl shadow-2xl p-8">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-6">
+                        <i class="fas fa-history text-blue-600 mr-2"></i>
+                        Tarix
+                    </h3>
+                    <div id="timeline" class="space-y-6">
+                        <!-- Timeline items will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Package Details -->
+                <div class="bg-white rounded-2xl shadow-2xl p-8">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-6">
+                        <i class="fas fa-box text-blue-600 mr-2"></i>
+                        Quti Ma'lumotlari
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div>
+                            <p class="text-sm text-gray-600 mb-1">Og'irlik</p>
+                            <p class="text-lg font-semibold text-gray-800" id="weight">-</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-600 mb-1">O'lcham</p>
+                            <p class="text-lg font-semibold text-gray-800" id="dimensions">-</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-600 mb-1">Quti soni</p>
+                            <p class="text-lg font-semibold text-gray-800" id="package-count">-</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t mt-12">
+        <div class="container mx-auto px-6 py-8">
+            <div class="text-center text-gray-600">
+                <p>&copy; 2025 Auto Gas Uzbekistan. Barcha huquqlar himoyalangan.</p>
+                <p class="text-sm mt-2">
+                    <a href="#" class="text-blue-600 hover:text-blue-800">Yordam</a> |
+                    <a href="#" class="text-blue-600 hover:text-blue-800">Bog'lanish</a> |
+                    <a href="#" class="text-blue-600 hover:text-blue-800">Shartlar</a>
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const API_BASE = 'http://127.0.0.1:8000/api';
+
+        async function trackShipment() {
+            const trackingCode = document.getElementById('tracking-input').value.trim();
+
+            if (!trackingCode) {
+                showError('Iltimos tracking kodni kiriting');
+                return;
+            }
+
+            showLoading();
+
+            try {
+                const response = await fetch(`${API_BASE}/shipments/track?tracking_code=${trackingCode}`, {
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    displayShipment(data.shipment);
+                } else {
+                    showError(data.message || 'Shipment topilmadi');
+                }
+            } catch (error) {
+                showError('Serverga ulanishda xatolik');
+                console.error('Track error:', error);
+            }
+        }
+
+        function displayShipment(shipment) {
+            hideAll();
+            document.getElementById('result').classList.remove('hidden');
+
+            // Header info
+            document.getElementById('tracking-code').textContent = shipment.tracking_code;
+            document.getElementById('product-info').textContent = `${shipment.transfer.product.name} - ${shipment.transfer.quantity} dona`;
+
+            // Status badge
+            document.getElementById('status-badge').innerHTML = getStatusBadge(shipment.status);
+
+            // Progress
+            const progress = getProgressPercentage(shipment.status);
+            document.getElementById('progress-text').textContent = `${progress}%`;
+            document.getElementById('progress-bar').style.width = `${progress}%`;
+
+            // Route
+            document.getElementById('origin').textContent = shipment.origin_city;
+            document.getElementById('current-location').textContent = shipment.current_location || '-';
+            document.getElementById('destination').textContent = shipment.destination_city;
+
+            // Carrier
+            document.getElementById('carrier-name').textContent = shipment.carrier_name || '-';
+            document.getElementById('vehicle-number').textContent = shipment.vehicle_number || '-';
+
+            // Issue
+            if (shipment.has_issues) {
+                document.getElementById('issue-alert').classList.remove('hidden');
+                document.getElementById('issue-description').textContent = shipment.issues_description;
+            }
+
+            // Timeline
+            displayTimeline(shipment.events);
+
+            // Package details
+            document.getElementById('weight').textContent = shipment.weight ? shipment.weight + ' kg' : '-';
+            document.getElementById('dimensions').textContent = shipment.package_dimensions || '-';
+            document.getElementById('package-count').textContent = shipment.package_count + ' ta';
+        }
+
+        function displayTimeline(events) {
+            const timeline = document.getElementById('timeline');
+            timeline.innerHTML = '';
+
+            events.forEach((event, index) => {
+                const item = document.createElement('div');
+                item.className = 'relative flex items-start space-x-4';
+
+                if (index < events.length - 1) {
+                    item.innerHTML += '<div class="absolute left-6 top-12 bottom-0 w-0.5 bg-gray-200"></div>';
+                }
+
+                const iconColor = getEventColor(event.event_type);
+
+                item.innerHTML += `
+                    <div class="w-12 h-12 ${iconColor} rounded-full flex items-center justify-center flex-shrink-0 z-10">
+                        <i class="fas ${getEventIcon(event.event_type)} text-white"></i>
+                    </div>
+                    <div class="flex-1 pb-8">
+                        <p class="font-semibold text-gray-800">${event.description}</p>
+                        ${event.location ? `<p class="text-sm text-gray-600 mt-1"><i class="fas fa-map-marker-alt mr-1"></i>${event.location}</p>` : ''}
+                        ${event.notes ? `<p class="text-sm text-gray-600 mt-1 italic">${event.notes}</p>` : ''}
+                        <p class="text-xs text-gray-500 mt-2">${new Date(event.created_at).toLocaleString('uz-UZ')}</p>
+                    </div>
+                `;
+
+                timeline.appendChild(item);
+            });
+        }
+
+        function getStatusBadge(status) {
+            const badges = {
+                preparing: '<span class="px-4 py-2 bg-yellow-100 text-yellow-800 rounded-full text-sm font-semibold"><i class="fas fa-box mr-1"></i>Tayyorlanmoqda</span>',
+                picked_up: '<span class="px-4 py-2 bg-orange-100 text-orange-800 rounded-full text-sm font-semibold"><i class="fas fa-hand-holding-box mr-1"></i>Olib ketildi</span>',
+                in_transit: '<span class="px-4 py-2 bg-blue-100 text-blue-800 rounded-full text-sm font-semibold"><i class="fas fa-truck mr-1"></i>Yo\'lda</span>',
+                arrived: '<span class="px-4 py-2 bg-purple-100 text-purple-800 rounded-full text-sm font-semibold"><i class="fas fa-map-marker-alt mr-1"></i>Manzilga yetdi</span>',
+                delivered: '<span class="px-4 py-2 bg-green-100 text-green-800 rounded-full text-sm font-semibold"><i class="fas fa-check-circle mr-1"></i>Topshirildi</span>',
+                returned: '<span class="px-4 py-2 bg-gray-100 text-gray-800 rounded-full text-sm font-semibold"><i class="fas fa-undo mr-1"></i>Qaytarildi</span>',
+                cancelled: '<span class="px-4 py-2 bg-red-100 text-red-800 rounded-full text-sm font-semibold"><i class="fas fa-ban mr-1"></i>Bekor qilindi</span>'
+            };
+            return badges[status] || status;
+        }
+
+        function getProgressPercentage(status) {
+            const percentages = {
+                preparing: 10,
+                picked_up: 30,
+                in_transit: 60,
+                arrived: 90,
+                delivered: 100,
+                returned: 100,
+                cancelled: 0
+            };
+            return percentages[status] || 0;
+        }
+
+        function getEventIcon(eventType) {
+            const icons = {
+                status_changed: 'fa-sync-alt',
+                location_updated: 'fa-map-marker-alt',
+                note_added: 'fa-sticky-note',
+                issue_reported: 'fa-exclamation-triangle'
+            };
+            return icons[eventType] || 'fa-info-circle';
+        }
+
+        function getEventColor(eventType) {
+            const colors = {
+                status_changed: 'bg-blue-500',
+                location_updated: 'bg-green-500',
+                note_added: 'bg-purple-500',
+                issue_reported: 'bg-red-500'
+            };
+            return colors[eventType] || 'bg-gray-500';
+        }
+
+        function showLoading() {
+            hideAll();
+            document.getElementById('loading').classList.remove('hidden');
+        }
+
+        function showError(message) {
+            hideAll();
+            document.getElementById('error').classList.remove('hidden');
+            document.getElementById('error-message').textContent = message;
+        }
+
+        function hideAll() {
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('error').classList.add('hidden');
+            document.getElementById('result').classList.add('hidden');
+        }
+
+        function resetSearch() {
+            hideAll();
+            document.getElementById('tracking-input').value = '';
+            document.getElementById('tracking-input').focus();
+        }
+    </script>
+</body>
+</html>
