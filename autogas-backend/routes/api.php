@@ -127,6 +127,9 @@ Route::middleware('auth:sanctum')->group(function () {
         // Buyurtmalar (sotuvlar)
         Route::get('/sales', [AdminController::class, 'getMySales']);
 
+        // Kontragentlar ro'yxati (transfer uchun)
+        Route::get('/kontragents', [AdminController::class, 'getKontragentsForTransfer']);
+
         // Mahsulotlar CRUD
         Route::get('/products', [ProductController::class, 'index']);
         Route::post('/products', [ProductController::class, 'store']);

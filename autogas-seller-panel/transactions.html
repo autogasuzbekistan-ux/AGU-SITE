@@ -319,7 +319,7 @@
 
         async function loadKontragents() {
             try {
-                const response = await fetch(`${API_BASE}/admin/kontragents`, {
+                const response = await fetch(`${API_BASE}/kontragent/kontragents`, {
                     headers: {
                         'Authorization': `Bearer ${authToken}`,
                         'Accept': 'application/json'

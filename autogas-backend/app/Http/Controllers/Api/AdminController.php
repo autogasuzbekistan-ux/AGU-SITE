@@ -88,7 +88,38 @@ class AdminController extends Controller
         
         return response()->json($orders);
     }
-    
+
+    /**
+     * Kontragentlar ro'yxati (Transfer uchun)
+     * GET /api/kontragent/kontragents
+     */
+    public function getKontragentsForTransfer(Request $request)
+    {
+        $user = $request->user();
+
+        if ($user->role !== 'kontragent') {
+            return response()->json(['message' => 'Ruxsat berilmagan'], 403);
+        }
+
+        // Faqat aktiv kontragentlarni qaytarish (o'zidan boshqa)
+        $kontragents = User::where('role', 'kontragent')
+            ->where('is_active', true)
+            ->where('id', '!=', $user->id)
+            ->select('id', 'name', 'email', 'phone', 'region')
+            ->get()
+            ->map(function($k) {
+                return [
+                    'id' => $k->id,
+                    'name' => $k->name,
+                    'email' => $k->email,
+                    'phone' => $k->phone,
+                    'region' => $k->region,
+                ];
+            });
+
+        return response()->json(['kontragents' => $kontragents]);
+    }
+
     /**
      * Sotuvchi mahsulot qo'shish
      * POST /api/kontragent/products

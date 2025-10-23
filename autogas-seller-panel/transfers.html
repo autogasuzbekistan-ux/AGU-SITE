@@ -260,7 +260,7 @@
         // Load kontragents
         async function loadKontragents() {
             try {
-                const response = await fetch(`${API_BASE}/admin/kontragents`, {
+                const response = await fetch(`${API_BASE}/kontragent/kontragents`, {
                     headers: {
                         'Authorization': `Bearer ${authToken}`,
                         'Accept': 'application/json'
@@ -271,12 +271,10 @@
                     const data = await response.json();
                     const select = document.getElementById('receiver-select');
                     data.kontragents.forEach(k => {
-                        if (currentUser && k.id !== currentUser.id) {
-                            const option = document.createElement('option');
-                            option.value = k.id;
-                            option.textContent = `${k.name} (${k.region || 'N/A'})`;
-                            select.appendChild(option);
-                        }
+                        const option = document.createElement('option');
+                        option.value = k.id;
+                        option.textContent = `${k.name} (${k.region || 'N/A'})`;
+                        select.appendChild(option);
                     });
                 }
             } catch (error) {
