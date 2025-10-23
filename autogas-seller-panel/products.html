@@ -127,7 +127,7 @@
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Qidirish</label>
-                    <input type="text" id="searchInput" onkeyup="filterProducts()" placeholder="Mahsulot nomi..." class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-500">
+                    <input type="text" id="searchInput" placeholder="Mahsulot nomi..." class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-500">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Kategoriya</label>
@@ -555,12 +555,29 @@
             }, 3000);
         }
 
+        // Debounce utility function
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
         // Close modal on outside click
         document.getElementById('productModal').addEventListener('click', (e) => {
             if (e.target.id === 'productModal') {
                 closeModal();
             }
         });
+
+        // Add debounced search event listener
+        const debouncedFilter = debounce(filterProducts, 300);
+        document.getElementById('searchInput').addEventListener('input', debouncedFilter);
     </script>
 </body>
 </html>

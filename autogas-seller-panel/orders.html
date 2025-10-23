@@ -592,6 +592,19 @@
             document.getElementById('order-modal').classList.add('hidden');
         }
 
+        // Debounce utility function
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
         // Make functions global
         window.showOrderDetail = showOrderDetail;
         window.closeModal = closeModal;
@@ -601,8 +614,9 @@
         if (checkAuth()) {
             loadOrders();
 
-            // Add filter event listeners
-            document.getElementById('search-input').addEventListener('input', filterAndSortOrders);
+            // Add filter event listeners with debouncing for search
+            const debouncedFilter = debounce(filterAndSortOrders, 300);
+            document.getElementById('search-input').addEventListener('input', debouncedFilter);
             document.getElementById('status-filter').addEventListener('change', filterAndSortOrders);
             document.getElementById('date-from').addEventListener('change', filterAndSortOrders);
             document.getElementById('date-to').addEventListener('change', filterAndSortOrders);
