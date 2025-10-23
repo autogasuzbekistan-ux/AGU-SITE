@@ -3,412 +3,584 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Buyurtmalar - Sotuvchi Paneli</title>
-    <!-- AGU Navbar -->
-    <script src="components/agu-navbar.js"></script>
-    <!-- AGU Branding -->
+    <title>AGU - Buyurtmalar</title>
+
+    <!-- AGU Components -->
     <script src="components/agu-branding.js"></script>
-    
+    <script src="components/agu-navbar.js"></script>
+    <script src="components/agu-performance.js"></script>
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <style>
-        :root {
-            --primary-blue: #1b5bb5;
-            --secondary-orange: #ed8f36;
-            --accent-red: #E30613;
-        }
-        
-        .sidebar {
-            transition: transform 0.3s ease;
-        }
-        
-        @media (max-width: 768px) {
-            .sidebar {
-                transform: translateX(-100%);
-            }
-            
-            .sidebar.active {
-                transform: translateX(0);
-            }
-        }
-        
         .order-card {
             transition: all 0.3s ease;
         }
-        
+
         .order-card:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
         }
-        
+
+        .stat-card {
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        }
+
         .status-badge {
-            padding: 0.25rem 0.75rem;
+            padding: 0.4rem 0.8rem;
             border-radius: 9999px;
             font-size: 0.75rem;
             font-weight: 600;
+            display: inline-block;
         }
-        
-        .status-new { background: #DBEAFE; color: #1E40AF; }
-        .status-processing { background: #FEF3C7; color: #92400E; }
+
+        .status-pending { background: #FEF3C7; color: #92400E; }
+        .status-processing { background: #DBEAFE; color: #1E40AF; }
         .status-shipped { background: #E0E7FF; color: #3730A3; }
-        .status-delivered { background: #D1FAE5; color: #065F46; }
+        .status-completed { background: #D1FAE5; color: #065F46; }
         .status-cancelled { background: #FEE2E2; color: #991B1B; }
     </style>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body class="bg-gray-100">
+<body class="bg-gray-50">
     <!-- AGU Navbar -->
     <div id="agu-navbar"></div>
 
-    
-    <!-- Toast -->
-    <div id="toast" class="fixed top-5 right-5 bg-green-500 text-white py-3 px-6 rounded-lg shadow-lg transform translate-x-[120%] transition-transform duration-500 z-50">
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed top-24 right-5 bg-green-500 text-white py-3 px-6 rounded-lg shadow-lg transform translate-x-[120%] transition-transform duration-500 z-50">
         <span id="toast-message"></span>
     </div>
-    
-    <div class="flex min-h-screen">
-        
-        <!-- Sidebar -->
-        <aside id="sidebar" class="sidebar fixed md:static w-64 bg-white shadow-lg z-40 min-h-screen">
-            <div class="p-6">
-                <!-- Logo -->
-                <div class="text-center mb-8">
-                    <div class="text-3xl font-bold">
-                        <span style="color: #E30613;">AG</span><span style="color: #0B3373;">U</span><sup style="color: #0B3373; font-size: 1rem;">®</sup>
+
+    <!-- Main Container -->
+    <div class="container mx-auto px-6 py-8">
+        <!-- Page Header -->
+        <div class="mb-8">
+            <h1 class="text-4xl font-bold text-gray-800 mb-2">
+                <i class="fas fa-shopping-cart mr-3 text-blue-600"></i>Buyurtmalar
+            </h1>
+            <p class="text-gray-600">Barcha buyurtmalarni ko'ring va boshqaring</p>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <!-- Total Orders -->
+            <div class="stat-card bg-gradient-to-br from-blue-500 to-blue-700 text-white rounded-xl shadow-lg p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-blue-100 text-sm font-medium mb-1">Jami Buyurtmalar</p>
+                        <p class="text-3xl font-bold" id="total-orders">0</p>
                     </div>
-                    <div class="text-xs font-bold" style="color: #0B3373; margin-top: -5px;">Auto Gas Uzbekistan</div>
-                </div>
-                
-                <!-- User Info -->
-                <div class="mb-8 p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl">
-                    <div class="flex items-center space-x-3">
-                        <div class="w-12 h-12 rounded-full flex items-center justify-center bg-gradient-to-br from-orange-400 to-red-500 text-white font-bold text-lg">
-                            <span id="user-initial">S</span>
-                        </div>
-                        <div>
-                            <div class="font-semibold text-gray-800" id="user-name">Sotuvchi</div>
-                            <div class="text-xs text-gray-500">Kontragent</div>
-                        </div>
+                    <div class="bg-white bg-opacity-20 rounded-full p-4">
+                        <i class="fas fa-shopping-cart text-3xl"></i>
                     </div>
                 </div>
-                
-                <!-- Navigation -->
-                <nav class="space-y-2">
-                    <a href="dashboard.html" class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100 font-medium">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-                        </svg>
-                        <span>Dashboard</span>
-                    </a>
-                    
-                    <a href="orders.html" class="flex items-center space-x-3 px-4 py-3 rounded-lg bg-blue-50 text-blue-600 font-medium">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
-                        </svg>
-                        <span>Buyurtmalar</span>
-                    </a>
-                    
-                    <a href="products.html" class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100 font-medium">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
-                        </svg>
-                        <span>Mahsulotlar</span>
-                    </a>
-                    
-                    <button id="logout-btn" class="flex items-center space-x-3 px-4 py-3 rounded-lg text-red-600 hover:bg-red-50 font-medium w-full">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
-                        </svg>
-                        <span>Chiqish</span>
-                    </button>
-                </nav>
             </div>
-        </aside>
-        
-        <!-- Main Content -->
-        <main class="flex-1 p-6 md:p-10">
-            
-            <!-- Header -->
-            <div class="flex justify-between items-center mb-8">
-                <div>
-                    <h1 class="text-3xl font-bold text-gray-800">Buyurtmalar</h1>
-                    <p class="text-gray-600 mt-1">Barcha buyurtmalarni ko'ring va boshqaring</p>
-                </div>
-                
-                <!-- Mobile Menu Button -->
-                <button id="mobile-menu-btn" class="md:hidden p-2 rounded-lg bg-white shadow-md">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                    </svg>
-                </button>
-            </div>
-            
-            <!-- Filter and Search -->
-            <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
-                <div class="flex flex-col md:flex-row gap-4">
-                    <input 
-                        type="text" 
-                        id="search-input" 
-                        placeholder="Buyurtma qidirish (mijoz nomi, telefon...)" 
-                        class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    >
-                    
-                    <select id="status-filter" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                        <option value="">Barcha holat</option>
-                        <option value="new">Yangi</option>
-                        <option value="processing">Tayyorlanmoqda</option>
-                        <option value="shipped">Yo'lda</option>
-                        <option value="delivered">Yetkazildi</option>
-                        <option value="cancelled">Bekor qilindi</option>
-                    </select>
+
+            <!-- Pending Orders -->
+            <div class="stat-card bg-gradient-to-br from-yellow-500 to-orange-600 text-white rounded-xl shadow-lg p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-yellow-100 text-sm font-medium mb-1">Kutilmoqda</p>
+                        <p class="text-3xl font-bold" id="pending-orders">0</p>
+                    </div>
+                    <div class="bg-white bg-opacity-20 rounded-full p-4">
+                        <i class="fas fa-clock text-3xl"></i>
+                    </div>
                 </div>
             </div>
-            
-            <!-- Orders List -->
-            <div id="orders-container" class="space-y-4">
-                <!-- Loading -->
-                <div class="text-center py-12">
-                    <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-                    <p class="text-gray-600 mt-4">Buyurtmalar yuklanmoqda...</p>
+
+            <!-- Completed Orders -->
+            <div class="stat-card bg-gradient-to-br from-green-500 to-green-700 text-white rounded-xl shadow-lg p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-green-100 text-sm font-medium mb-1">Yakunlangan</p>
+                        <p class="text-3xl font-bold" id="completed-orders">0</p>
+                    </div>
+                    <div class="bg-white bg-opacity-20 rounded-full p-4">
+                        <i class="fas fa-check-circle text-3xl"></i>
+                    </div>
                 </div>
             </div>
-            
-        </main>
-        
-    </div>
-    
-    <!-- Order Detail Modal -->
-    <div id="order-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div class="p-6 border-b border-gray-200 flex justify-between items-center">
-                <h2 class="text-2xl font-bold text-gray-800">Buyurtma Tafsilotlari</h2>
-                <button id="close-modal" class="text-gray-500 hover:text-gray-700">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                    </svg>
-                </button>
+
+            <!-- Total Revenue -->
+            <div class="stat-card bg-gradient-to-br from-purple-500 to-pink-600 text-white rounded-xl shadow-lg p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-purple-100 text-sm font-medium mb-1">Jami Summa</p>
+                        <p class="text-3xl font-bold" id="total-revenue">$0</p>
+                    </div>
+                    <div class="bg-white bg-opacity-20 rounded-full p-4">
+                        <i class="fas fa-dollar-sign text-3xl"></i>
+                    </div>
+                </div>
             </div>
-            <div id="order-detail-content" class="p-6">
-                <!-- Order details will be loaded here -->
+        </div>
+
+        <!-- Filters -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <!-- Search -->
+                <input
+                    type="text"
+                    id="search-input"
+                    placeholder="Mijoz nomi, telefon..."
+                    class="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                >
+
+                <!-- Status Filter -->
+                <select id="status-filter" class="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                    <option value="">Barcha holat</option>
+                    <option value="pending">Kutilmoqda</option>
+                    <option value="processing">Tayyorlanmoqda</option>
+                    <option value="shipped">Yo'lda</option>
+                    <option value="completed">Yakunlandi</option>
+                    <option value="cancelled">Bekor qilindi</option>
+                </select>
+
+                <!-- Date Range -->
+                <input
+                    type="date"
+                    id="date-from"
+                    class="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                >
+                <input
+                    type="date"
+                    id="date-to"
+                    class="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                >
+            </div>
+
+            <!-- Sort Options -->
+            <div class="flex items-center gap-4 mt-4">
+                <label class="text-sm font-medium text-gray-700">Saralash:</label>
+                <select id="sort-select" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                    <option value="newest">Eng yangi</option>
+                    <option value="oldest">Eng eski</option>
+                    <option value="price-high">Narx (yuqori)</option>
+                    <option value="price-low">Narx (past)</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Orders Grid -->
+        <div id="orders-grid" class="grid grid-cols-1 gap-6 mb-8">
+            <!-- Loading State -->
+            <div class="text-center py-12">
+                <div class="inline-block animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600"></div>
+                <p class="text-gray-600 mt-4 text-lg">Buyurtmalar yuklanmoqda...</p>
             </div>
         </div>
     </div>
-    
+
+    <!-- Order Detail Modal -->
+    <div id="order-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+            <!-- Modal Header -->
+            <div class="sticky top-0 bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6 rounded-t-2xl flex justify-between items-center">
+                <div>
+                    <h2 class="text-2xl font-bold">Buyurtma Tafsilotlari</h2>
+                    <p class="text-blue-100 text-sm mt-1" id="modal-order-id">Buyurtma #0</p>
+                </div>
+                <button onclick="closeModal()" class="text-white hover:bg-white hover:bg-opacity-20 rounded-full p-2 transition-all">
+                    <i class="fas fa-times text-2xl"></i>
+                </button>
+            </div>
+
+            <!-- Modal Content -->
+            <div id="order-detail-content" class="p-6">
+                <!-- Content will be loaded here -->
+            </div>
+        </div>
+    </div>
+
     <script>
         const API_BASE_URL = 'http://127.0.0.1:8000/api';
-        let authToken = localStorage.getItem('token');
-        let allOrders = [];
-        
+        let orders = [];
+        let filteredOrders = [];
+
+        // Toast Notification
         function showToast(message, isError = false) {
             const toast = document.getElementById('toast');
             const toastMessage = document.getElementById('toast-message');
+
             toastMessage.textContent = message;
-            toast.className = `fixed top-5 right-5 text-white py-3 px-6 rounded-lg shadow-lg transform transition-transform duration-500 z-50 ${isError ? 'bg-red-500' : 'bg-green-500'}`;
+            toast.className = `fixed top-24 right-5 text-white py-3 px-6 rounded-lg shadow-lg transform transition-transform duration-500 z-50 ${isError ? 'bg-red-500' : 'bg-green-500'}`;
+
             toast.classList.remove('translate-x-[120%]');
             toast.classList.add('translate-x-0');
+
             setTimeout(() => {
                 toast.classList.remove('translate-x-0');
                 toast.classList.add('translate-x-[120%]');
             }, 4000);
         }
-        
+
+        // Check Authentication
         function checkAuth() {
-            if (!authToken) {
+            const token = localStorage.getItem('token');
+            if (!token) {
                 window.location.href = 'login.html';
                 return false;
             }
-            const userStr = localStorage.getItem('seller_user');
-            if (userStr) {
-                const user = JSON.parse(userStr);
-                document.getElementById('user-name').textContent = user.name;
-                document.getElementById('user-initial').textContent = user.name.charAt(0).toUpperCase();
-            }
             return true;
         }
-        
+
+        // Load Orders
+        async function loadOrders() {
+            try {
+                const data = await AGU_PERFORMANCE.api.get('/orders');
+                orders = data;
+                filteredOrders = [...orders];
+                renderOrders();
+                updateStatistics();
+            } catch (error) {
+                console.error('Orders load error:', error);
+                showToast('Buyurtmalarni yuklashda xatolik', true);
+                document.getElementById('orders-grid').innerHTML = `
+                    <div class="text-center py-12 bg-white rounded-xl">
+                        <i class="fas fa-exclamation-circle text-6xl text-red-400 mb-4"></i>
+                        <p class="text-gray-600 text-lg">Buyurtmalarni yuklashda xatolik yuz berdi</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Update Statistics
+        function updateStatistics() {
+            const total = orders.length;
+            const pending = orders.filter(o => o.status === 'pending' || o.status === 'processing').length;
+            const completed = orders.filter(o => o.status === 'completed').length;
+            const revenue = orders
+                .filter(o => o.status === 'completed')
+                .reduce((sum, o) => sum + parseFloat(o.total_amount || o.total_price || 0), 0);
+
+            document.getElementById('total-orders').textContent = total;
+            document.getElementById('pending-orders').textContent = pending;
+            document.getElementById('completed-orders').textContent = completed;
+            document.getElementById('total-revenue').textContent = '$' + revenue.toFixed(2);
+        }
+
+        // Get Status Text
         function getStatusText(status) {
             const statusMap = {
-                'new': 'Yangi',
+                'pending': 'Kutilmoqda',
                 'processing': 'Tayyorlanmoqda',
                 'shipped': "Yo'lda",
-                'delivered': 'Yetkazildi',
+                'completed': 'Yakunlandi',
                 'cancelled': 'Bekor qilindi'
             };
             return statusMap[status] || status;
         }
-        
+
+        // Get Status Class
         function getStatusClass(status) {
             return `status-${status}`;
         }
-        
-        async function loadOrders() {
-            try {
-                const response = await fetch(`${API_BASE_URL}/kontragent/sales`, {
-                    headers: {
-                        'Authorization': `Bearer ${authToken}`,
-                        'Accept': 'application/json'
-                    }
-                });
-                
-                if (!response.ok) throw new Error('Buyurtmalarni yuklashda xatolik');
-                
-                allOrders = await response.json();
-                renderOrders(allOrders);
-                
-            } catch (error) {
-                console.error('Error:', error);
-                document.getElementById('orders-container').innerHTML = `
-                    <div class="text-center py-12">
-                        <div class="text-red-500 text-lg font-semibold">Xatolik yuz berdi</div>
-                        <p class="text-gray-600 mt-2">${error.message}</p>
-                    </div>
-                `;
-            }
+
+        // Get Status Icon
+        function getStatusIcon(status) {
+            const iconMap = {
+                'pending': 'fa-clock',
+                'processing': 'fa-cog fa-spin',
+                'shipped': 'fa-truck',
+                'completed': 'fa-check-circle',
+                'cancelled': 'fa-times-circle'
+            };
+            return iconMap[status] || 'fa-question-circle';
         }
-        
-        function renderOrders(orders) {
-            const container = document.getElementById('orders-container');
-            
-            if (!orders || orders.length === 0) {
-                container.innerHTML = `
-                    <div class="text-center py-12 bg-white rounded-xl">
-                        <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
-                        </svg>
-                        <p class="text-gray-600 text-lg">Hozircha buyurtmalar yo'q</p>
+
+        // Render Orders
+        function renderOrders() {
+            const grid = document.getElementById('orders-grid');
+
+            if (filteredOrders.length === 0) {
+                grid.innerHTML = `
+                    <div class="text-center py-16 bg-white rounded-xl">
+                        <i class="fas fa-shopping-cart text-6xl text-gray-300 mb-4"></i>
+                        <p class="text-gray-600 text-xl font-semibold">Buyurtmalar topilmadi</p>
+                        <p class="text-gray-500 mt-2">Hozircha buyurtmalar mavjud emas</p>
                     </div>
                 `;
                 return;
             }
-            
-            container.innerHTML = orders.map(order => `
-                <div class="order-card bg-white rounded-xl shadow-lg p-6 cursor-pointer" onclick="showOrderDetail(${order.id})">
-                    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                        <div class="flex-1">
-                            <div class="flex items-center gap-3 mb-2">
-                                <span class="status-badge ${getStatusClass(order.status)}">${getStatusText(order.status)}</span>
-                                <span class="text-sm text-gray-500">#${order.id}</span>
+
+            grid.innerHTML = filteredOrders.map(order => `
+                <div class="order-card bg-white rounded-xl shadow-lg overflow-hidden cursor-pointer hover:shadow-2xl" onclick="showOrderDetail(${order.id})">
+                    <div class="p-6">
+                        <div class="flex items-start justify-between mb-4">
+                            <!-- Order Info -->
+                            <div class="flex-1">
+                                <div class="flex items-center gap-3 mb-3">
+                                    <span class="status-badge ${getStatusClass(order.status)}">
+                                        <i class="fas ${getStatusIcon(order.status)} mr-1"></i>${getStatusText(order.status)}
+                                    </span>
+                                    <span class="text-sm text-gray-500 font-mono">#${order.id}</span>
+                                </div>
+
+                                <!-- Customer Info -->
+                                <h3 class="text-xl font-bold text-gray-800 mb-2">
+                                    <i class="fas fa-user mr-2 text-blue-600"></i>${order.customer_name || 'N/A'}
+                                </h3>
+                                <div class="space-y-1 text-sm text-gray-600">
+                                    <p><i class="fas fa-phone mr-2 text-green-600"></i>${order.customer_phone || 'N/A'}</p>
+                                    <p><i class="fas fa-map-marker-alt mr-2 text-red-600"></i>${order.shipping_address || order.address || 'N/A'}</p>
+                                    ${order.region ? `<p><i class="fas fa-globe mr-2 text-purple-600"></i>${order.region}</p>` : ''}
+                                </div>
                             </div>
-                            <h3 class="text-lg font-semibold text-gray-800 mb-1">${order.customer_name}</h3>
-                            <p class="text-sm text-gray-600">${order.customer_phone || 'N/A'}</p>
-                            <p class="text-sm text-gray-500 mt-1">${order.region || 'N/A'}</p>
+
+                            <!-- Price & Date -->
+                            <div class="text-right ml-4">
+                                <div class="text-3xl font-bold text-blue-600 mb-2">
+                                    $${parseFloat(order.total_amount || order.total_price || 0).toFixed(2)}
+                                </div>
+                                <div class="text-sm text-gray-500">
+                                    <i class="fas fa-calendar mr-1"></i>
+                                    ${new Date(order.created_at).toLocaleDateString('uz-UZ')}
+                                </div>
+                                <div class="text-xs text-gray-400 mt-1">
+                                    ${new Date(order.created_at).toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit' })}
+                                </div>
+                            </div>
                         </div>
-                        <div class="text-right">
-                            <div class="text-2xl font-bold text-blue-600 mb-1">$${parseFloat(order.total_price).toFixed(2)}</div>
-                            <div class="text-sm text-gray-500">${new Date(order.created_at).toLocaleDateString('uz-UZ')}</div>
+
+                        <!-- Products Summary -->
+                        ${order.items && order.items.length > 0 ? `
+                            <div class="border-t border-gray-200 pt-4 mt-4">
+                                <p class="text-sm text-gray-600 mb-2">
+                                    <i class="fas fa-box mr-2"></i>Mahsulotlar: ${order.items.length} ta
+                                </p>
+                                <div class="flex gap-2 flex-wrap">
+                                    ${order.items.slice(0, 3).map(item => `
+                                        <span class="text-xs bg-gray-100 text-gray-700 px-3 py-1 rounded-full">
+                                            ${item.product?.name || 'Mahsulot'} (${item.quantity})
+                                        </span>
+                                    `).join('')}
+                                    ${order.items.length > 3 ? `
+                                        <span class="text-xs bg-blue-100 text-blue-700 px-3 py-1 rounded-full">
+                                            +${order.items.length - 3} ta
+                                        </span>
+                                    ` : ''}
+                                </div>
+                            </div>
+                        ` : ''}
+
+                        <!-- Action Button -->
+                        <div class="mt-4 pt-4 border-t border-gray-200">
+                            <button class="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all transform hover:scale-105 font-semibold">
+                                <i class="fas fa-eye mr-2"></i>Tafsilotlarini ko'rish
+                            </button>
                         </div>
                     </div>
                 </div>
             `).join('');
         }
-        
-        function filterOrders() {
-            const searchTerm = document.getElementById('search-input').value.toLowerCase();
-            const statusFilter = document.getElementById('status-filter').value;
-            
-            let filtered = allOrders;
-            
-            if (searchTerm) {
-                filtered = filtered.filter(order => 
-                    order.customer_name.toLowerCase().includes(searchTerm) ||
-                    (order.customer_phone && order.customer_phone.includes(searchTerm)) ||
-                    (order.region && order.region.toLowerCase().includes(searchTerm))
-                );
-            }
-            
-            if (statusFilter) {
-                filtered = filtered.filter(order => order.status === statusFilter);
-            }
-            
-            renderOrders(filtered);
-        }
-        
+
+        // Show Order Detail
         async function showOrderDetail(orderId) {
-            const order = allOrders.find(o => o.id === orderId);
+            const order = orders.find(o => o.id === orderId);
             if (!order) return;
-            
+
             const modal = document.getElementById('order-modal');
             const content = document.getElementById('order-detail-content');
-            
+
+            document.getElementById('modal-order-id').textContent = `Buyurtma #${order.id}`;
+
             content.innerHTML = `
                 <div class="space-y-6">
-                    <div class="grid md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="text-sm text-gray-600">Mijoz</label>
-                            <p class="font-semibold text-gray-800">${order.customer_name}</p>
-                        </div>
-                        <div>
-                            <label class="text-sm text-gray-600">Telefon</label>
-                            <p class="font-semibold text-gray-800">${order.customer_phone || 'N/A'}</p>
-                        </div>
-                        <div>
-                            <label class="text-sm text-gray-600">Viloyat</label>
-                            <p class="font-semibold text-gray-800">${order.region || 'N/A'}</p>
-                        </div>
-                        <div>
-                            <label class="text-sm text-gray-600">Holat</label>
-                            <p><span class="status-badge ${getStatusClass(order.status)}">${getStatusText(order.status)}</span></p>
-                        </div>
-                        <div class="md:col-span-2">
-                            <label class="text-sm text-gray-600">Manzil</label>
-                            <p class="font-semibold text-gray-800">${order.address || 'N/A'}</p>
+                    <!-- Order Status -->
+                    <div class="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-600 mb-2">Buyurtma holati</p>
+                                <span class="status-badge ${getStatusClass(order.status)} text-lg">
+                                    <i class="fas ${getStatusIcon(order.status)} mr-2"></i>${getStatusText(order.status)}
+                                </span>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-sm text-gray-600 mb-2">Umumiy summa</p>
+                                <p class="text-3xl font-bold text-blue-600">$${parseFloat(order.total_amount || order.total_price || 0).toFixed(2)}</p>
+                            </div>
                         </div>
                     </div>
-                    
-                    <div class="border-t border-gray-200 pt-6">
-                        <h3 class="font-bold text-lg text-gray-800 mb-4">Mahsulotlar</h3>
+
+                    <!-- Customer Information -->
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
+                            <i class="fas fa-user-circle mr-2 text-blue-600"></i>Mijoz ma'lumotlari
+                        </h3>
+                        <div class="grid md:grid-cols-2 gap-4 bg-gray-50 rounded-xl p-6">
+                            <div>
+                                <label class="text-sm text-gray-600">To'liq ism</label>
+                                <p class="font-semibold text-gray-800">${order.customer_name || 'N/A'}</p>
+                            </div>
+                            <div>
+                                <label class="text-sm text-gray-600">Telefon raqam</label>
+                                <p class="font-semibold text-gray-800">${order.customer_phone || 'N/A'}</p>
+                            </div>
+                            <div>
+                                <label class="text-sm text-gray-600">Email</label>
+                                <p class="font-semibold text-gray-800">${order.customer_email || 'N/A'}</p>
+                            </div>
+                            <div>
+                                <label class="text-sm text-gray-600">Viloyat</label>
+                                <p class="font-semibold text-gray-800">${order.region || 'N/A'}</p>
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="text-sm text-gray-600">Yetkazib berish manzili</label>
+                                <p class="font-semibold text-gray-800">${order.shipping_address || order.address || 'N/A'}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Order Items -->
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
+                            <i class="fas fa-box-open mr-2 text-purple-600"></i>Buyurtma mahsulotlari
+                        </h3>
                         <div class="space-y-3">
-                            ${order.items ? order.items.map(item => `
-                                <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                                    <div>
-                                        <p class="font-semibold text-gray-800">${item.product?.name || 'N/A'}</p>
-                                        <p class="text-sm text-gray-600">Miqdor: ${item.quantity}</p>
+                            ${order.items && order.items.length > 0 ? order.items.map(item => `
+                                <div class="bg-gradient-to-r from-gray-50 to-blue-50 rounded-xl p-4 flex items-center justify-between">
+                                    <div class="flex items-center gap-4 flex-1">
+                                        <div class="w-16 h-16 bg-white rounded-lg flex items-center justify-center shadow">
+                                            ${item.product?.image ? `
+                                                <img src="${item.product.image}" alt="${item.product.name}" class="w-full h-full object-cover rounded-lg">
+                                            ` : `
+                                                <i class="fas fa-box text-2xl text-gray-400"></i>
+                                            `}
+                                        </div>
+                                        <div class="flex-1">
+                                            <p class="font-bold text-gray-800 text-lg">${item.product?.name || 'Mahsulot'}</p>
+                                            <p class="text-sm text-gray-600">Miqdor: <span class="font-semibold">${item.quantity}</span></p>
+                                            <p class="text-sm text-gray-600">Narx: <span class="font-semibold">$${parseFloat(item.price).toFixed(2)}</span></p>
+                                        </div>
                                     </div>
-                                    <p class="font-bold text-gray-800">$${(parseFloat(item.price) * item.quantity).toFixed(2)}</p>
+                                    <div class="text-right">
+                                        <p class="text-2xl font-bold text-blue-600">$${(parseFloat(item.price) * item.quantity).toFixed(2)}</p>
+                                    </div>
                                 </div>
-                            `).join('') : '<p class="text-gray-500">Mahsulotlar mavjud emas</p>'}
+                            `).join('') : `
+                                <p class="text-gray-500 text-center py-4">Mahsulotlar mavjud emas</p>
+                            `}
                         </div>
                     </div>
-                    
-                    <div class="border-t border-gray-200 pt-6">
+
+                    <!-- Order Dates -->
+                    <div class="bg-gray-50 rounded-xl p-6">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
+                            <i class="fas fa-calendar-alt mr-2 text-green-600"></i>Sanalar
+                        </h3>
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="text-sm text-gray-600">Yaratilgan sana</label>
+                                <p class="font-semibold text-gray-800">
+                                    ${new Date(order.created_at).toLocaleDateString('uz-UZ')}
+                                    ${new Date(order.created_at).toLocaleTimeString('uz-UZ')}
+                                </p>
+                            </div>
+                            ${order.updated_at ? `
+                                <div>
+                                    <label class="text-sm text-gray-600">Yangilangan sana</label>
+                                    <p class="font-semibold text-gray-800">
+                                        ${new Date(order.updated_at).toLocaleDateString('uz-UZ')}
+                                        ${new Date(order.updated_at).toLocaleTimeString('uz-UZ')}
+                                    </p>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+
+                    <!-- Total -->
+                    <div class="border-t-4 border-blue-600 pt-6 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-6">
                         <div class="flex justify-between items-center">
-                            <span class="text-xl font-bold text-gray-800">Jami:</span>
-                            <span class="text-2xl font-bold text-blue-600">$${parseFloat(order.total_price).toFixed(2)}</span>
+                            <span class="text-2xl font-bold text-gray-800">JAMI SUMMA:</span>
+                            <span class="text-4xl font-bold text-blue-600">$${parseFloat(order.total_amount || order.total_price || 0).toFixed(2)}</span>
                         </div>
                     </div>
                 </div>
             `;
-            
+
             modal.classList.remove('hidden');
         }
-        
-        // Event Listeners
-        document.getElementById('search-input').addEventListener('input', filterOrders);
-        document.getElementById('status-filter').addEventListener('change', filterOrders);
-        document.getElementById('close-modal').addEventListener('click', () => {
+
+        // Close Modal
+        function closeModal() {
             document.getElementById('order-modal').classList.add('hidden');
-        });
-        
-        document.getElementById('logout-btn').addEventListener('click', async () => {
-            try {
-                await fetch(`${API_BASE_URL}/logout`, {
-                    method: 'POST',
-                    headers: { 'Authorization': `Bearer ${authToken}`, 'Accept': 'application/json' }
-                });
-            } catch (e) {}
-            localStorage.removeItem('token');
-            localStorage.removeItem('seller_user');
-            window.location.href = 'login.html';
-        });
-        
-        document.getElementById('mobile-menu-btn').addEventListener('click', () => {
-            document.getElementById('sidebar').classList.toggle('active');
-        });
-        
-        // Make showOrderDetail global
+        }
+
+        // Filter Orders
+        function filterOrders() {
+            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            const statusFilter = document.getElementById('status-filter').value;
+            const dateFrom = document.getElementById('date-from').value;
+            const dateTo = document.getElementById('date-to').value;
+            const sortBy = document.getElementById('sort-select').value;
+
+            filteredOrders = [...orders];
+
+            // Search filter
+            if (searchTerm) {
+                filteredOrders = filteredOrders.filter(order =>
+                    (order.customer_name && order.customer_name.toLowerCase().includes(searchTerm)) ||
+                    (order.customer_phone && order.customer_phone.includes(searchTerm)) ||
+                    (order.customer_email && order.customer_email.toLowerCase().includes(searchTerm))
+                );
+            }
+
+            // Status filter
+            if (statusFilter) {
+                filteredOrders = filteredOrders.filter(order => order.status === statusFilter);
+            }
+
+            // Date range filter
+            if (dateFrom) {
+                filteredOrders = filteredOrders.filter(order =>
+                    new Date(order.created_at) >= new Date(dateFrom)
+                );
+            }
+            if (dateTo) {
+                filteredOrders = filteredOrders.filter(order =>
+                    new Date(order.created_at) <= new Date(dateTo + 'T23:59:59')
+                );
+            }
+
+            // Sort
+            switch (sortBy) {
+                case 'newest':
+                    filteredOrders.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+                    break;
+                case 'oldest':
+                    filteredOrders.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+                    break;
+                case 'price-high':
+                    filteredOrders.sort((a, b) => parseFloat(b.total_amount || b.total_price || 0) - parseFloat(a.total_amount || a.total_price || 0));
+                    break;
+                case 'price-low':
+                    filteredOrders.sort((a, b) => parseFloat(a.total_amount || a.total_price || 0) - parseFloat(b.total_amount || b.total_price || 0));
+                    break;
+            }
+
+            renderOrders();
+        }
+
+        // Event Listeners
+        document.getElementById('search-input').addEventListener('input', AGU_PERFORMANCE.debounce(filterOrders, 300));
+        document.getElementById('status-filter').addEventListener('change', filterOrders);
+        document.getElementById('date-from').addEventListener('change', filterOrders);
+        document.getElementById('date-to').addEventListener('change', filterOrders);
+        document.getElementById('sort-select').addEventListener('change', filterOrders);
+
+        // Make functions global
         window.showOrderDetail = showOrderDetail;
-        
+        window.closeModal = closeModal;
+
         // Initialize
         if (checkAuth()) {
             loadOrders();
