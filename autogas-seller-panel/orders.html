@@ -260,7 +260,7 @@
 
         // Update Statistics (based on filtered orders)
         function updateStatistics() {
-            const dataToUse = filteredOrders.length > 0 ? filteredOrders : orders;
+            const dataToUse = filteredOrders;
             const total = dataToUse.length;
             const pending = dataToUse.filter(o => o.status === 'pending' || o.status === 'processing').length;
             const completed = dataToUse.filter(o => o.status === 'completed').length;
@@ -590,61 +590,6 @@
         // Close Modal
         function closeModal() {
             document.getElementById('order-modal').classList.add('hidden');
-        }
-
-        // Filter Orders
-        function filterOrders() {
-            const searchTerm = document.getElementById('search-input').value.toLowerCase();
-            const statusFilter = document.getElementById('status-filter').value;
-            const dateFrom = document.getElementById('date-from').value;
-            const dateTo = document.getElementById('date-to').value;
-            const sortBy = document.getElementById('sort-select').value;
-
-            filteredOrders = [...orders];
-
-            // Search filter
-            if (searchTerm) {
-                filteredOrders = filteredOrders.filter(order =>
-                    (order.customer_name && order.customer_name.toLowerCase().includes(searchTerm)) ||
-                    (order.customer_phone && order.customer_phone.includes(searchTerm)) ||
-                    (order.customer_email && order.customer_email.toLowerCase().includes(searchTerm))
-                );
-            }
-
-            // Status filter
-            if (statusFilter) {
-                filteredOrders = filteredOrders.filter(order => order.status === statusFilter);
-            }
-
-            // Date range filter
-            if (dateFrom) {
-                filteredOrders = filteredOrders.filter(order =>
-                    new Date(order.created_at) >= new Date(dateFrom)
-                );
-            }
-            if (dateTo) {
-                filteredOrders = filteredOrders.filter(order =>
-                    new Date(order.created_at) <= new Date(dateTo + 'T23:59:59')
-                );
-            }
-
-            // Sort
-            switch (sortBy) {
-                case 'newest':
-                    filteredOrders.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-                    break;
-                case 'oldest':
-                    filteredOrders.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
-                    break;
-                case 'price-high':
-                    filteredOrders.sort((a, b) => parseFloat(b.total_amount || b.total_price || 0) - parseFloat(a.total_amount || a.total_price || 0));
-                    break;
-                case 'price-low':
-                    filteredOrders.sort((a, b) => parseFloat(a.total_amount || a.total_price || 0) - parseFloat(b.total_amount || b.total_price || 0));
-                    break;
-            }
-
-            renderOrders();
         }
 
         // Make functions global
