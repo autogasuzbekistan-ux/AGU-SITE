@@ -122,7 +122,7 @@
             </div>
         </div>
 
-        <!-- Filters -->
+        <!-- Filters and Actions -->
         <div class="bg-white rounded-lg shadow p-4 mb-6">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div>
@@ -145,16 +145,31 @@
                         <option value="">Barcha statuslar</option>
                         <option value="in_stock">Mavjud</option>
                         <option value="out_of_stock">Tugagan</option>
+                        <option value="low_stock">Kam qoldi</option>
                     </select>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Saralash</label>
                     <select id="sortBy" onchange="sortProducts()" class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-500">
                         <option value="name">Nom (A-Z)</option>
+                        <option value="name_desc">Nom (Z-A)</option>
                         <option value="price_asc">Narx (Arzon)</option>
                         <option value="price_desc">Narx (Qimmat)</option>
                         <option value="created_at">Eng yangi</option>
                     </select>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex items-center gap-3 mt-4 pt-4 border-t">
+                <button onclick="clearFilters()" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-all">
+                    <i class="fas fa-redo mr-2"></i>Tozalash
+                </button>
+                <button onclick="exportToCSV()" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all">
+                    <i class="fas fa-file-export mr-2"></i>CSV Export
+                </button>
+                <div class="ml-auto text-sm text-gray-600">
+                    <span id="filteredCount">0</span> ta mahsulot
                 </div>
             </div>
         </div>
@@ -262,8 +277,10 @@
                 const data = await AGU_PERFORMANCE.api.get('/kontragent/products');
                 products = data;
                 filteredProducts = [...products];
+                sortProducts();
                 renderProducts();
                 updateStatistics();
+                updateFilteredCount();
             } catch (error) {
                 console.error('Load error:', error);
                 showToast('Mahsulotlarni yuklashda xatolik', true);
@@ -297,8 +314,16 @@
                     <div class="p-4">
                         <div class="flex items-start justify-between mb-2">
                             <h3 class="font-semibold text-lg text-gray-800">${product.name}</h3>
-                            <span class="px-2 py-1 rounded text-xs font-semibold ${product.stockStatus === 'in_stock' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
-                                ${product.stockStatus === 'in_stock' ? 'Mavjud' : 'Tugagan'}
+                            <span class="px-2 py-1 rounded text-xs font-semibold ${
+                                product.stockStatus === 'in_stock' ? 'bg-green-100 text-green-800' :
+                                product.stockStatus === 'low_stock' ? 'bg-yellow-100 text-yellow-800' :
+                                'bg-red-100 text-red-800'
+                            }">
+                                ${
+                                    product.stockStatus === 'in_stock' ? 'Mavjud' :
+                                    product.stockStatus === 'low_stock' ? 'Kam qoldi' :
+                                    'Tugagan'
+                                }
                             </span>
                         </div>
 
@@ -357,7 +382,9 @@
                 return matchSearch && matchCategory && matchStatus;
             });
 
+            sortProducts();
             renderProducts();
+            updateFilteredCount();
         }
 
         // Sort products
@@ -367,6 +394,9 @@
             switch(sortBy) {
                 case 'name':
                     filteredProducts.sort((a, b) => a.name.localeCompare(b.name));
+                    break;
+                case 'name_desc':
+                    filteredProducts.sort((a, b) => b.name.localeCompare(a.name));
                     break;
                 case 'price_asc':
                     filteredProducts.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
@@ -378,8 +408,59 @@
                     filteredProducts.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
                     break;
             }
+        }
 
-            renderProducts();
+        // Update filtered count
+        function updateFilteredCount() {
+            document.getElementById('filteredCount').textContent = filteredProducts.length;
+        }
+
+        // Clear all filters
+        function clearFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('categoryFilter').value = '';
+            document.getElementById('statusFilter').value = '';
+            document.getElementById('sortBy').value = 'name';
+            filterProducts();
+        }
+
+        // Export to CSV
+        function exportToCSV() {
+            if (filteredProducts.length === 0) {
+                showToast('Export qilish uchun mahsulotlar yo\'q', true);
+                return;
+            }
+
+            // CSV headers
+            const headers = ['ID', 'Nomi', 'Kategoriya', 'Narx', 'Status', 'Yaratilgan'];
+
+            // CSV rows
+            const rows = filteredProducts.map(p => [
+                p.id,
+                `"${p.name}"`,
+                `"${p.category || 'N/A'}"`,
+                p.price,
+                p.stockStatus === 'in_stock' ? 'Mavjud' : p.stockStatus === 'low_stock' ? 'Kam qoldi' : 'Tugagan',
+                new Date(p.created_at).toLocaleDateString('uz-UZ')
+            ]);
+
+            // Combine headers and rows
+            const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+
+            // Create download link
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+
+            link.setAttribute('href', url);
+            link.setAttribute('download', `mahsulotlar_${new Date().toISOString().split('T')[0]}.csv`);
+            link.style.visibility = 'hidden';
+
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            showToast(`${filteredProducts.length} ta mahsulot export qilindi`, false);
         }
 
         // Open create modal
