@@ -17,25 +17,6 @@
     <div id="agu-navbar"></div>
 
     <!-- Navigation -->
-    <nav class="bg-white shadow-md">
-        <div class="container mx-auto px-6 py-3">
-            <div class="flex items-center justify-between">
-                <div class="text-2xl font-bold text-gray-800">
-                    <i class="fas fa-gas-pump text-blue-600"></i>
-                    AutoGas - Admin Panel
-                </div>
-                <div class="flex items-center space-x-4">
-                    <a href="inventory.html" class="text-gray-700 hover:text-blue-600">
-                        <i class="fas fa-boxes mr-1"></i>Inventar
-                    </a>
-                    <span id="userName" class="text-gray-700"></span>
-                    <button onclick="logout()" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
-                        <i class="fas fa-sign-out-alt mr-2"></i>Chiqish
-                    </button>
-                </div>
-            </div>
-        </div>
-    </nav>
 
     <!-- Main Container -->
     <div class="container mx-auto px-6 py-8">
@@ -176,7 +157,6 @@
                         window.location.href = '../index.html';
                         return;
                     }
-                    document.getElementById('userName').textContent = data.name;
                 } else {
                     window.location.href = '../login.html';
                 }
