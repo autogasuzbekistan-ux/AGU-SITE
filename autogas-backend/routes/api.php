@@ -24,6 +24,14 @@ use App\Http\Controllers\InventoryController;
 */
 
 // --- Ochiq yo'llar (autentifikatsiyasiz) ---
+Route::get('/health', function () {
+    return response()->json([
+        'status' => 'ok',
+        'message' => 'API is running',
+        'timestamp' => now()->toDateTimeString()
+    ]);
+});
+
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
