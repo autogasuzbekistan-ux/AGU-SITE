@@ -3,7 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\ProductController;
+use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\CartController;
@@ -119,8 +119,15 @@ Route::middleware('auth:sanctum')->group(function () {
         // Buyurtmalar (sotuvlar)
         Route::get('/sales', [AdminController::class, 'getMySales']);
 
-        // Mahsulot qo'shish (omborga)
-        Route::post('/products', [AdminController::class, 'addProductToWarehouse']);
+        // Mahsulotlar CRUD
+        Route::get('/products', [ProductController::class, 'index']);
+        Route::post('/products', [ProductController::class, 'store']);
+        Route::get('/products/{product}', [ProductController::class, 'show']);
+        Route::put('/products/{product}', [ProductController::class, 'update']);
+        Route::delete('/products/{product}', [ProductController::class, 'destroy']);
+
+        // Buyurtmalar
+        Route::get('/orders', [OrderController::class, 'index']);
     });
 
     // --- TRANSFER yo'llari (Yuk almashinuvi) ---
