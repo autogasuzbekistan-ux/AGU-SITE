@@ -270,7 +270,7 @@
 
     <script>
         const API_BASE = 'http://127.0.0.1:8000/api';
-        let authToken = localStorage.getItem('authToken');
+        let authToken = localStorage.getItem('token');
         let currentUser = null;
         let allShipments = [];
 
@@ -808,7 +808,7 @@
         }
 
         function logout() {
-            localStorage.removeItem('authToken');
+            localStorage.removeItem('token');
             localStorage.removeItem('user');
             window.location.href = 'login.html';
         }
