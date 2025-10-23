@@ -408,12 +408,14 @@
         /* View Modal Stats */
         .stats-row {
             display: flex;
+            flex-wrap: wrap;
             gap: 15px;
             margin-bottom: 20px;
         }
 
         .stat-box {
             flex: 1;
+            min-width: 150px;
             padding: 20px;
             background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
             color: white;
@@ -433,8 +435,14 @@
 
         .info-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: 1fr;
             gap: 15px;
+        }
+
+        @media (min-width: 768px) {
+            .info-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
 
         .info-item {

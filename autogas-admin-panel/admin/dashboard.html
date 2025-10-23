@@ -98,6 +98,13 @@
             position: fixed;
             height: 100vh;
             overflow-y: auto;
+            display: none;
+        }
+
+        @media (min-width: 768px) {
+            .sidebar {
+                display: block;
+            }
         }
 
         .logo {
@@ -205,10 +212,17 @@
         /* Main Content */
         .main-content {
             flex: 1;
-            margin-left: 260px;
-            padding: 30px;
+            margin-left: 0;
+            padding: 15px;
             opacity: 0;
             animation: fadeIn 0.5s ease 2.5s forwards;
+        }
+
+        @media (min-width: 768px) {
+            .main-content {
+                margin-left: 260px;
+                padding: 30px;
+            }
         }
 
         @keyframes fadeIn {
@@ -219,16 +233,29 @@
 
         .header {
             background: white;
-            padding: 20px 30px;
+            padding: 15px 20px;
             border-radius: 15px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-            margin-bottom: 30px;
+            margin-bottom: 20px;
+        }
+
+        @media (min-width: 768px) {
+            .header {
+                padding: 20px 30px;
+                margin-bottom: 30px;
+            }
         }
 
         .header h1 {
-            font-size: 28px;
+            font-size: 22px;
             color: #333;
             margin-bottom: 5px;
+        }
+
+        @media (min-width: 768px) {
+            .header h1 {
+                font-size: 28px;
+            }
         }
 
         .header p {
@@ -258,10 +285,16 @@
 
         .stat-card {
             background: white;
-            padding: 25px;
+            padding: 20px;
             border-radius: 15px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
             transition: transform 0.3s ease;
+        }
+
+        @media (min-width: 768px) {
+            .stat-card {
+                padding: 25px;
+            }
         }
 
         .stat-card:hover {
@@ -298,9 +331,15 @@
         }
 
         .stat-value {
-            font-size: 32px;
+            font-size: 24px;
             font-weight: bold;
             color: #333;
+        }
+
+        @media (min-width: 768px) {
+            .stat-value {
+                font-size: 32px;
+            }
         }
 
         .stat-subtitle {
