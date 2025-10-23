@@ -65,6 +65,7 @@ Tizim egasi uchun mo'ljallangan panel.
 - **AGU Branding** - Brending komponenti
 - **AGU Navbar** - Navigatsiya komponenti (Seller, Admin, Owner)
 - **AGU Performance** - Performance optimizatsiya komponenti
+- **AGU Utils** - Utility funksiyalar (debounce, toast, validation, formatting)
 
 ## Asosiy Xususiyatlar
 
@@ -95,11 +96,41 @@ Tizim egasi uchun mo'ljallangan panel.
 - Image lazy loading (planned)
 
 ### 5. User Experience
-- Toast notifications
-- Loading states
-- Smooth animations
+- Toast notifications system
+- Loading states (page load, form submit, data fetch)
+- Error states with retry buttons
+- Empty states with helpful messages
+- Smooth animations and transitions
 - Hover effects
-- Modal dialogs
+- Modal dialogs with ESC and outside click support
+- Form validation with instant feedback
+- Button loading states
+- Disabled states during operations
+
+### 6. Form Validation
+- Client-side validation (name, email, phone, price, etc.)
+- Required field validation
+- Min/Max length validation
+- Number validation with min/max values
+- Email format validation
+- Phone format validation (Uzbekistan)
+- Real-time validation feedback
+
+### 7. Security Features
+- XSS protection (HTML sanitization and escaping)
+- Input validation and sanitization
+- CSRF token support (prepared)
+- Secure data handling
+
+### 8. Utility Functions (AGU_UTILS)
+- Debounce function (performance optimization)
+- Toast notifications
+- Loading/Error/Empty state helpers
+- Form validation utilities
+- Currency and date formatting
+- Status badge generation
+- Copy to clipboard
+- File download helper
 
 ## Loyihani o'rnatish
 
@@ -214,32 +245,52 @@ AGU/
 
 ## So'nggi Yangilanishlar
 
-### Version 2.0 (Current)
+### Version 2.1 (Current)
+
+**New Components:**
+- ✅ AGU Utils Component - Reusable utility functions
+- ✅ Comprehensive validation utilities
+- ✅ Security helpers (XSS protection, sanitization)
+- ✅ Formatting utilities (currency, date, status badges)
 
 **Feature Enhancements:**
 - ✅ Advanced filtering va sorting (Orders page)
 - ✅ CSV export with UTF-8 BOM (Products, Owner, Admin dashboards)
-- ✅ Refresh functionality (Owner va Admin dashboards)
-- ✅ Toast notification system
+- ✅ Refresh functionality (Owner, Admin, Seller dashboards)
+- ✅ Toast notification system (all pages)
 - ✅ Mobile responsive design (barcha panellar)
 - ✅ Search input debouncing (300ms)
+- ✅ Form validation system (Products page)
+- ✅ Loading states (page load, form submit)
+- ✅ Error states with retry buttons
+- ✅ Modal improvements (ESC key, outside click, scroll lock)
 
 **Bug Fixes:**
-- ✅ Dead code removal (Orders page)
+- ✅ Dead code removal (Orders page - 54 lines)
 - ✅ Statistics bug fix (Orders page - filtered data)
 - ✅ UTF-8 encoding issue fix (CSV exports)
 - ✅ LocalStorage key consistency
+- ✅ Grid state management (Products, Orders pages)
 
 **Performance:**
 - ✅ Search debouncing implementation
 - ✅ Efficient rendering
 - ✅ Optimized API calls
+- ✅ Button state management during operations
 
 **Code Quality:**
 - ✅ Component-based architecture
-- ✅ DRY principles
+- ✅ DRY principles (utility functions extracted)
 - ✅ Consistent code style
 - ✅ -312 lines of duplicate code removed (Admin panel refactoring)
+- ✅ Reusable utility component created
+- ✅ Security best practices implemented
+
+**Documentation:**
+- ✅ Comprehensive README.md (269+ lines)
+- ✅ API endpoints documentation
+- ✅ Setup instructions
+- ✅ Component documentation
 
 ## Git Branch
 
