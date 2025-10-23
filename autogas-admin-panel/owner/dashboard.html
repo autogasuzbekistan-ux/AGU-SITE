@@ -175,12 +175,18 @@
             border-radius: 15px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
             margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
         }
 
         @media (min-width: 768px) {
             .header {
                 padding: 20px 30px;
                 margin-bottom: 30px;
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
             }
         }
 
@@ -335,8 +341,18 @@
     <!-- Main Content -->
     <main class="main-content">
             <div class="header">
-                <h1>Dashboard</h1>
-                <p>Barcha tizim statistikasi</p>
+                <div>
+                    <h1>Dashboard</h1>
+                    <p>Barcha tizim statistikasi</p>
+                </div>
+                <div class="flex gap-3 mt-3 sm:mt-0">
+                    <button onclick="exportReport()" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all text-sm sm:text-base">
+                        <i class="fas fa-file-export mr-2"></i>Export Report
+                    </button>
+                    <button onclick="refreshData()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all text-sm sm:text-base">
+                        <i class="fas fa-sync-alt mr-2"></i>Yangilash
+                    </button>
+                </div>
             </div>
 
             <div id="alert" class="alert alert-error"></div>
@@ -473,6 +489,98 @@
                 alert.style.display = 'block';
             }
         }
+
+        // Refresh data
+        async function refreshData() {
+            const refreshBtn = event.target.closest('button');
+            const icon = refreshBtn.querySelector('i');
+
+            // Add spin animation
+            icon.classList.add('fa-spin');
+            refreshBtn.disabled = true;
+
+            try {
+                await loadDashboard();
+                showToast('Ma\'lumotlar yangilandi', false);
+            } catch (error) {
+                showToast('Yangilashda xatolik', true);
+            } finally {
+                icon.classList.remove('fa-spin');
+                refreshBtn.disabled = false;
+            }
+        }
+
+        // Export report to CSV
+        function exportReport() {
+            try {
+                // Collect current stats data
+                const reportData = {
+                    total_admins: document.getElementById('totalAdmins').textContent,
+                    active_admins: document.getElementById('activeAdmins').textContent,
+                    total_kontragents: document.getElementById('totalKontragents').textContent,
+                    active_kontragents: document.getElementById('activeKontragents').textContent,
+                    total_customers: document.getElementById('totalCustomers').textContent,
+                    total_products: document.getElementById('totalProducts').textContent,
+                    total_orders: document.getElementById('totalOrders').textContent,
+                    pending_orders: document.getElementById('pendingOrders').textContent,
+                    total_sales: document.getElementById('totalSales').textContent
+                };
+
+                // Create CSV content
+                const csvContent = [
+                    ['AGU Owner Dashboard Report', ''],
+                    ['Sana:', new Date().toLocaleDateString('uz-UZ')],
+                    ['Vaqt:', new Date().toLocaleTimeString('uz-UZ')],
+                    ['', ''],
+                    ['Ko\'rsatkich', 'Qiymat'],
+                    ['Jami Adminlar', reportData.total_admins],
+                    ['Faol Adminlar', reportData.active_admins],
+                    ['Jami Kontragentlar', reportData.total_kontragents],
+                    ['Faol Kontragentlar', reportData.active_kontragents],
+                    ['Jami Mijozlar', reportData.total_customers],
+                    ['Jami Mahsulotlar', reportData.total_products],
+                    ['Jami Buyurtmalar', reportData.total_orders],
+                    ['Kutilayotgan Buyurtmalar', reportData.pending_orders],
+                    ['Jami Sotuv', reportData.total_sales]
+                ].map(row => row.join(',')).join('\n');
+
+                // Create and download file
+                const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                const url = URL.createObjectURL(blob);
+
+                link.setAttribute('href', url);
+                link.setAttribute('download', `agu_dashboard_report_${new Date().toISOString().split('T')[0]}.csv`);
+                link.style.visibility = 'hidden';
+
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+                showToast('Report muvaffaqiyatli export qilindi', false);
+            } catch (error) {
+                console.error('Export error:', error);
+                showToast('Export qilishda xatolik', true);
+            }
+        }
+
+        // Show toast notification
+        function showToast(message, isError = false) {
+            const toast = document.createElement('div');
+            toast.className = `fixed top-24 right-5 ${isError ? 'bg-red-500' : 'bg-green-500'} text-white py-3 px-6 rounded-lg shadow-lg transform transition-transform duration-500 z-50`;
+            toast.textContent = message;
+
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.transform = 'translateX(120%)';
+                setTimeout(() => toast.remove(), 500);
+            }, 3000);
+        }
+
+        // Make functions global
+        window.refreshData = refreshData;
+        window.exportReport = exportReport;
 
         // Load dashboard on page load
         window.addEventListener('load', loadDashboard);
