@@ -158,15 +158,20 @@
                 >
             </div>
 
-            <!-- Sort Options -->
-            <div class="flex items-center gap-4 mt-4">
-                <label class="text-sm font-medium text-gray-700">Saralash:</label>
-                <select id="sort-select" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
-                    <option value="newest">Eng yangi</option>
-                    <option value="oldest">Eng eski</option>
-                    <option value="price-high">Narx (yuqori)</option>
-                    <option value="price-low">Narx (past)</option>
-                </select>
+            <!-- Sort Options and Clear Button -->
+            <div class="flex items-center justify-between gap-4 mt-4">
+                <div class="flex items-center gap-4">
+                    <label class="text-sm font-medium text-gray-700">Saralash:</label>
+                    <select id="sort-select" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                        <option value="newest">Eng yangi</option>
+                        <option value="oldest">Eng eski</option>
+                        <option value="price-high">Narx (yuqori)</option>
+                        <option value="price-low">Narx (past)</option>
+                    </select>
+                </div>
+                <button onclick="clearFilters()" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-all">
+                    <i class="fas fa-redo mr-2"></i>Tozalash
+                </button>
             </div>
         </div>
 
@@ -253,12 +258,13 @@
             }
         }
 
-        // Update Statistics
+        // Update Statistics (based on filtered orders)
         function updateStatistics() {
-            const total = orders.length;
-            const pending = orders.filter(o => o.status === 'pending' || o.status === 'processing').length;
-            const completed = orders.filter(o => o.status === 'completed').length;
-            const revenue = orders
+            const dataToUse = filteredOrders.length > 0 ? filteredOrders : orders;
+            const total = dataToUse.length;
+            const pending = dataToUse.filter(o => o.status === 'pending' || o.status === 'processing').length;
+            const completed = dataToUse.filter(o => o.status === 'completed').length;
+            const revenue = dataToUse
                 .filter(o => o.status === 'completed')
                 .reduce((sum, o) => sum + parseFloat(o.total_amount || o.total_price || 0), 0);
 
@@ -266,6 +272,16 @@
             document.getElementById('pending-orders').textContent = pending;
             document.getElementById('completed-orders').textContent = completed;
             document.getElementById('total-revenue').textContent = '$' + revenue.toFixed(2);
+        }
+
+        // Clear All Filters
+        function clearFilters() {
+            document.getElementById('search-input').value = '';
+            document.getElementById('status-filter').value = '';
+            document.getElementById('date-from').value = '';
+            document.getElementById('date-to').value = '';
+            document.getElementById('sort-select').value = 'newest';
+            filterAndSortOrders();
         }
 
         // Get Status Text
@@ -295,6 +311,67 @@
                 'cancelled': 'fa-times-circle'
             };
             return iconMap[status] || 'fa-question-circle';
+        }
+
+        // Filter and Sort Orders
+        function filterAndSortOrders() {
+            let result = [...orders];
+
+            // Search filter
+            const searchText = document.getElementById('search-input').value.toLowerCase();
+            if (searchText) {
+                result = result.filter(order => {
+                    const customerName = (order.customer_name || '').toLowerCase();
+                    const customerPhone = (order.customer_phone || '').toLowerCase();
+                    const orderId = (order.id || '').toString();
+                    return customerName.includes(searchText) ||
+                           customerPhone.includes(searchText) ||
+                           orderId.includes(searchText);
+                });
+            }
+
+            // Status filter
+            const statusFilter = document.getElementById('status-filter').value;
+            if (statusFilter) {
+                result = result.filter(order => order.status === statusFilter);
+            }
+
+            // Date range filter
+            const dateFrom = document.getElementById('date-from').value;
+            const dateTo = document.getElementById('date-to').value;
+            if (dateFrom) {
+                result = result.filter(order => {
+                    const orderDate = new Date(order.created_at).toISOString().split('T')[0];
+                    return orderDate >= dateFrom;
+                });
+            }
+            if (dateTo) {
+                result = result.filter(order => {
+                    const orderDate = new Date(order.created_at).toISOString().split('T')[0];
+                    return orderDate <= dateTo;
+                });
+            }
+
+            // Sorting
+            const sortBy = document.getElementById('sort-select').value;
+            result.sort((a, b) => {
+                switch(sortBy) {
+                    case 'newest':
+                        return new Date(b.created_at) - new Date(a.created_at);
+                    case 'oldest':
+                        return new Date(a.created_at) - new Date(b.created_at);
+                    case 'price-high':
+                        return parseFloat(b.total_amount || b.total_price || 0) - parseFloat(a.total_amount || a.total_price || 0);
+                    case 'price-low':
+                        return parseFloat(a.total_amount || a.total_price || 0) - parseFloat(b.total_amount || b.total_price || 0);
+                    default:
+                        return 0;
+                }
+            });
+
+            filteredOrders = result;
+            renderOrders();
+            updateStatistics();
         }
 
         // Render Orders
@@ -570,20 +647,21 @@
             renderOrders();
         }
 
-        // Event Listeners
-        document.getElementById('search-input').addEventListener('input', AGU_PERFORMANCE.debounce(filterOrders, 300));
-        document.getElementById('status-filter').addEventListener('change', filterOrders);
-        document.getElementById('date-from').addEventListener('change', filterOrders);
-        document.getElementById('date-to').addEventListener('change', filterOrders);
-        document.getElementById('sort-select').addEventListener('change', filterOrders);
-
         // Make functions global
         window.showOrderDetail = showOrderDetail;
         window.closeModal = closeModal;
+        window.clearFilters = clearFilters;
 
         // Initialize
         if (checkAuth()) {
             loadOrders();
+
+            // Add filter event listeners
+            document.getElementById('search-input').addEventListener('input', filterAndSortOrders);
+            document.getElementById('status-filter').addEventListener('change', filterAndSortOrders);
+            document.getElementById('date-from').addEventListener('change', filterAndSortOrders);
+            document.getElementById('date-to').addEventListener('change', filterAndSortOrders);
+            document.getElementById('sort-select').addEventListener('change', filterAndSortOrders);
         }
     </script>
 </body>
