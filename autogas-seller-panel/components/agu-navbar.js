@@ -28,43 +28,80 @@ const AGU_NAVBAR = {
         { id: 'notifications', label: 'Bildirishnomalar', icon: 'fa-bell', url: 'notifications.html' }
     ],
 
+    // Mobile menu toggle
+    toggleMobileMenu: () => {
+        const mobileMenu = document.getElementById('mobileMenu');
+        if (mobileMenu) {
+            mobileMenu.classList.toggle('hidden');
+        }
+    },
+
     // Generate navbar HTML
     getNavbarHTML: (userName = '') => {
         const currentPage = AGU_NAVBAR.getCurrentPage();
 
         let menuHTML = '';
+        let mobileMenuHTML = '';
+
         AGU_NAVBAR.menuItems.forEach(item => {
             const isActive = item.id === currentPage;
             const activeClass = isActive ? 'text-white font-semibold' : 'text-gray-300 hover:text-white';
+            const mobileActiveClass = isActive ? 'bg-blue-700 text-white font-semibold' : 'text-gray-300 hover:bg-blue-800 hover:text-white';
 
+            // Desktop menu
             menuHTML += `
-                <a href="${item.url}" class="${activeClass} transition-colors">
-                    <i class="fas ${item.icon} mr-1"></i>${item.label}
+                <a href="${item.url}" class="${activeClass} transition-colors hidden lg:block">
+                    <i class="fas ${item.icon} mr-1"></i><span class="hidden xl:inline">${item.label}</span>
+                </a>
+            `;
+
+            // Mobile menu
+            mobileMenuHTML += `
+                <a href="${item.url}" class="${mobileActiveClass} px-4 py-3 rounded-lg transition-colors flex items-center space-x-3">
+                    <i class="fas ${item.icon} w-5"></i>
+                    <span>${item.label}</span>
                 </a>
             `;
         });
 
         return `
             <nav class="bg-gradient-to-r from-blue-900 via-gray-800 to-red-900 shadow-lg sticky top-0 z-50">
-                <div class="container mx-auto px-6 py-4">
+                <div class="container mx-auto px-4 sm:px-6 py-3 sm:py-4">
                     <div class="flex items-center justify-between">
                         <!-- Logo -->
-                        <a href="dashboard.html" class="flex items-center space-x-3 hover:opacity-80 transition-opacity">
-                            <div class="text-3xl font-extrabold agu-logo-navbar">
+                        <a href="dashboard.html" class="flex items-center space-x-2 sm:space-x-3 hover:opacity-80 transition-opacity">
+                            <div class="text-2xl sm:text-3xl font-extrabold agu-logo-navbar">
                                 <span style="color: #E30613">AG</span><span style="color: #1b5bb5">U</span><sup style="font-size: 0.5em; color: #fff">®</sup>
                             </div>
-                            <div>
-                                <div class="text-white font-semibold text-sm">Auto Gas Uzbekistan</div>
+                            <div class="hidden sm:block">
+                                <div class="text-white font-semibold text-xs sm:text-sm">Auto Gas Uzbekistan</div>
                                 <div class="text-gray-300 text-xs">Kontragent Panel</div>
                             </div>
                         </a>
 
-                        <!-- Menu -->
-                        <div class="flex items-center space-x-6">
+                        <!-- Desktop Menu -->
+                        <div class="hidden lg:flex items-center space-x-4 xl:space-x-6">
                             ${menuHTML}
-                            <span id="userName" class="text-white font-medium">${userName}</span>
-                            <button onclick="logout()" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all transform hover:scale-105">
-                                <i class="fas fa-sign-out-alt mr-2"></i>Chiqish
+                            <span id="userName" class="text-white font-medium text-sm">${userName}</span>
+                            <button onclick="logout()" class="px-3 py-2 xl:px-4 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all text-sm">
+                                <i class="fas fa-sign-out-alt mr-1 xl:mr-2"></i><span class="hidden xl:inline">Chiqish</span>
+                            </button>
+                        </div>
+
+                        <!-- Mobile Menu Button -->
+                        <button onclick="AGU_NAVBAR.toggleMobileMenu()" class="lg:hidden text-white p-2 hover:bg-white/10 rounded-lg transition-colors">
+                            <i class="fas fa-bars text-2xl"></i>
+                        </button>
+                    </div>
+
+                    <!-- Mobile Menu -->
+                    <div id="mobileMenu" class="hidden lg:hidden mt-4 pb-4 space-y-2">
+                        ${mobileMenuHTML}
+                        <div class="px-4 py-3 text-white border-t border-gray-600 mt-2 pt-3">
+                            <span id="userNameMobile" class="block text-sm font-medium mb-2">${userName}</span>
+                            <button onclick="logout()" class="w-full px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all flex items-center justify-center space-x-2">
+                                <i class="fas fa-sign-out-alt"></i>
+                                <span>Chiqish</span>
                             </button>
                         </div>
                     </div>
@@ -130,9 +167,15 @@ const AGU_NAVBAR = {
 
             if (response.ok) {
                 const data = await response.json();
+                // Update desktop username
                 const userNameElement = document.getElementById('userName');
                 if (userNameElement) {
                     userNameElement.textContent = data.name;
+                }
+                // Update mobile username
+                const userNameMobile = document.getElementById('userNameMobile');
+                if (userNameMobile) {
+                    userNameMobile.textContent = data.name;
                 }
             }
         } catch (error) {
