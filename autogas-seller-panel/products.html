@@ -259,7 +259,7 @@
         // Load products from API
         async function loadProducts() {
             try {
-                const data = await AGU_PERFORMANCE.api.get('/products');
+                const data = await AGU_PERFORMANCE.api.get('/kontragent/products');
                 products = data;
                 filteredProducts = [...products];
                 renderProducts();
@@ -428,10 +428,10 @@
 
             try {
                 if (id) {
-                    await AGU_PERFORMANCE.api.put(`/products/${id}`, data);
+                    await AGU_PERFORMANCE.api.put(`/kontragent/products/${id}`, data);
                     showToast('Mahsulot yangilandi!', false);
                 } else {
-                    await AGU_PERFORMANCE.api.post('/products', data);
+                    await AGU_PERFORMANCE.api.post('/kontragent/products', data);
                     showToast('Mahsulot qo\'shildi!', false);
                 }
 
@@ -448,7 +448,7 @@
             if (!confirm('Mahsulotni o\'chirmoqchimisiz?')) return;
 
             try {
-                await AGU_PERFORMANCE.api.delete(`/products/${id}`);
+                await AGU_PERFORMANCE.api.delete(`/kontragent/products/${id}`);
                 showToast('Mahsulot o\'chirildi', false);
                 await loadProducts();
             } catch (error) {

@@ -236,7 +236,7 @@
         // Load Orders
         async function loadOrders() {
             try {
-                const data = await AGU_PERFORMANCE.api.get('/orders');
+                const data = await AGU_PERFORMANCE.api.get('/kontragent/orders');
                 orders = data;
                 filteredOrders = [...orders];
                 renderOrders();
