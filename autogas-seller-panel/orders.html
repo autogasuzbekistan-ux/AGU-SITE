@@ -175,13 +175,15 @@
             </div>
         </div>
 
+        <!-- Loading State -->
+        <div id="loading-state" class="bg-white rounded-xl shadow-lg p-12 text-center mb-8">
+            <div class="inline-block animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600"></div>
+            <p class="text-gray-600 mt-4 text-lg">Buyurtmalar yuklanmoqda...</p>
+        </div>
+
         <!-- Orders Grid -->
-        <div id="orders-grid" class="grid grid-cols-1 gap-6 mb-8">
-            <!-- Loading State -->
-            <div class="text-center py-12">
-                <div class="inline-block animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600"></div>
-                <p class="text-gray-600 mt-4 text-lg">Buyurtmalar yuklanmoqda...</p>
-            </div>
+        <div id="orders-grid" class="hidden grid-cols-1 gap-6 mb-8">
+            <!-- Orders will be rendered here -->
         </div>
     </div>
 
@@ -240,6 +242,13 @@
 
         // Load Orders
         async function loadOrders() {
+            const loadingState = document.getElementById('loading-state');
+            const ordersGrid = document.getElementById('orders-grid');
+
+            // Show loading
+            loadingState.classList.remove('hidden');
+            ordersGrid.classList.add('hidden');
+
             try {
                 const data = await AGU_PERFORMANCE.api.get('/kontragent/orders');
                 orders = data;
@@ -248,13 +257,24 @@
                 updateStatistics();
             } catch (error) {
                 console.error('Orders load error:', error);
-                showToast('Buyurtmalarni yuklashda xatolik', true);
-                document.getElementById('orders-grid').innerHTML = `
-                    <div class="text-center py-12 bg-white rounded-xl">
+                showToast('Buyurtmalarni yuklashda xatolik yuz berdi', true);
+
+                // Show error state
+                loadingState.classList.add('hidden');
+                ordersGrid.classList.remove('hidden');
+                ordersGrid.classList.remove('grid-cols-1', 'gap-6');
+                ordersGrid.innerHTML = `
+                    <div class="text-center py-12 bg-white rounded-xl shadow-lg">
                         <i class="fas fa-exclamation-circle text-6xl text-red-400 mb-4"></i>
-                        <p class="text-gray-600 text-lg">Buyurtmalarni yuklashda xatolik yuz berdi</p>
+                        <p class="text-gray-600 text-lg mb-4">Buyurtmalarni yuklashda xatolik yuz berdi</p>
+                        <button onclick="loadOrders()" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all">
+                            <i class="fas fa-sync-alt mr-2"></i>Qayta urinish
+                        </button>
                     </div>
                 `;
+            } finally {
+                // Hide loading
+                loadingState.classList.add('hidden');
             }
         }
 
@@ -378,9 +398,14 @@
         function renderOrders() {
             const grid = document.getElementById('orders-grid');
 
+            // Show grid
+            grid.classList.remove('hidden');
+            grid.classList.add('grid', 'grid-cols-1', 'gap-6');
+
             if (filteredOrders.length === 0) {
+                grid.classList.remove('grid', 'grid-cols-1', 'gap-6');
                 grid.innerHTML = `
-                    <div class="text-center py-16 bg-white rounded-xl">
+                    <div class="text-center py-16 bg-white rounded-xl shadow-lg">
                         <i class="fas fa-shopping-cart text-6xl text-gray-300 mb-4"></i>
                         <p class="text-gray-600 text-xl font-semibold">Buyurtmalar topilmadi</p>
                         <p class="text-gray-500 mt-2">Hozircha buyurtmalar mavjud emas</p>
@@ -585,12 +610,31 @@
             `;
 
             modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden'; // Disable scrolling when modal is open
         }
 
         // Close Modal
         function closeModal() {
             document.getElementById('order-modal').classList.add('hidden');
+            document.body.style.overflow = ''; // Re-enable scrolling
         }
+
+        // Handle ESC key to close modal
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                const modal = document.getElementById('order-modal');
+                if (!modal.classList.contains('hidden')) {
+                    closeModal();
+                }
+            }
+        });
+
+        // Close modal on outside click
+        document.getElementById('order-modal').addEventListener('click', (e) => {
+            if (e.target.id === 'order-modal') {
+                closeModal();
+            }
+        });
 
         // Debounce utility function
         function debounce(func, wait) {
