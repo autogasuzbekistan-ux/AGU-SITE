@@ -53,7 +53,7 @@ const AGU_ADMIN_NAVBAR = {
                         <!-- Logo -->
                         <a href="dashboard.html" class="flex items-center space-x-3 hover:opacity-80 transition-opacity">
                             <div class="text-3xl font-extrabold agu-logo-navbar">
-                                <span style="color: #E30613">AG</span><span style="color: #fff">U</span><sup style="font-size: 0.5em; color: #fff">®</sup>
+                                <span style="color: #E30613">AG</span><span style="color: #1b5bb5">U</span><sup style="font-size: 0.5em; color: #fff">®</sup>
                             </div>
                             <div>
                                 <div class="text-white font-semibold text-sm">Auto Gas Uzbekistan</div>
