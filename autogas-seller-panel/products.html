@@ -174,8 +174,14 @@
             </div>
         </div>
 
+        <!-- Loading State -->
+        <div id="loadingState" class="bg-white rounded-lg shadow-lg p-12 text-center">
+            <div class="inline-block animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600 mb-4"></div>
+            <p class="text-gray-600 text-lg">Mahsulotlar yuklanmoqda...</p>
+        </div>
+
         <!-- Products Grid -->
-        <div id="productsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div id="productsGrid" class="hidden grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             <!-- Products will be loaded here -->
         </div>
 
@@ -273,6 +279,13 @@
 
         // Load products from API
         async function loadProducts() {
+            const loadingState = document.getElementById('loadingState');
+            const productsGrid = document.getElementById('productsGrid');
+
+            // Show loading
+            loadingState.classList.remove('hidden');
+            productsGrid.classList.add('hidden');
+
             try {
                 const data = await AGU_PERFORMANCE.api.get('/kontragent/products');
                 products = data;
@@ -283,7 +296,14 @@
                 updateFilteredCount();
             } catch (error) {
                 console.error('Load error:', error);
-                showToast('Mahsulotlarni yuklashda xatolik', true);
+                showToast('Mahsulotlarni yuklashda xatolik yuz berdi', true);
+
+                // Show empty state on error
+                loadingState.classList.add('hidden');
+                document.getElementById('emptyState').classList.remove('hidden');
+            } finally {
+                // Hide loading
+                loadingState.classList.add('hidden');
             }
         }
 
@@ -293,12 +313,14 @@
             const emptyState = document.getElementById('emptyState');
 
             if (filteredProducts.length === 0) {
+                grid.classList.remove('grid');
                 grid.classList.add('hidden');
                 emptyState.classList.remove('hidden');
                 return;
             }
 
             grid.classList.remove('hidden');
+            grid.classList.add('grid');
             emptyState.classList.add('hidden');
 
             grid.innerHTML = filteredProducts.map(product => `
@@ -493,48 +515,103 @@
             document.getElementById('productModal').classList.remove('active');
         }
 
+        // Validate form
+        function validateProductForm() {
+            const name = document.getElementById('productName').value.trim();
+            const price = document.getElementById('productPrice').value;
+            const category = document.getElementById('productCategory').value;
+
+            if (!name) {
+                showToast('Mahsulot nomini kiriting', true);
+                return false;
+            }
+
+            if (name.length < 3) {
+                showToast('Mahsulot nomi kamida 3 ta belgidan iborat bo\'lishi kerak', true);
+                return false;
+            }
+
+            if (!category) {
+                showToast('Kategoriyani tanlang', true);
+                return false;
+            }
+
+            if (!price || parseFloat(price) <= 0) {
+                showToast('To\'g\'ri narx kiriting', true);
+                return false;
+            }
+
+            return true;
+        }
+
         // Submit form
         document.getElementById('productForm').addEventListener('submit', async (e) => {
             e.preventDefault();
 
+            // Validate form
+            if (!validateProductForm()) {
+                return;
+            }
+
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const submitBtnText = submitBtn.innerHTML;
+
+            // Disable button and show loading
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Saqlanmoqda...';
+
             const id = document.getElementById('productId').value;
             const data = {
-                name: document.getElementById('productName').value,
+                name: document.getElementById('productName').value.trim(),
                 category: document.getElementById('productCategory').value,
                 price: parseFloat(document.getElementById('productPrice').value),
-                description: document.getElementById('productDescription').value,
-                imageUrl: document.getElementById('productImage').value,
+                description: document.getElementById('productDescription').value.trim(),
+                imageUrl: document.getElementById('productImage').value.trim(),
                 stockStatus: document.getElementById('productStatus').value
             };
 
             try {
                 if (id) {
                     await AGU_PERFORMANCE.api.put(`/kontragent/products/${id}`, data);
-                    showToast('Mahsulot yangilandi!', false);
+                    showToast('Mahsulot muvaffaqiyatli yangilandi!', false);
                 } else {
                     await AGU_PERFORMANCE.api.post('/kontragent/products', data);
-                    showToast('Mahsulot qo\'shildi!', false);
+                    showToast('Mahsulot muvaffaqiyatli qo\'shildi!', false);
                 }
 
                 closeModal();
                 await loadProducts();
             } catch (error) {
                 console.error('Save error:', error);
-                showToast('Xatolik yuz berdi', true);
+                const errorMsg = error.message || 'Xatolik yuz berdi';
+                showToast(errorMsg, true);
+            } finally {
+                // Re-enable button
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = submitBtnText;
             }
         });
 
         // Delete product
         async function deleteProduct(id) {
-            if (!confirm('Mahsulotni o\'chirmoqchimisiz?')) return;
+            const product = products.find(p => p.id === id);
+            const productName = product ? product.name : 'mahsulot';
+
+            if (!confirm(`${productName} mahsulotini o'chirmoqchimisiz?\n\nBu amalni qaytarib bo'lmaydi!`)) {
+                return;
+            }
+
+            // Show loading toast
+            showToast('O\'chirilmoqda...', false);
 
             try {
                 await AGU_PERFORMANCE.api.delete(`/kontragent/products/${id}`);
-                showToast('Mahsulot o\'chirildi', false);
+                showToast('Mahsulot muvaffaqiyatli o\'chirildi', false);
                 await loadProducts();
             } catch (error) {
                 console.error('Delete error:', error);
-                showToast('O\'chirishda xatolik', true);
+                const errorMsg = error.message || 'O\'chirishda xatolik';
+                showToast(errorMsg, true);
             }
         }
 
