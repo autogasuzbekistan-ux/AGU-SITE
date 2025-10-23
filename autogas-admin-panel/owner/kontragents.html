@@ -3,7 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kontragentlar - Owner Panel</title>
+    <title>AGU - Owner Panel</title>
+
+    <!-- AGU Components -->
+    <script src="../components/agu-branding.js"></script>
+    <script src="../components/agu-navbar-owner.js"></script>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -111,7 +118,7 @@
         /* Main Content */
         .main-content {
             flex: 1;
-            margin-left: 260px;
+            padding: 30px; max-width: 1400px; margin: 0 auto;
             padding: 30px;
         }
 
@@ -484,49 +491,12 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Sidebar -->
-        <aside class="sidebar">
-            <div class="logo">
-                <h2>🚗 AutoGas</h2>
-                <p>Owner Panel</p>
-            </div>
+    <div>
+        
+        <!-- AGU Navbar -->
+    <div id="agu-navbar"></div>
 
-            <ul class="nav-menu">
-                <li class="nav-item">
-                    <a href="dashboard.html" class="nav-link">
-                        <span>📊</span>
-                        <span>Dashboard</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="admins.html" class="nav-link">
-                        <span>👥</span>
-                        <span>Adminlar</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="kontragents.html" class="nav-link active">
-                        <span>🏪</span>
-                        <span>Kontragentlar</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="activities.html" class="nav-link">
-                        <span>📋</span>
-                        <span>Faoliyat</span>
-                    </a>
-                </li>
-            </ul>
-
-            <div class="user-info">
-                <p><strong id="userName">...</strong></p>
-                <p style="font-size: 12px; opacity: 0.8;" id="userEmail">...</p>
-                <button class="btn-logout" onclick="logout()">🚪 Chiqish</button>
-            </div>
-        </aside>
-
-        <!-- Main Content -->
+    <!-- Main Content -->
         <main class="main-content">
             <div class="header">
                 <h1>Kontragentlar</h1>
@@ -889,12 +859,7 @@
         }
 
         // Logout
-        function logout() {
-            if (confirm('Tizimdan chiqmoqchimisiz?')) {
-                localStorage.removeItem('token');
-                localStorage.removeItem('user');
-                window.location.href = '../index.html';
-            }
+        // Logout handled by navbar component
         }
 
         // Load kontragents on page load

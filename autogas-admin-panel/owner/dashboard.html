@@ -3,7 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Owner Dashboard - AutoGas</title>
+    <title>AGU - Owner Dashboard</title>
+
+    <!-- AGU Components -->
+    <script src="../components/agu-branding.js"></script>
+    <script src="../components/agu-navbar-owner.js"></script>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <style>
         /* Loading Animation Overlay */
 .loading-overlay {
@@ -136,129 +144,11 @@
             vertical-align: top;
         }
 
-        .container {
-            display: flex;
-            min-height: 100vh;
-        }
-
-        /* Sidebar */
-        .sidebar {
-            width: 260px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 20px;
-            position: fixed;
-            height: 100vh;
-            overflow-y: auto;
-        }
-
-        .logo {
-            text-align: center;
-            padding: 20px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-            margin-bottom: 30px;
-        }
-
-        .agu-logo {
-            font-family: Arial, sans-serif;
-            font-size: 2.5rem;
-            font-weight: 800;
-            display: inline-block;
-            margin-bottom: 10px;
-        }
-
-        .agu-logo .red-part {
-            color: #E30613;
-        }
-
-        .agu-logo .blue-part {
-            color: #ffffff;
-        }
-
-        .agu-logo .registered {
-            font-size: 1rem;
-            vertical-align: top;
-        }
-
-        .logo-subtitle {
-            font-family: 'Helvetica Neue', Arial, sans-serif;
-            font-size: 0.65rem;
-            font-weight: 700;
-            color: #ffffff;
-            margin-top: -5px;
-            letter-spacing: 0.5px;
-            opacity: 0.9;
-        }
-
-        .logo p {
-            font-size: 12px;
-            opacity: 0.8;
-            margin-top: 5px;
-        }
-
-        .nav-menu {
-            list-style: none;
-        }
-
-        .nav-item {
-            margin-bottom: 5px;
-        }
-
-        .nav-link {
-            display: flex;
-            align-items: center;
-            padding: 12px 15px;
-            color: white;
-            text-decoration: none;
-            border-radius: 10px;
-            transition: all 0.3s ease;
-        }
-
-        .nav-link:hover, .nav-link.active {
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        .nav-link span {
-            margin-right: 10px;
-            font-size: 18px;
-        }
-
-        .user-info {
-            position: absolute;
-            bottom: 20px;
-            left: 20px;
-            right: 20px;
-            padding: 15px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-        }
-
-        .user-info p {
-            margin-bottom: 5px;
-            font-size: 14px;
-        }
-
-        .btn-logout {
-            width: 100%;
-            padding: 8px;
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            margin-top: 10px;
-            transition: all 0.3s ease;
-        }
-
-        .btn-logout:hover {
-            background: rgba(255, 255, 255, 0.3);
-        }
-
         /* Main Content */
         .main-content {
-            flex: 1;
-            margin-left: 260px;
             padding: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
             opacity: 0;
             animation: fadeIn 0.5s ease 2.5s forwards;
         }
@@ -388,21 +278,6 @@
 
         /* Responsive */
         @media (max-width: 768px) {
-            .sidebar {
-                width: 70px;
-            }
-
-            .sidebar .logo-subtitle,
-            .sidebar .logo p,
-            .sidebar .nav-link span:not(:first-child),
-            .sidebar .user-info p {
-                display: none;
-            }
-
-            .main-content {
-                margin-left: 70px;
-            }
-
             .stats-grid {
                 grid-template-columns: 1fr;
             }
@@ -419,53 +294,11 @@
         </div>
     </div>
 
-    <div class="container">
-        <!-- Sidebar -->
-        <aside class="sidebar">
-            <div class="logo">
-                <div class="agu-logo">
-                    <span class="red-part">AG</span><span class="blue-part">U</span><sup class="registered">®</sup>
-                </div>
-                <div class="logo-subtitle">Auto Gas Uzbekistan</div>
-                <p>Owner Panel</p>
-            </div>
+    <!-- AGU Navbar -->
+    <div id="agu-navbar"></div>
 
-            <ul class="nav-menu">
-                <li class="nav-item">
-                    <a href="dashboard.html" class="nav-link active">
-                        <span>📊</span>
-                        <span>Dashboard</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="admins.html" class="nav-link">
-                        <span>👥</span>
-                        <span>Adminlar</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="kontragents.html" class="nav-link">
-                        <span>🏪</span>
-                        <span>Kontragentlar</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="activities.html" class="nav-link">
-                        <span>📋</span>
-                        <span>Faoliyat</span>
-                    </a>
-                </li>
-            </ul>
-
-            <div class="user-info">
-                <p><strong id="userName">...</strong></p>
-                <p style="font-size: 12px; opacity: 0.8;" id="userEmail">...</p>
-                <button class="btn-logout" onclick="logout()">🚪 Chiqish</button>
-            </div>
-        </aside>
-
-        <!-- Main Content -->
-        <main class="main-content">
+    <!-- Main Content -->
+    <main class="main-content">
             <div class="header">
                 <h1>Dashboard</h1>
                 <p>Barcha tizim statistikasi</p>
@@ -551,7 +384,6 @@
                 </div>
             </div>
         </main>
-    </div>
 
     <script>
         const API_URL = 'http://127.0.0.1:8000/api';
@@ -562,10 +394,6 @@
         if (!token || user.role !== 'owner') {
             window.location.href = '../index.html';
         }
-
-        // Set user info
-        document.getElementById('userName').textContent = user.name || 'Owner';
-        document.getElementById('userEmail').textContent = user.email || '';
 
         // Load dashboard data
         async function loadDashboard() {
@@ -608,15 +436,6 @@
                 const alert = document.getElementById('alert');
                 alert.textContent = error.message || 'Ma\'lumotlarni yuklashda xatolik!';
                 alert.style.display = 'block';
-            }
-        }
-
-        // Logout function
-        function logout() {
-            if (confirm('Tizimdan chiqmoqchimisiz?')) {
-                localStorage.removeItem('token');
-                localStorage.removeItem('user');
-                window.location.href = '../index.html';
             }
         }
 
