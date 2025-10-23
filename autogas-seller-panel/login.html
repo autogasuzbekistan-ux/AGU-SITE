@@ -248,8 +248,8 @@
                 
                 // Save to localStorage
                 localStorage.setItem('token', data.token);
-                localStorage.setItem('user', JSON.stringify(data.user));
-                
+                localStorage.setItem('seller_user', JSON.stringify(data.user));
+
                 showToast('Xush kelibsiz, ' + data.user.name + '!', false);
                 
                 // Redirect to dashboard
@@ -267,7 +267,7 @@
         // Check if already logged in
         window.addEventListener('DOMContentLoaded', () => {
             const token = localStorage.getItem('token');
-            const user = localStorage.getItem('user');
+            const user = localStorage.getItem('seller_user');
 
             if (token && user) {
                 window.location.href = 'dashboard.html';
