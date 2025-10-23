@@ -123,18 +123,27 @@
         <main class="flex-1 p-6 md:p-10">
             
             <!-- Header -->
-            <div class="flex justify-between items-center mb-8">
-                <div>
-                    <h1 class="text-3xl font-bold text-gray-800">Dashboard</h1>
-                    <p class="text-gray-600 mt-1">Xush kelibsiz, <span id="welcome-name">Sotuvchi</span>!</p>
+            <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-800">Dashboard</h1>
+                        <p class="text-gray-600 mt-1">Xush kelibsiz, <span id="welcome-name">Sotuvchi</span>!</p>
+                    </div>
+
+                    <div class="flex items-center gap-3">
+                        <!-- Refresh Button -->
+                        <button onclick="refreshDashboard()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all text-sm md:text-base">
+                            <i class="fas fa-sync-alt mr-2"></i>Yangilash
+                        </button>
+
+                        <!-- Mobile Menu Button -->
+                        <button id="mobile-menu-btn" class="md:hidden p-2 rounded-lg bg-gray-100">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
-                
-                <!-- Mobile Menu Button -->
-                <button id="mobile-menu-btn" class="md:hidden p-2 rounded-lg bg-white shadow-md">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                    </svg>
-                </button>
             </div>
             
             <!-- Stats Cards -->
@@ -396,11 +405,51 @@
             window.location.href = 'login.html';
         });
         
+        // Refresh Dashboard
+        async function refreshDashboard() {
+            const refreshBtn = event.target.closest('button');
+            const icon = refreshBtn.querySelector('i');
+
+            // Add spin animation
+            icon.classList.add('fa-spin');
+            refreshBtn.disabled = true;
+
+            try {
+                await loadDashboard();
+                showToast('Ma\'lumotlar yangilandi', false);
+            } catch (error) {
+                showToast('Yangilashda xatolik', true);
+            } finally {
+                icon.classList.remove('fa-spin');
+                refreshBtn.disabled = false;
+            }
+        }
+
+        // Show toast notification
+        function showToast(message, isError = false) {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toast-message');
+
+            toastMessage.textContent = message;
+            toast.className = `fixed top-5 right-5 text-white py-3 px-6 rounded-lg shadow-lg transform transition-transform duration-500 z-50 ${isError ? 'bg-red-500' : 'bg-green-500'}`;
+
+            toast.classList.remove('translate-x-[120%]');
+            toast.classList.add('translate-x-0');
+
+            setTimeout(() => {
+                toast.classList.remove('translate-x-0');
+                toast.classList.add('translate-x-[120%]');
+            }, 3000);
+        }
+
+        // Make functions global
+        window.refreshDashboard = refreshDashboard;
+
         // Mobile menu toggle
         document.getElementById('mobile-menu-btn').addEventListener('click', () => {
             document.getElementById('sidebar').classList.toggle('active');
         });
-        
+
         // Initialize
         if (checkAuth()) {
             loadDashboard();
