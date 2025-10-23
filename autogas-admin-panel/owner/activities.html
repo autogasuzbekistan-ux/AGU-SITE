@@ -3,499 +3,418 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AGU - Owner Panel</title>
+    <title>AGU - Faoliyat Loglari</title>
 
     <!-- AGU Components -->
     <script src="../components/agu-branding.js"></script>
     <script src="../components/agu-navbar-owner.js"></script>
+    <script src="../components/agu-performance.js"></script>
 
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f5f7fa;
-            color: #333;
-        }
-
-        .container {
-            display: flex;
-            min-height: 100vh;
-        }
-
-        /* Loading Animation */
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #1b5bb5 0%, #2d3748 50%, #E30613 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-            animation: fadeOut 1s ease 2s forwards;
-        }
-
-        @keyframes fadeOut {
-            to {
-                opacity: 0;
-                visibility: hidden;
-            }
-        }
-
-        .loading-logo {
-            animation: logoZoom 2s ease;
-        }
-
-        @keyframes logoZoom {
-            0% {
-                transform: scale(0.5);
-                opacity: 0;
-            }
-            50% {
-                transform: scale(2);
-                opacity: 1;
-            }
-            100% {
-                transform: scale(1);
-                opacity: 1;
-            }
-        }
-
-        .agu-logo-large {
-            font-family: Arial, sans-serif;
-            font-size: 6rem;
-            font-weight: 800;
-        }
-
-        .agu-logo-large .red-part {
-            color: #E30613;
-        }
-
-        .agu-logo-large .blue-part {
-            color: #ffffff;
-        }
-
-        .agu-logo-large .registered {
-            font-size: 2rem;
-            vertical-align: top;
-        }
-
-        .container {
-            display: flex;
-            min-height: 100vh;
-        } 
-        
-        /* Sidebar */
-        .sidebar {
-            width: 260px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 20px;
-            position: fixed;
-            height: 100vh;
-            overflow-y: auto;
-        }
-
-        .logo {
-            text-align: center;
-            padding: 20px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-            margin-bottom: 30px;
-        }
-
-        .logo h2 {
-            font-size: 24px;
-            margin-bottom: 5px;
-        }
-
-        .logo p {
-            font-size: 12px;
-            opacity: 0.8;
-        }
-
-        .nav-menu {
-            list-style: none;
-        }
-
-        .nav-item {
-            margin-bottom: 5px;
-        }
-
-        .nav-link {
-            display: flex;
-            align-items: center;
-            padding: 12px 15px;
-            color: white;
-            text-decoration: none;
-            border-radius: 10px;
+        .activity-card {
             transition: all 0.3s ease;
         }
 
-        .nav-link:hover, .nav-link.active {
-            background: rgba(255, 255, 255, 0.2);
+        .activity-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
         }
 
-        .nav-link span {
-            margin-right: 10px;
-            font-size: 18px;
+        .activity-icon {
+            transition: transform 0.3s ease;
         }
 
-        .user-info {
-            position: absolute;
-            bottom: 20px;
-            left: 20px;
-            right: 20px;
-            padding: 15px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
+        .activity-card:hover .activity-icon {
+            transform: scale(1.2);
         }
 
-        .user-info p {
-            margin-bottom: 5px;
-            font-size: 14px;
-        }
-
-        .btn-logout {
-            width: 100%;
-            padding: 8px;
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            margin-top: 10px;
+        .stat-card {
             transition: all 0.3s ease;
         }
 
-        .btn-logout:hover {
-            background: rgba(255, 255, 255, 0.3);
-        }
-
-        /* Main Content */
-        .main-content {
-            flex: 1;
-            padding: 30px; max-width: 1400px; margin: 0 auto;
-            padding: 30px;
-        }
-
-        .header {
-            background: white;
-            padding: 20px 30px;
-            border-radius: 15px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-            margin-bottom: 30px;
-        }
-
-        .header h1 {
-            font-size: 28px;
-            color: #333;
-            margin-bottom: 5px;
-        }
-
-        .header p {
-            color: #666;
-            font-size: 14px;
-        }
-
-        /* Coming Soon Section */
-        .coming-soon {
-            background: white;
-            padding: 80px 30px;
-            border-radius: 15px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-            text-align: center;
-        }
-
-        .coming-soon-icon {
-            font-size: 120px;
-            margin-bottom: 30px;
-            animation: float 3s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-20px); }
-        }
-
-        .coming-soon h2 {
-            font-size: 36px;
-            color: #333;
-            margin-bottom: 15px;
-        }
-
-        .coming-soon p {
-            font-size: 18px;
-            color: #666;
-            margin-bottom: 30px;
-        }
-
-        .feature-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-top: 50px;
-            text-align: left;
-        }
-
-        .feature-item {
-            padding: 20px;
-            background: #f8f9fa;
-            border-radius: 12px;
-            border-left: 4px solid #667eea;
-        }
-
-        .feature-item h3 {
-            font-size: 18px;
-            color: #333;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .feature-item p {
-            font-size: 14px;
-            color: #666;
-        }
-
-        .progress-bar {
-            width: 100%;
-            height: 8px;
-            background: #e0e0e0;
-            border-radius: 10px;
-            overflow: hidden;
-            margin-top: 30px;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            width: 75%;
-            animation: progress 2s ease-in-out;
-        }
-
-        @keyframes progress {
-            from { width: 0; }
-            to { width: 75%; }
-        }
-
-        .timeline {
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-            margin-top: 30px;
-        }
-
-        .timeline h3 {
-            font-size: 22px;
-            margin-bottom: 20px;
-            color: #333;
-        }
-
-        .timeline-item {
-            padding: 20px;
-            border-left: 3px solid #667eea;
-            margin-bottom: 20px;
-            position: relative;
-        }
-
-        .timeline-item::before {
-            content: '';
-            position: absolute;
-            left: -8px;
-            top: 25px;
-            width: 13px;
-            height: 13px;
-            background: #667eea;
-            border-radius: 50%;
-        }
-
-        .timeline-date {
-            font-size: 12px;
-            color: #999;
-            margin-bottom: 5px;
-        }
-
-        .timeline-title {
-            font-size: 16px;
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 5px;
-        }
-
-        .timeline-desc {
-            font-size: 14px;
-            color: #666;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .sidebar {
-                width: 70px;
-            }
-
-            .sidebar .logo p,
-            .sidebar .nav-link span:not(:first-child),
-            .sidebar .user-info p {
-                display: none;
-            }
-
-            .main-content {
-                margin-left: 70px;
-                padding: 15px;
-            }
-
-            .coming-soon {
-                padding: 40px 15px;
-            }
-
-            .coming-soon-icon {
-                font-size: 80px;
-            }
-
-            .coming-soon h2 {
-                font-size: 24px;
-            }
-
-            .feature-list {
-                grid-template-columns: 1fr;
-            }
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
         }
     </style>
 </head>
-<body>
-    <div>
-        
-        <!-- AGU Navbar -->
+<body class="bg-gray-50">
+    <!-- AGU Navbar -->
     <div id="agu-navbar"></div>
 
-    <!-- Main Content -->
-        <main class="main-content">
-            <div class="header">
-                <h1>Faoliyat Loglari</h1>
-                <p>Tizim faoliyatini kuzatish va nazorat qilish</p>
-            </div>
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed top-24 right-5 bg-green-500 text-white py-3 px-6 rounded-lg shadow-lg transform translate-x-[120%] transition-transform duration-500 z-50">
+        <span id="toast-message"></span>
+    </div>
 
-            <div class="coming-soon">
-                <div class="coming-soon-icon">🚧</div>
-                <h2>Tez orada!</h2>
-                <p>Activity Logs funksiyasi hozirda ishlab chiqilmoqda</p>
-                
-                <div class="progress-bar">
-                    <div class="progress-fill"></div>
-                </div>
-                <p style="margin-top: 15px; font-size: 14px; color: #999;">Tayyor: 75%</p>
+    <!-- Main Container -->
+    <div class="container mx-auto px-6 py-8">
+        <!-- Page Header -->
+        <div class="mb-8">
+            <h1 class="text-4xl font-bold text-gray-800 mb-2">
+                <i class="fas fa-history mr-3 text-purple-600"></i>Faoliyat Loglari
+            </h1>
+            <p class="text-gray-600">Tizimda sodir bo'lgan barcha harakatlar tarixi</p>
+        </div>
 
-                <div class="feature-list">
-                    <div class="feature-item">
-                        <h3>📝 Log Yozish</h3>
-                        <p>Barcha foydalanuvchi harakatlarini avtomatik yozib borish</p>
+        <!-- Statistics Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <!-- Today's Activities -->
+            <div class="stat-card bg-gradient-to-br from-blue-500 to-blue-700 text-white rounded-xl shadow-lg p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-blue-100 text-sm font-medium mb-1">Bugun</p>
+                        <p class="text-3xl font-bold" id="today-count">0</p>
                     </div>
-                    <div class="feature-item">
-                        <h3>🔍 Qidiruv</h3>
-                        <p>Foydalanuvchi, sana va harakat turlari bo'yicha qidirish</p>
-                    </div>
-                    <div class="feature-item">
-                        <h3>📊 Statistika</h3>
-                        <p>Eng ko'p bajarilgan harakatlar va foydalauvchilar</p>
-                    </div>
-                    <div class="feature-item">
-                        <h3>📥 Export</h3>
-                        <p>Loglarni Excel yoki PDF formatida yuklab olish</p>
-                    </div>
-                    <div class="feature-item">
-                        <h3>🔔 Bildirishnomalar</h3>
-                        <p>Muhim harakatlar haqida real-time xabarlar</p>
-                    </div>
-                    <div class="feature-item">
-                        <h3>🔒 Xavfsizlik</h3>
-                        <p>Suspicious harakatlarni avtomatik aniqlash</p>
+                    <div class="bg-white bg-opacity-20 rounded-full p-4">
+                        <i class="fas fa-clock text-3xl"></i>
                     </div>
                 </div>
             </div>
 
-            <div class="timeline">
-                <h3>📅 Rivojlanish Jadvali</h3>
-                
-                <div class="timeline-item">
-                    <div class="timeline-date">1-bosqich (Bajarildi)</div>
-                    <div class="timeline-title">✅ Backend API yaratish</div>
-                    <div class="timeline-desc">ActivityLog modeli va controller'lar tayyor</div>
-                </div>
-
-                <div class="timeline-item">
-                    <div class="timeline-date">2-bosqich (Bajarildi)</div>
-                    <div class="timeline-title">✅ Ma'lumotlar bazasi strukturasi</div>
-                    <div class="timeline-desc">Activity logs jadvali va migration'lar tayyor</div>
-                </div>
-
-                <div class="timeline-item">
-                    <div class="timeline-date">3-bosqich (Jarayonda)</div>
-                    <div class="timeline-title">🔄 Log yozish mexanizmi</div>
-                    <div class="timeline-desc">Barcha harakatlarni avtomatik logga yozish tizimi</div>
-                </div>
-
-                <div class="timeline-item">
-                    <div class="timeline-date">4-bosqich (Rejalashtirilgan)</div>
-                    <div class="timeline-title">⏳ Frontend interfeys</div>
-                    <div class="timeline-desc">Loglarni ko'rish, qidirish va filtrlash sahifasi</div>
-                </div>
-
-                <div class="timeline-item">
-                    <div class="timeline-date">5-bosqich (Rejalashtirilgan)</div>
-                    <div class="timeline-title">⏳ Export va hisobot</div>
-                    <div class="timeline-desc">Excel/PDF formatida yuklab olish va statistika</div>
+            <!-- This Week -->
+            <div class="stat-card bg-gradient-to-br from-green-500 to-green-700 text-white rounded-xl shadow-lg p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-green-100 text-sm font-medium mb-1">Bu Hafta</p>
+                        <p class="text-3xl font-bold" id="week-count">0</p>
+                    </div>
+                    <div class="bg-white bg-opacity-20 rounded-full p-4">
+                        <i class="fas fa-calendar-week text-3xl"></i>
+                    </div>
                 </div>
             </div>
-        </main>
+
+            <!-- Total Users -->
+            <div class="stat-card bg-gradient-to-br from-purple-500 to-pink-600 text-white rounded-xl shadow-lg p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-purple-100 text-sm font-medium mb-1">Faol Foydalanuvchilar</p>
+                        <p class="text-3xl font-bold" id="users-count">0</p>
+                    </div>
+                    <div class="bg-white bg-opacity-20 rounded-full p-4">
+                        <i class="fas fa-users text-3xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Total Activities -->
+            <div class="stat-card bg-gradient-to-br from-orange-500 to-red-600 text-white rounded-xl shadow-lg p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-orange-100 text-sm font-medium mb-1">Jami Faoliyat</p>
+                        <p class="text-3xl font-bold" id="total-count">0</p>
+                    </div>
+                    <div class="bg-white bg-opacity-20 rounded-full p-4">
+                        <i class="fas fa-chart-line text-3xl"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <!-- Search -->
+                <input
+                    type="text"
+                    id="search-input"
+                    placeholder="Qidirish..."
+                    class="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                >
+
+                <!-- User Filter -->
+                <select id="user-filter" class="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all">
+                    <option value="">Barcha foydalanuvchilar</option>
+                    <option value="owner">Owner</option>
+                    <option value="admin">Admin</option>
+                    <option value="kontragent">Kontragent</option>
+                </select>
+
+                <!-- Action Type Filter -->
+                <select id="action-filter" class="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all">
+                    <option value="">Barcha harakatlar</option>
+                    <option value="create">Yaratish</option>
+                    <option value="update">Yangilash</option>
+                    <option value="delete">O'chirish</option>
+                    <option value="login">Kirish</option>
+                    <option value="logout">Chiqish</option>
+                </select>
+
+                <!-- Date Filter -->
+                <input
+                    type="date"
+                    id="date-filter"
+                    class="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                >
+            </div>
+        </div>
+
+        <!-- Activities Timeline -->
+        <div id="activities-timeline" class="space-y-4">
+            <!-- Loading State -->
+            <div class="text-center py-12">
+                <div class="inline-block animate-spin rounded-full h-16 w-16 border-b-4 border-purple-600"></div>
+                <p class="text-gray-600 mt-4 text-lg">Faoliyatlar yuklanmoqda...</p>
+            </div>
+        </div>
     </div>
 
     <script>
-        const token = localStorage.getItem('token');
-        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        const API_BASE_URL = 'http://127.0.0.1:8000/api';
+        let activities = [];
+        let filteredActivities = [];
 
-        // Check authentication
-        if (!token || user.role !== 'owner') {
-            window.location.href = '../index.html';
+        // Toast Notification
+        function showToast(message, isError = false) {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toast-message');
+
+            toastMessage.textContent = message;
+            toast.className = `fixed top-24 right-5 text-white py-3 px-6 rounded-lg shadow-lg transform transition-transform duration-500 z-50 ${isError ? 'bg-red-500' : 'bg-green-500'}`;
+
+            toast.classList.remove('translate-x-[120%]');
+            toast.classList.add('translate-x-0');
+
+            setTimeout(() => {
+                toast.classList.remove('translate-x-0');
+                toast.classList.add('translate-x-[120%]');
+            }, 4000);
         }
 
-        // Set user info
-        document.getElementById('userName').textContent = user.name || 'Owner';
-        document.getElementById('userEmail').textContent = user.email || '';
+        // Check Authentication
+        function checkAuth() {
+            const token = localStorage.getItem('token');
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
 
-        // Logout
-        // Logout handled by navbar component
+            if (!token || user.role !== 'owner') {
+                window.location.href = '../index.html';
+                return false;
+            }
+            return true;
         }
 
-        // Check API (optional)
-        async function checkActivities() {
-            try {
-                const response = await fetch('http://127.0.0.1:8000/api/owner/activities', {
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    }
+        // Get Activity Icon
+        function getActivityIcon(action) {
+            const icons = {
+                'create': 'fa-plus-circle text-green-600',
+                'update': 'fa-edit text-blue-600',
+                'delete': 'fa-trash text-red-600',
+                'login': 'fa-sign-in-alt text-purple-600',
+                'logout': 'fa-sign-out-alt text-orange-600',
+                'view': 'fa-eye text-gray-600',
+                'download': 'fa-download text-indigo-600',
+                'upload': 'fa-upload text-pink-600'
+            };
+            return icons[action] || 'fa-circle text-gray-400';
+        }
+
+        // Get Activity Color
+        function getActivityColor(action) {
+            const colors = {
+                'create': 'border-green-500 bg-green-50',
+                'update': 'border-blue-500 bg-blue-50',
+                'delete': 'border-red-500 bg-red-50',
+                'login': 'border-purple-500 bg-purple-50',
+                'logout': 'border-orange-500 bg-orange-50'
+            };
+            return colors[action] || 'border-gray-400 bg-gray-50';
+        }
+
+        // Format Time Ago
+        function timeAgo(date) {
+            const seconds = Math.floor((new Date() - new Date(date)) / 1000);
+
+            if (seconds < 60) return seconds + ' soniya oldin';
+            const minutes = Math.floor(seconds / 60);
+            if (minutes < 60) return minutes + ' daqiqa oldin';
+            const hours = Math.floor(minutes / 60);
+            if (hours < 24) return hours + ' soat oldin';
+            const days = Math.floor(hours / 24);
+            if (days < 7) return days + ' kun oldin';
+            const weeks = Math.floor(days / 7);
+            return weeks + ' hafta oldin';
+        }
+
+        // Generate Mock Activities
+        function generateMockActivities() {
+            const actions = ['create', 'update', 'delete', 'login', 'logout'];
+            const users = ['Admin Adminov', 'Kontragent 1', 'Kontragent 2', 'Owner User'];
+            const entities = ['mahsulot', 'buyurtma', 'kontragent', 'omborxona', 'transfer'];
+
+            const mockActivities = [];
+            const now = new Date();
+
+            for (let i = 0; i < 50; i++) {
+                const action = actions[Math.floor(Math.random() * actions.length)];
+                const user = users[Math.floor(Math.random() * users.length)];
+                const entity = entities[Math.floor(Math.random() * entities.length)];
+
+                const date = new Date(now - Math.random() * 7 * 24 * 60 * 60 * 1000); // Last 7 days
+
+                mockActivities.push({
+                    id: i + 1,
+                    user_name: user,
+                    action: action,
+                    description: `${entity} ${action === 'create' ? 'yaratdi' : action === 'update' ? 'yangiladi' : action === 'delete' ? "o'chirdi" : action === 'login' ? 'tizimga kirdi' : 'tizimdan chiqdi'}`,
+                    entity: entity,
+                    created_at: date.toISOString(),
+                    ip_address: '192.168.1.' + Math.floor(Math.random() * 255)
                 });
+            }
 
-                const data = await response.json();
-                console.log('Activities API response:', data);
+            return mockActivities.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        }
+
+        // Load Activities
+        async function loadActivities() {
+            try {
+                // For now, use mock data (API endpoint will be implemented later)
+                activities = generateMockActivities();
+                filteredActivities = [...activities];
+                renderActivities();
+                updateStatistics();
             } catch (error) {
-                console.error('Activities check error:', error);
+                console.error('Activities load error:', error);
+                showToast('Faoliyatlarni yuklashda xatolik', true);
+                document.getElementById('activities-timeline').innerHTML = `
+                    <div class="text-center py-12 bg-white rounded-xl">
+                        <i class="fas fa-exclamation-circle text-6xl text-red-400 mb-4"></i>
+                        <p class="text-gray-600 text-lg">Faoliyatlarni yuklashda xatolik yuz berdi</p>
+                    </div>
+                `;
             }
         }
 
-        // Check on load
-        window.addEventListener('load', checkActivities);
+        // Update Statistics
+        function updateStatistics() {
+            const now = new Date();
+            const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            const weekStart = new Date(now - 7 * 24 * 60 * 60 * 1000);
+
+            const todayCount = activities.filter(a => new Date(a.created_at) >= todayStart).length;
+            const weekCount = activities.filter(a => new Date(a.created_at) >= weekStart).length;
+            const uniqueUsers = new Set(activities.map(a => a.user_name)).size;
+
+            document.getElementById('today-count').textContent = todayCount;
+            document.getElementById('week-count').textContent = weekCount;
+            document.getElementById('users-count').textContent = uniqueUsers;
+            document.getElementById('total-count').textContent = activities.length;
+        }
+
+        // Render Activities
+        function renderActivities() {
+            const timeline = document.getElementById('activities-timeline');
+
+            if (filteredActivities.length === 0) {
+                timeline.innerHTML = `
+                    <div class="text-center py-16 bg-white rounded-xl">
+                        <i class="fas fa-inbox text-6xl text-gray-300 mb-4"></i>
+                        <p class="text-gray-600 text-xl font-semibold">Faoliyatlar topilmadi</p>
+                        <p class="text-gray-500 mt-2">Hozircha hech qanday faoliyat mavjud emas</p>
+                    </div>
+                `;
+                return;
+            }
+
+            timeline.innerHTML = filteredActivities.map(activity => `
+                <div class="activity-card bg-white rounded-xl shadow-lg p-6 border-l-4 ${getActivityColor(activity.action)}">
+                    <div class="flex items-start justify-between">
+                        <div class="flex items-start gap-4 flex-1">
+                            <!-- Icon -->
+                            <div class="activity-icon bg-white rounded-full p-3 shadow-md">
+                                <i class="fas ${getActivityIcon(activity.action)} text-2xl"></i>
+                            </div>
+
+                            <!-- Content -->
+                            <div class="flex-1">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <h3 class="text-lg font-bold text-gray-800">${activity.user_name}</h3>
+                                    <span class="text-xs bg-gray-200 text-gray-700 px-2 py-1 rounded-full font-semibold">
+                                        ${activity.action.toUpperCase()}
+                                    </span>
+                                </div>
+                                <p class="text-gray-700 mb-2">${activity.description}</p>
+                                <div class="flex items-center gap-4 text-sm text-gray-500">
+                                    <span><i class="fas fa-clock mr-1"></i>${timeAgo(activity.created_at)}</span>
+                                    <span><i class="fas fa-network-wired mr-1"></i>${activity.ip_address}</span>
+                                    <span><i class="fas fa-calendar mr-1"></i>${new Date(activity.created_at).toLocaleDateString('uz-UZ')}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Time -->
+                        <div class="text-right text-sm text-gray-500">
+                            ${new Date(activity.created_at).toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit' })}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Filter Activities
+        function filterActivities() {
+            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            const userFilter = document.getElementById('user-filter').value;
+            const actionFilter = document.getElementById('action-filter').value;
+            const dateFilter = document.getElementById('date-filter').value;
+
+            filteredActivities = [...activities];
+
+            // Search filter
+            if (searchTerm) {
+                filteredActivities = filteredActivities.filter(activity =>
+                    activity.user_name.toLowerCase().includes(searchTerm) ||
+                    activity.description.toLowerCase().includes(searchTerm) ||
+                    activity.entity.toLowerCase().includes(searchTerm)
+                );
+            }
+
+            // User filter
+            if (userFilter) {
+                filteredActivities = filteredActivities.filter(activity =>
+                    activity.user_name.toLowerCase().includes(userFilter.toLowerCase())
+                );
+            }
+
+            // Action filter
+            if (actionFilter) {
+                filteredActivities = filteredActivities.filter(activity =>
+                    activity.action === actionFilter
+                );
+            }
+
+            // Date filter
+            if (dateFilter) {
+                const filterDate = new Date(dateFilter);
+                const nextDay = new Date(filterDate);
+                nextDay.setDate(nextDay.getDate() + 1);
+
+                filteredActivities = filteredActivities.filter(activity => {
+                    const activityDate = new Date(activity.created_at);
+                    return activityDate >= filterDate && activityDate < nextDay;
+                });
+            }
+
+            renderActivities();
+        }
+
+        // Event Listeners
+        document.getElementById('search-input').addEventListener('input', AGU_PERFORMANCE.debounce(filterActivities, 300));
+        document.getElementById('user-filter').addEventListener('change', filterActivities);
+        document.getElementById('action-filter').addEventListener('change', filterActivities);
+        document.getElementById('date-filter').addEventListener('change', filterActivities);
+
+        // Initialize
+        if (checkAuth()) {
+            loadActivities();
+        }
     </script>
 </body>
 </html>
