@@ -16,35 +16,6 @@
     <!-- AGU Navbar -->
     <div id="agu-navbar"></div>
 
-    <!-- Navigation -->
-    <nav class="bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg">
-        <div class="container mx-auto px-6 py-4">
-            <div class="flex justify-between items-center">
-                <div>
-                    <h1 class="text-2xl font-bold">AGU Kontragent Panel</h1>
-                    <p class="text-sm opacity-90" id="user-info">Yuklanmoqda...</p>
-                </div>
-                <div class="flex space-x-4">
-                    <a href="dashboard.html" class="hover:bg-white hover:bg-opacity-20 px-4 py-2 rounded transition">
-                        <i class="fas fa-home mr-2"></i>Dashboard
-                    </a>
-                    <a href="products.html" class="hover:bg-white hover:bg-opacity-20 px-4 py-2 rounded transition">
-                        <i class="fas fa-box mr-2"></i>Mahsulotlar
-                    </a>
-                    <a href="orders.html" class="hover:bg-white hover:bg-opacity-20 px-4 py-2 rounded transition">
-                        <i class="fas fa-shopping-cart mr-2"></i>Buyurtmalar
-                    </a>
-                    <a href="transfers.html" class="bg-white bg-opacity-20 px-4 py-2 rounded transition">
-                        <i class="fas fa-exchange-alt mr-2"></i>Transferlar
-                    </a>
-                    <button onclick="logout()" class="bg-red-500 hover:bg-red-600 px-4 py-2 rounded transition">
-                        <i class="fas fa-sign-out-alt mr-2"></i>Chiqish
-                    </button>
-                </div>
-            </div>
-        </div>
-    </nav>
-
     <!-- Main Content -->
     <div class="container mx-auto px-6 py-8">
         <!-- Header & Actions -->
@@ -280,7 +251,6 @@
 
                 if (response.ok) {
                     currentUser = await response.json();
-                    document.getElementById('user-info').textContent = `${currentUser.name} (${currentUser.region || 'Viloyat ko\'rsatilmagan'})`;
                 }
             } catch (error) {
                 console.error('User info error:', error);
