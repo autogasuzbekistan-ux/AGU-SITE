@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AGU - Inventar Boshqaruvi</title>
-    <!-- AGU Navbar -->
+    <!-- AGU Components -->
     <script src="components/agu-navbar.js"></script>
     <script src="components/agu-performance.js"></script>
-    <!-- AGU Branding -->
     <script src="components/agu-branding.js"></script>
+    <script src="components/agu-utils.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -431,6 +431,17 @@
             if (expiry === 'expired') url += `&expired_only=true`;
             if (expiry === 'expiring_soon') url += `&expiring_soon=true`;
 
+            // Show loading state
+            const tbody = document.getElementById('inventoryTableBody');
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="8" class="text-center py-12">
+                        <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-4 border-blue-600 mb-3"></div>
+                        <p class="text-gray-600">Inventar yuklanmoqda...</p>
+                    </td>
+                </tr>
+            `;
+
             try {
                 const response = await fetch(url, {
                     headers: {
@@ -445,9 +456,23 @@
                     displayPagination(data.inventory);
                     loadStatistics();
                     loadAlerts();
+                } else {
+                    throw new Error('Ma\'lumotlarni yuklashda xatolik');
                 }
             } catch (error) {
                 console.error('Error:', error);
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" class="text-center py-12">
+                            <i class="fas fa-exclamation-circle text-6xl text-red-400 mb-4"></i>
+                            <p class="text-gray-600 text-lg mb-4">Ma'lumotlarni yuklashda xatolik</p>
+                            <button onclick="loadInventory(${page})" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                                <i class="fas fa-sync-alt mr-2"></i>Qayta urinish
+                            </button>
+                        </td>
+                    </tr>
+                `;
+                AGU_UTILS.showToast('Inventarni yuklashda xatolik yuz berdi', true);
             }
         }
 
@@ -746,20 +771,53 @@
             event.preventDefault();
             const token = localStorage.getItem('token');
 
+            // Validate warehouse
+            const warehouse_id = document.getElementById('warehouse_id').value;
+            if (!warehouse_id) {
+                AGU_UTILS.showToast('Omborni tanlang', true);
+                return;
+            }
+
+            // Validate product
+            const product_id = document.getElementById('product_id').value;
+            if (!product_id) {
+                AGU_UTILS.showToast('Mahsulotni tanlang', true);
+                return;
+            }
+
+            // Validate quantity
+            const quantityValue = document.getElementById('quantity').value;
+            const quantityValidation = AGU_UTILS.validateField(quantityValue, {
+                required: true,
+                number: true,
+                min: 0.01,
+                requiredMessage: 'Miqdorni kiriting',
+                minMessage: 'Miqdor 0 dan katta bo\'lishi kerak'
+            });
+
+            if (!quantityValidation.valid) {
+                AGU_UTILS.showToast(quantityValidation.error, true);
+                return;
+            }
+
             const data = {
-                warehouse_id: document.getElementById('warehouse_id').value,
-                product_id: document.getElementById('product_id').value,
-                quantity: document.getElementById('quantity').value,
+                warehouse_id: warehouse_id,
+                product_id: product_id,
+                quantity: quantityValue,
                 unit: document.getElementById('unit').value,
                 min_quantity: document.getElementById('min_quantity').value,
                 max_quantity: document.getElementById('max_quantity').value || null,
                 reorder_point: document.getElementById('reorder_point').value || null,
-                location: document.getElementById('location').value || null,
-                batch_number: document.getElementById('batch_number').value || null,
+                location: document.getElementById('location').value?.trim() || null,
+                batch_number: document.getElementById('batch_number').value?.trim() || null,
                 expiry_date: document.getElementById('expiry_date').value || null,
                 cost_per_unit: document.getElementById('cost_per_unit').value || null,
-                notes: document.getElementById('notes').value || null,
+                notes: document.getElementById('notes').value?.trim() || null,
             };
+
+            // Get submit button
+            const submitBtn = event.target.querySelector('button[type="submit"]');
+            AGU_UTILS.setButtonLoading(submitBtn, true, 'Saqlanmoqda...');
 
             try {
                 const response = await fetch(`${API_URL}/inventory`, {
@@ -774,14 +832,16 @@
                 if (response.ok) {
                     closeAddStockModal();
                     loadInventory();
-                    alert('Stock muvaffaqiyatli qo\'shildi');
+                    AGU_UTILS.showToast('Stock muvaffaqiyatli qo\'shildi', false);
                 } else {
                     const error = await response.json();
-                    alert('Xatolik: ' + (error.message || 'Noma\'lum xatolik'));
+                    AGU_UTILS.showToast('Xatolik: ' + (error.message || 'Noma\'lum xatolik'), true);
                 }
             } catch (error) {
                 console.error('Error:', error);
-                alert('Xatolik yuz berdi');
+                AGU_UTILS.showToast('Xatolik yuz berdi', true);
+            } finally {
+                AGU_UTILS.setButtonLoading(submitBtn, false);
             }
         }
 
@@ -795,15 +855,33 @@
             const quantity = document.getElementById('operation_quantity').value;
             const notes = document.getElementById('operation_notes').value;
 
+            // Validate quantity
+            const quantityValidation = AGU_UTILS.validateField(quantity, {
+                required: true,
+                number: true,
+                min: 0.01,
+                requiredMessage: 'Miqdorni kiriting',
+                minMessage: 'Miqdor 0 dan katta bo\'lishi kerak'
+            });
+
+            if (!quantityValidation.valid) {
+                AGU_UTILS.showToast(quantityValidation.error, true);
+                return;
+            }
+
             const endpoint = operation === 'add' ? 'add-stock' : 'remove-stock';
             const data = {
                 quantity: quantity,
-                notes: notes || null,
+                notes: notes?.trim() || null,
             };
 
             if (operation === 'remove') {
                 data.type = document.getElementById('remove_type').value;
             }
+
+            // Get submit button
+            const submitBtn = event.target.querySelector('button[type="submit"]');
+            AGU_UTILS.setButtonLoading(submitBtn, true, 'Bajarilmoqda...');
 
             try {
                 const response = await fetch(`${API_URL}/inventory/${inventoryId}/${endpoint}`, {
@@ -818,14 +896,16 @@
                 if (response.ok) {
                     closeStockOperationModal();
                     loadInventory();
-                    alert('Operatsiya muvaffaqiyatli bajarildi');
+                    AGU_UTILS.showToast('Operatsiya muvaffaqiyatli bajarildi', false);
                 } else {
                     const error = await response.json();
-                    alert('Xatolik: ' + (error.message || 'Noma\'lum xatolik'));
+                    AGU_UTILS.showToast('Xatolik: ' + (error.message || 'Noma\'lum xatolik'), true);
                 }
             } catch (error) {
                 console.error('Error:', error);
-                alert('Xatolik yuz berdi');
+                AGU_UTILS.showToast('Xatolik yuz berdi', true);
+            } finally {
+                AGU_UTILS.setButtonLoading(submitBtn, false);
             }
         }
 

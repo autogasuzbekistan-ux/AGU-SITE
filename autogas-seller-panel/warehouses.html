@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AGU - Omborlar Boshqaruvi</title>
 
-    <!-- AGU Branding -->
+    <!-- AGU Components -->
     <script src="components/agu-branding.js"></script>
-    <!-- AGU Navbar -->
     <script src="components/agu-navbar.js"></script>
     <script src="components/agu-performance.js"></script>
+    <script src="components/agu-utils.js"></script>
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -247,6 +247,9 @@
             if (region) url += `&region=${region}`;
             if (status) url += `&status=${status}`;
 
+            // Show loading
+            AGU_UTILS.showLoading('warehousesList', 'Omborlar yuklanmoqda...');
+
             try {
                 const response = await fetch(url, {
                     headers: {
@@ -259,9 +262,13 @@
                     const data = await response.json();
                     displayWarehouses(data.warehouses.data);
                     loadStatistics();
+                } else {
+                    throw new Error('Ma\'lumotlarni yuklashda xatolik');
                 }
             } catch (error) {
                 console.error('Error:', error);
+                AGU_UTILS.showError('warehousesList', 'Omborlarni yuklashda xatolik', 'loadWarehouses()');
+                AGU_UTILS.showToast('Omborlarni yuklashda xatolik yuz berdi', true);
             }
         }
 
@@ -607,20 +614,52 @@
             const token = localStorage.getItem('token');
             const id = document.getElementById('warehouseId').value;
 
+            // Validate name
+            const name = document.getElementById('name').value;
+            const nameValidation = AGU_UTILS.validateField(name, {
+                required: true,
+                minLength: 3,
+                requiredMessage: 'Ombor nomini kiriting',
+                minLengthMessage: 'Ombor nomi kamida 3 ta belgidan iborat bo\'lishi kerak'
+            });
+
+            if (!nameValidation.valid) {
+                AGU_UTILS.showToast(nameValidation.error, true);
+                return;
+            }
+
+            // Validate phone if provided
+            const phone = document.getElementById('phone').value;
+            if (phone) {
+                const phoneValidation = AGU_UTILS.validateField(phone, {
+                    phone: true,
+                    phoneMessage: 'To\'g\'ri telefon raqam kiriting (+998901234567)'
+                });
+
+                if (!phoneValidation.valid) {
+                    AGU_UTILS.showToast(phoneValidation.error, true);
+                    return;
+                }
+            }
+
             const data = {
-                name: document.getElementById('name').value,
-                description: document.getElementById('description').value,
+                name: name.trim(),
+                description: document.getElementById('description').value?.trim() || null,
                 region: document.getElementById('region').value,
-                district: document.getElementById('district').value,
-                address: document.getElementById('address').value,
-                phone: document.getElementById('phone').value,
-                manager_name: document.getElementById('manager_name').value,
+                district: document.getElementById('district').value?.trim() || null,
+                address: document.getElementById('address').value?.trim() || null,
+                phone: phone?.trim() || null,
+                manager_name: document.getElementById('manager_name').value?.trim() || null,
                 total_capacity: document.getElementById('total_capacity').value || null,
                 capacity_unit: document.getElementById('capacity_unit').value,
             };
 
             const url = id ? `${API_URL}/warehouses/${id}` : `${API_URL}/warehouses`;
             const method = id ? 'PUT' : 'POST';
+
+            // Get submit button
+            const submitBtn = event.target.querySelector('button[type="submit"]');
+            AGU_UTILS.setButtonLoading(submitBtn, true, 'Saqlanmoqda...');
 
             try {
                 const response = await fetch(url, {
@@ -635,14 +674,16 @@
                 if (response.ok) {
                     closeModal();
                     loadWarehouses();
-                    alert(id ? 'Ombor yangilandi' : 'Ombor yaratildi');
+                    AGU_UTILS.showToast(id ? 'Ombor muvaffaqiyatli yangilandi' : 'Ombor muvaffaqiyatli yaratildi', false);
                 } else {
                     const error = await response.json();
-                    alert('Xatolik: ' + (error.message || 'Noma\'lum xatolik'));
+                    AGU_UTILS.showToast('Xatolik: ' + (error.message || 'Noma\'lum xatolik'), true);
                 }
             } catch (error) {
                 console.error('Error:', error);
-                alert('Xatolik yuz berdi');
+                AGU_UTILS.showToast('Xatolik yuz berdi', true);
+            } finally {
+                AGU_UTILS.setButtonLoading(submitBtn, false);
             }
         }
 
