@@ -330,11 +330,11 @@
                     displayTransfers(allTransfers);
                     updateStatistics(allTransfers);
                 } else {
-                    showToast('Xatolik yuz berdi', true);
+                    AGU_UTILS.showToast('Xatolik yuz berdi', true);
                 }
             } catch (error) {
                 console.error('Load transfers error:', error);
-                showToast('Serverga ulanishda xatolik', true);
+                AGU_UTILS.showToast('Serverga ulanishda xatolik', true);
             } finally {
                 document.getElementById('loading').classList.add('hidden');
             }
@@ -495,14 +495,14 @@
                 const data = await response.json();
 
                 if (response.ok) {
-                    showToast('Transfer muvaffaqiyatli yaratildi!', false);
+                    AGU_UTILS.showToast('Transfer muvaffaqiyatli yaratildi!', false);
                     closeCreateModal();
                     loadTransfers();
                 } else {
-                    showToast(data.message || 'Xatolik yuz berdi', true);
+                    AGU_UTILS.showToast(data.message || 'Xatolik yuz berdi', true);
                 }
             } catch (error) {
-                showToast('Serverga ulanishda xatolik', true);
+                AGU_UTILS.showToast('Serverga ulanishda xatolik', true);
             }
         });
 
@@ -521,13 +521,13 @@
 
                 const data = await response.json();
                 if (response.ok) {
-                    showToast('Transfer tasdiqlandi!', false);
+                    AGU_UTILS.showToast('Transfer tasdiqlandi!', false);
                     loadTransfers();
                 } else {
-                    showToast(data.message, true);
+                    AGU_UTILS.showToast(data.message, true);
                 }
             } catch (error) {
-                showToast('Xatolik yuz berdi', true);
+                AGU_UTILS.showToast('Xatolik yuz berdi', true);
             }
         }
 
@@ -548,13 +548,13 @@
 
                 const data = await response.json();
                 if (response.ok) {
-                    showToast('Transfer rad etildi', false);
+                    AGU_UTILS.showToast('Transfer rad etildi', false);
                     loadTransfers();
                 } else {
-                    showToast(data.message, true);
+                    AGU_UTILS.showToast(data.message, true);
                 }
             } catch (error) {
-                showToast('Xatolik yuz berdi', true);
+                AGU_UTILS.showToast('Xatolik yuz berdi', true);
             }
         }
 
@@ -572,13 +572,13 @@
 
                 const data = await response.json();
                 if (response.ok) {
-                    showToast('Transfer yo\'lga chiqarildi!', false);
+                    AGU_UTILS.showToast('Transfer yo\'lga chiqarildi!', false);
                     loadTransfers();
                 } else {
-                    showToast(data.message, true);
+                    AGU_UTILS.showToast(data.message, true);
                 }
             } catch (error) {
-                showToast('Xatolik yuz berdi', true);
+                AGU_UTILS.showToast('Xatolik yuz berdi', true);
             }
         }
 
@@ -596,13 +596,13 @@
 
                 const data = await response.json();
                 if (response.ok) {
-                    showToast('Transfer yetkazildi!', false);
+                    AGU_UTILS.showToast('Transfer yetkazildi!', false);
                     loadTransfers();
                 } else {
-                    showToast(data.message, true);
+                    AGU_UTILS.showToast(data.message, true);
                 }
             } catch (error) {
-                showToast('Xatolik yuz berdi', true);
+                AGU_UTILS.showToast('Xatolik yuz berdi', true);
             }
         }
 
@@ -620,13 +620,13 @@
 
                 const data = await response.json();
                 if (response.ok) {
-                    showToast('Transfer bekor qilindi', false);
+                    AGU_UTILS.showToast('Transfer bekor qilindi', false);
                     loadTransfers();
                 } else {
-                    showToast(data.message, true);
+                    AGU_UTILS.showToast(data.message, true);
                 }
             } catch (error) {
-                showToast('Xatolik yuz berdi', true);
+                AGU_UTILS.showToast('Xatolik yuz berdi', true);
             }
         }
 
@@ -634,7 +634,7 @@
         async function searchByTracking() {
             const trackingNumber = document.getElementById('tracking-search').value.trim();
             if (!trackingNumber) {
-                showToast('Tracking raqamini kiriting', true);
+                AGU_UTILS.showToast('Tracking raqamini kiriting', true);
                 return;
             }
 
@@ -650,21 +650,11 @@
                 if (response.ok) {
                     displayTransfers([data.transfer]);
                 } else {
-                    showToast(data.message, true);
+                    AGU_UTILS.showToast(data.message, true);
                 }
             } catch (error) {
-                showToast('Xatolik yuz berdi', true);
+                AGU_UTILS.showToast('Xatolik yuz berdi', true);
             }
-        }
-
-        // Show toast
-        function showToast(message, isError = false) {
-            const toast = document.getElementById('toast');
-            const toastMessage = document.getElementById('toast-message');
-            toastMessage.textContent = message;
-            toast.className = `fixed top-5 right-5 px-6 py-3 rounded-lg shadow-lg z-50 ${isError ? 'bg-red-600' : 'bg-green-600'} text-white`;
-            toast.classList.remove('hidden');
-            setTimeout(() => toast.classList.add('hidden'), 4000);
         }
 
         // Logout
