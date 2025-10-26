@@ -46,6 +46,8 @@ class Product extends Model
         'stockStatus',
         'seller_id',
         'quantity',
+        'status',
+        'is_active',
     ];
 
     /**
@@ -56,6 +58,7 @@ class Product extends Model
         'price' => 'decimal:2',
         'quantity' => 'integer',
         'seller_id' => 'integer',
+        'is_active' => 'boolean',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
@@ -66,6 +69,8 @@ class Product extends Model
     protected $attributes = [
         'stockStatus' => 'in_stock',
         'quantity' => 0,
+        'status' => 'approved',
+        'is_active' => true,
     ];
 
     // ==================== RELATIONSHIPS ====================
@@ -150,6 +155,30 @@ class Product extends Model
     public function scopeAvailable($query)
     {
         return $query->whereIn('stockStatus', ['in_stock', 'low_stock']);
+    }
+
+    /**
+     * Faqat tasdiqlangan mahsulotlar
+     */
+    public function scopeApproved($query)
+    {
+        return $query->where('status', 'approved');
+    }
+
+    /**
+     * Faqat faol mahsulotlar
+     */
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
+    }
+
+    /**
+     * Ommaviy ko'rinish uchun mahsulotlar (approved va active)
+     */
+    public function scopePublic($query)
+    {
+        return $query->where('status', 'approved')->where('is_active', true);
     }
 
     // ==================== ACCESSORS & MUTATORS ====================

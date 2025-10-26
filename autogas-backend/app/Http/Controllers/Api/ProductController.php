@@ -15,7 +15,8 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Product::query();
+        // Faqat ommaviy ko'rinishdagi mahsulotlarni ko'rsatish (approved va active)
+        $query = Product::public();
 
         // Filter by category
         if ($request->has('category') && $request->category) {
@@ -66,7 +67,9 @@ class ProductController extends Controller
             'imageUrl' => 'nullable|string',
             'stockStatus' => 'required|in:in_stock,out_of_stock',
             'quantity' => 'required|integer|min:0',
-            'seller_id' => 'nullable|exists:users,id'
+            'seller_id' => 'nullable|exists:users,id',
+            'status' => 'nullable|in:pending,approved,rejected',
+            'is_active' => 'nullable|boolean'
         ]);
 
         if ($validator->fails()) {
@@ -82,6 +85,14 @@ class ProductController extends Controller
         // Set seller_id from authenticated user if not provided
         if (!isset($data['seller_id']) && auth()->check()) {
             $data['seller_id'] = auth()->id();
+        }
+
+        // Set default status and is_active if not provided
+        if (!isset($data['status'])) {
+            $data['status'] = 'approved';
+        }
+        if (!isset($data['is_active'])) {
+            $data['is_active'] = true;
         }
 
         $product = Product::create($data);
@@ -137,7 +148,9 @@ class ProductController extends Controller
             'imageUrl' => 'nullable|string',
             'stockStatus' => 'sometimes|required|in:in_stock,out_of_stock',
             'quantity' => 'sometimes|required|integer|min:0',
-            'seller_id' => 'nullable|exists:users,id'
+            'seller_id' => 'nullable|exists:users,id',
+            'status' => 'sometimes|required|in:pending,approved,rejected',
+            'is_active' => 'sometimes|required|boolean'
         ]);
 
         if ($validator->fails()) {
