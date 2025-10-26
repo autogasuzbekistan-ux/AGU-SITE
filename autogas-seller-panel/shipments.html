@@ -234,6 +234,68 @@
         </div>
     </div>
 
+    <!-- Update Location Modal -->
+    <div id="location-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-md mx-4">
+            <div class="p-6 border-b">
+                <h3 class="text-xl font-bold text-gray-800">Lokatsiyani Yangilash</h3>
+            </div>
+            <form id="location-form" class="p-6 space-y-4">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Hozirgi joylashuv</label>
+                    <input
+                        type="text"
+                        id="location-input"
+                        placeholder="Masalan: Toshkent, Chilonzor tumani..."
+                        class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                        required
+                    />
+                    <p class="text-xs text-gray-500 mt-1">Yukni hozir qayerda ekanligini kiriting</p>
+                </div>
+
+                <div class="flex justify-end space-x-3 pt-2">
+                    <button type="button" onclick="closeLocationModal()" class="px-5 py-2 border rounded-lg hover:bg-gray-100">
+                        Bekor qilish
+                    </button>
+                    <button type="submit" id="location-submit-btn" class="px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                        <i class="fas fa-map-marker-alt mr-2"></i>Yangilash
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Report Issue Modal -->
+    <div id="issue-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-md mx-4">
+            <div class="p-6 border-b">
+                <h3 class="text-xl font-bold text-gray-800">Muammo Xabar Qilish</h3>
+            </div>
+            <form id="issue-form" class="p-6 space-y-4">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Muammo tavsifi</label>
+                    <textarea
+                        id="issue-input"
+                        rows="4"
+                        placeholder="Muammoni batafsil tavsiflab bering..."
+                        class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-red-500"
+                        required
+                    ></textarea>
+                    <p class="text-xs text-gray-500 mt-1">Yuk yetkazishda yuzaga kelgan muammoni yozing</p>
+                </div>
+
+                <div class="flex justify-end space-x-3 pt-2">
+                    <button type="button" onclick="closeIssueModal()" class="px-5 py-2 border rounded-lg hover:bg-gray-100">
+                        Bekor qilish
+                    </button>
+                    <button type="submit" id="issue-submit-btn" class="px-5 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
+                        <i class="fas fa-exclamation-circle mr-2"></i>Xabar Qilish
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Toast -->
     <div id="toast" class="hidden fixed top-5 right-5 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg z-50">
         <span id="toast-message"></span>
@@ -327,11 +389,11 @@
                     displayShipments(allShipments);
                     updateStatistics(allShipments);
                 } else {
-                    showToast('Xatolik yuz berdi', true);
+                    AGU_UTILS.showToast('Xatolik yuz berdi', true);
                 }
             } catch (error) {
                 console.error('Load shipments error:', error);
-                showToast('Serverga ulanishda xatolik', true);
+                AGU_UTILS.showToast('Serverga ulanishda xatolik', true);
             } finally {
                 document.getElementById('loading').classList.add('hidden');
             }
@@ -506,7 +568,7 @@
                     displayDetails(data.shipment);
                 }
             } catch (error) {
-                showToast('Xatolik yuz berdi', true);
+                AGU_UTILS.showToast('Xatolik yuz berdi', true);
             }
         }
 
@@ -643,19 +705,19 @@
                 const data = await response.json();
 
                 if (response.ok) {
-                    showToast('Shipment muvaffaqiyatli yaratildi!', false);
+                    AGU_UTILS.showToast('Shipment muvaffaqiyatli yaratildi!', false);
                     closeCreateModal();
                     loadShipments();
                 } else {
-                    showToast(data.message || 'Xatolik yuz berdi', true);
+                    AGU_UTILS.showToast(data.message || 'Xatolik yuz berdi', true);
                 }
             } catch (error) {
-                showToast('Serverga ulanishda xatolik', true);
+                AGU_UTILS.showToast('Serverga ulanishda xatolik', true);
             }
         });
 
         async function updateStatus(id, newStatus) {
-            if (!confirm(`Holatni o'zgartirmoqchimisiz?`)) return;
+            if (!AGU_UTILS.confirm(`Holatni o'zgartirmoqchimisiz?`)) return;
 
             try {
                 const response = await fetch(`${API_BASE}/shipments/${id}/update-status`, {
@@ -670,22 +732,74 @@
 
                 const data = await response.json();
                 if (response.ok) {
-                    showToast('Holat muvaffaqiyatli yangilandi!', false);
+                    AGU_UTILS.showToast('Holat muvaffaqiyatli yangilandi!', false);
                     loadShipments();
                 } else {
-                    showToast(data.message, true);
+                    AGU_UTILS.showToast(data.message || 'Xatolik yuz berdi', true);
                 }
             } catch (error) {
-                showToast('Xatolik yuz berdi', true);
+                AGU_UTILS.showToast('Xatolik yuz berdi', true);
             }
         }
 
-        function openLocationModal(id) {
-            const location = prompt('Hozirgi joylashuvni kiriting:');
-            if (!location) return;
+        let currentLocationShipmentId = null;
 
-            updateLocation(id, location);
+        function openLocationModal(id) {
+            currentLocationShipmentId = id;
+            const modal = document.getElementById('location-modal');
+            const input = document.getElementById('location-input');
+
+            // Clear previous input
+            input.value = '';
+
+            // Show modal
+            modal.classList.remove('hidden');
+
+            // Focus input after a short delay
+            setTimeout(() => input.focus(), 100);
         }
+
+        function closeLocationModal() {
+            const modal = document.getElementById('location-modal');
+            modal.classList.add('hidden');
+            currentLocationShipmentId = null;
+        }
+
+        // Handle location form submit
+        document.addEventListener('DOMContentLoaded', () => {
+            const locationForm = document.getElementById('location-form');
+            if (locationForm) {
+                locationForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+
+                    const location = document.getElementById('location-input').value.trim();
+                    const submitBtn = document.getElementById('location-submit-btn');
+
+                    // Validate
+                    const validation = AGU_UTILS.validateField(location, {
+                        required: true,
+                        minLength: 3,
+                        requiredMessage: 'Lokatsiyani kiriting',
+                        minLengthMessage: 'Lokatsiya kamida 3 ta belgidan iborat bo\'lishi kerak'
+                    });
+
+                    if (!validation.valid) {
+                        AGU_UTILS.showToast(validation.error, true);
+                        return;
+                    }
+
+                    // Set loading state
+                    AGU_UTILS.setButtonLoading(submitBtn, true, 'Saqlanmoqda...');
+
+                    // Update location
+                    await updateLocation(currentLocationShipmentId, location);
+
+                    // Reset button and close modal
+                    AGU_UTILS.setButtonLoading(submitBtn, false);
+                    closeLocationModal();
+                });
+            }
+        });
 
         async function updateLocation(id, location) {
             try {
@@ -701,22 +815,102 @@
 
                 const data = await response.json();
                 if (response.ok) {
-                    showToast('Lokatsiya yangilandi!', false);
+                    AGU_UTILS.showToast('Lokatsiya yangilandi!', false);
                     loadShipments();
                 } else {
-                    showToast(data.message, true);
+                    AGU_UTILS.showToast(data.message, true);
                 }
             } catch (error) {
-                showToast('Xatolik yuz berdi', true);
+                AGU_UTILS.showToast('Xatolik yuz berdi', true);
             }
         }
 
-        function openIssueModal(id) {
-            const issue = prompt('Muammo tavsifini kiriting:');
-            if (!issue) return;
+        let currentIssueShipmentId = null;
 
-            reportIssue(id, issue);
+        function openIssueModal(id) {
+            currentIssueShipmentId = id;
+            const modal = document.getElementById('issue-modal');
+            const input = document.getElementById('issue-input');
+
+            // Clear previous input
+            input.value = '';
+
+            // Show modal
+            modal.classList.remove('hidden');
+
+            // Focus input after a short delay
+            setTimeout(() => input.focus(), 100);
         }
+
+        function closeIssueModal() {
+            const modal = document.getElementById('issue-modal');
+            modal.classList.add('hidden');
+            currentIssueShipmentId = null;
+        }
+
+        // Handle issue form submit
+        document.addEventListener('DOMContentLoaded', () => {
+            const issueForm = document.getElementById('issue-form');
+            if (issueForm) {
+                issueForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+
+                    const issue = document.getElementById('issue-input').value.trim();
+                    const submitBtn = document.getElementById('issue-submit-btn');
+
+                    // Validate
+                    const validation = AGU_UTILS.validateField(issue, {
+                        required: true,
+                        minLength: 10,
+                        requiredMessage: 'Muammo tavsifini kiriting',
+                        minLengthMessage: 'Muammo tavsifi kamida 10 ta belgidan iborat bo\'lishi kerak'
+                    });
+
+                    if (!validation.valid) {
+                        AGU_UTILS.showToast(validation.error, true);
+                        return;
+                    }
+
+                    // Set loading state
+                    AGU_UTILS.setButtonLoading(submitBtn, true, 'Yuborilmoqda...');
+
+                    // Report issue
+                    await reportIssue(currentIssueShipmentId, issue);
+
+                    // Reset button and close modal
+                    AGU_UTILS.setButtonLoading(submitBtn, false);
+                    closeIssueModal();
+                });
+            }
+        });
+
+        // ESC key and outside-click handlers for modals
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                const locationModal = document.getElementById('location-modal');
+                const issueModal = document.getElementById('issue-modal');
+
+                if (!locationModal.classList.contains('hidden')) {
+                    closeLocationModal();
+                }
+                if (!issueModal.classList.contains('hidden')) {
+                    closeIssueModal();
+                }
+            }
+        });
+
+        // Close on outside click
+        document.getElementById('location-modal')?.addEventListener('click', (e) => {
+            if (e.target.id === 'location-modal') {
+                closeLocationModal();
+            }
+        });
+
+        document.getElementById('issue-modal')?.addEventListener('click', (e) => {
+            if (e.target.id === 'issue-modal') {
+                closeIssueModal();
+            }
+        });
 
         async function reportIssue(id, issue) {
             try {
@@ -732,20 +926,20 @@
 
                 const data = await response.json();
                 if (response.ok) {
-                    showToast('Muammo xabar qilindi!', false);
+                    AGU_UTILS.showToast('Muammo xabar qilindi!', false);
                     loadShipments();
                 } else {
-                    showToast(data.message, true);
+                    AGU_UTILS.showToast(data.message, true);
                 }
             } catch (error) {
-                showToast('Xatolik yuz berdi', true);
+                AGU_UTILS.showToast('Xatolik yuz berdi', true);
             }
         }
 
         async function quickTrack() {
             const code = document.getElementById('quick-track').value.trim();
             if (!code) {
-                showToast('Tracking kodni kiriting', true);
+                AGU_UTILS.showToast('Tracking kodni kiriting', true);
                 return;
             }
 
@@ -761,10 +955,10 @@
                 if (response.ok) {
                     displayDetails(data.shipment);
                 } else {
-                    showToast(data.message, true);
+                    AGU_UTILS.showToast(data.message, true);
                 }
             } catch (error) {
-                showToast('Xatolik yuz berdi', true);
+                AGU_UTILS.showToast('Xatolik yuz berdi', true);
             }
         }
 
