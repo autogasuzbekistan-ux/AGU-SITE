@@ -504,7 +504,7 @@ function showSkeletons(count = 24) {
 function createProductCard(product) {
     const card = document.createElement('div');
     const isOutOfStock = product.stockStatus === 'out_of_stock';
-    card.className = `product-card relative p-6 rounded-2xl shadow-lg card-hover fade-in ${isOutOfStock ? 'opacity-60' : ''}`;
+    card.className = `product-card relative p-6 rounded-2xl shadow-lg card-hover fade-in h-full flex flex-col ${isOutOfStock ? 'opacity-60' : ''}`;
 
     const isWishlisted = userWishlist.some(item => item.id === product.id);
     const wishlistButton = currentUser ? `
@@ -534,15 +534,15 @@ function createProductCard(product) {
     card.innerHTML = `
         ${stockBadge}
         ${wishlistButton}
-        <div class="w-full h-48 bg-gradient-to-br ${randomGradient} rounded-xl mb-6 flex items-center justify-center product-image overflow-hidden">
+        <div class="w-full h-48 bg-gradient-to-br ${randomGradient} rounded-xl mb-6 flex items-center justify-center product-image overflow-hidden flex-shrink-0">
             ${imageHTML}
         </div>
         <h3 class="text-xl font-bold mb-2" style="color: var(--dark-gray);">${product.name}</h3>
-        <p class="text-gray-600 mb-4 line-clamp-2">${product.description || ''}</p>
-        <div class="flex justify-between items-center">
+        <p class="text-gray-600 mb-4 line-clamp-2 flex-grow">${product.description || ''}</p>
+        <div class="flex justify-between items-center mt-auto">
             <span class="text-2xl font-bold" style="color: var(--secondary-orange);">$${parseFloat(product.price).toFixed(2)}</span>
-            <button 
-                onclick="event.stopPropagation(); ${isOutOfStock ? '' : `addToCart(${product.id})`}" 
+            <button
+                onclick="event.stopPropagation(); ${isOutOfStock ? '' : `addToCart(${product.id})`}"
                 class="${isOutOfStock ? 'bg-gray-400 cursor-not-allowed' : 'btn-primary'} text-white px-6 py-2 rounded-full font-semibold"
                 ${isOutOfStock ? 'disabled' : ''}
             >
