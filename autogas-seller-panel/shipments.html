@@ -962,15 +962,6 @@
             }
         }
 
-        function showToast(message, isError = false) {
-            const toast = document.getElementById('toast');
-            const toastMessage = document.getElementById('toast-message');
-            toastMessage.textContent = message;
-            toast.className = `fixed top-5 right-5 px-6 py-3 rounded-lg shadow-lg z-50 ${isError ? 'bg-red-600' : 'bg-green-600'} text-white`;
-            toast.classList.remove('hidden');
-            setTimeout(() => toast.classList.add('hidden'), 4000);
-        }
-
         function logout() {
             localStorage.removeItem('token');
             localStorage.removeItem('user');
