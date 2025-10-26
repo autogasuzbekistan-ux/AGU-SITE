@@ -9,6 +9,7 @@
     <script src="components/agu-branding.js"></script>
     <script src="components/agu-navbar.js"></script>
     <script src="components/agu-performance.js"></script>
+    <script src="components/agu-utils.js"></script>
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -296,7 +297,7 @@
                 updateFilteredCount();
             } catch (error) {
                 console.error('Load error:', error);
-                showToast('Mahsulotlarni yuklashda xatolik yuz berdi', true);
+                AGU_UTILS.showToast('Mahsulotlarni yuklashda xatolik yuz berdi', true);
 
                 // Show empty state on error
                 loadingState.classList.add('hidden');
@@ -449,7 +450,7 @@
         // Export to CSV
         function exportToCSV() {
             if (filteredProducts.length === 0) {
-                showToast('Export qilish uchun mahsulotlar yo\'q', true);
+                AGU_UTILS.showToast('Export qilish uchun mahsulotlar yo\'q', true);
                 return;
             }
 
@@ -482,7 +483,7 @@
             link.click();
             document.body.removeChild(link);
 
-            showToast(`${filteredProducts.length} ta mahsulot export qilindi`, false);
+            AGU_UTILS.showToast(`${filteredProducts.length} ta mahsulot export qilindi`, false);
         }
 
         // Open create modal
@@ -522,22 +523,22 @@
             const category = document.getElementById('productCategory').value;
 
             if (!name) {
-                showToast('Mahsulot nomini kiriting', true);
+                AGU_UTILS.showToast('Mahsulot nomini kiriting', true);
                 return false;
             }
 
             if (name.length < 3) {
-                showToast('Mahsulot nomi kamida 3 ta belgidan iborat bo\'lishi kerak', true);
+                AGU_UTILS.showToast('Mahsulot nomi kamida 3 ta belgidan iborat bo\'lishi kerak', true);
                 return false;
             }
 
             if (!category) {
-                showToast('Kategoriyani tanlang', true);
+                AGU_UTILS.showToast('Kategoriyani tanlang', true);
                 return false;
             }
 
             if (!price || parseFloat(price) <= 0) {
-                showToast('To\'g\'ri narx kiriting', true);
+                AGU_UTILS.showToast('To\'g\'ri narx kiriting', true);
                 return false;
             }
 
@@ -573,10 +574,10 @@
             try {
                 if (id) {
                     await AGU_PERFORMANCE.api.put(`/kontragent/products/${id}`, data);
-                    showToast('Mahsulot muvaffaqiyatli yangilandi!', false);
+                    AGU_UTILS.showToast('Mahsulot muvaffaqiyatli yangilandi!', false);
                 } else {
                     await AGU_PERFORMANCE.api.post('/kontragent/products', data);
-                    showToast('Mahsulot muvaffaqiyatli qo\'shildi!', false);
+                    AGU_UTILS.showToast('Mahsulot muvaffaqiyatli qo\'shildi!', false);
                 }
 
                 closeModal();
@@ -584,7 +585,7 @@
             } catch (error) {
                 console.error('Save error:', error);
                 const errorMsg = error.message || 'Xatolik yuz berdi';
-                showToast(errorMsg, true);
+                AGU_UTILS.showToast(errorMsg, true);
             } finally {
                 // Re-enable button
                 submitBtn.disabled = false;
@@ -602,47 +603,17 @@
             }
 
             // Show loading toast
-            showToast('O\'chirilmoqda...', false);
+            AGU_UTILS.showToast('O\'chirilmoqda...', false);
 
             try {
                 await AGU_PERFORMANCE.api.delete(`/kontragent/products/${id}`);
-                showToast('Mahsulot muvaffaqiyatli o\'chirildi', false);
+                AGU_UTILS.showToast('Mahsulot muvaffaqiyatli o\'chirildi', false);
                 await loadProducts();
             } catch (error) {
                 console.error('Delete error:', error);
                 const errorMsg = error.message || 'O\'chirishda xatolik';
-                showToast(errorMsg, true);
+                AGU_UTILS.showToast(errorMsg, true);
             }
-        }
-
-        // Show toast notification
-        function showToast(message, isError = false) {
-            const toast = document.getElementById('toast');
-            const toastMessage = document.getElementById('toast-message');
-
-            toastMessage.textContent = message;
-            toast.className = `fixed top-20 right-5 text-white py-3 px-6 rounded-lg shadow-lg transform transition-transform duration-500 z-50 ${isError ? 'bg-red-500' : 'bg-green-500'}`;
-
-            toast.classList.remove('translate-x-[120%]');
-            toast.classList.add('translate-x-0');
-
-            setTimeout(() => {
-                toast.classList.remove('translate-x-0');
-                toast.classList.add('translate-x-[120%]');
-            }, 3000);
-        }
-
-        // Debounce utility function
-        function debounce(func, wait) {
-            let timeout;
-            return function executedFunction(...args) {
-                const later = () => {
-                    clearTimeout(timeout);
-                    func(...args);
-                };
-                clearTimeout(timeout);
-                timeout = setTimeout(later, wait);
-            };
         }
 
         // Close modal on outside click
@@ -653,7 +624,7 @@
         });
 
         // Add debounced search event listener
-        const debouncedFilter = debounce(filterProducts, 300);
+        const debouncedFilter = AGU_UTILS.debounce(filterProducts, 300);
         document.getElementById('searchInput').addEventListener('input', debouncedFilter);
     </script>
 </body>

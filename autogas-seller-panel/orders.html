@@ -9,6 +9,7 @@
     <script src="components/agu-branding.js"></script>
     <script src="components/agu-navbar.js"></script>
     <script src="components/agu-performance.js"></script>
+    <script src="components/agu-utils.js"></script>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -213,23 +214,6 @@
         let orders = [];
         let filteredOrders = [];
 
-        // Toast Notification
-        function showToast(message, isError = false) {
-            const toast = document.getElementById('toast');
-            const toastMessage = document.getElementById('toast-message');
-
-            toastMessage.textContent = message;
-            toast.className = `fixed top-24 right-5 text-white py-3 px-6 rounded-lg shadow-lg transform transition-transform duration-500 z-50 ${isError ? 'bg-red-500' : 'bg-green-500'}`;
-
-            toast.classList.remove('translate-x-[120%]');
-            toast.classList.add('translate-x-0');
-
-            setTimeout(() => {
-                toast.classList.remove('translate-x-0');
-                toast.classList.add('translate-x-[120%]');
-            }, 4000);
-        }
-
         // Check Authentication
         function checkAuth() {
             const token = localStorage.getItem('token');
@@ -257,7 +241,7 @@
                 updateStatistics();
             } catch (error) {
                 console.error('Orders load error:', error);
-                showToast('Buyurtmalarni yuklashda xatolik yuz berdi', true);
+                AGU_UTILS.showToast('Buyurtmalarni yuklashda xatolik yuz berdi', true);
 
                 // Show error state
                 loadingState.classList.add('hidden');
@@ -636,19 +620,6 @@
             }
         });
 
-        // Debounce utility function
-        function debounce(func, wait) {
-            let timeout;
-            return function executedFunction(...args) {
-                const later = () => {
-                    clearTimeout(timeout);
-                    func(...args);
-                };
-                clearTimeout(timeout);
-                timeout = setTimeout(later, wait);
-            };
-        }
-
         // Make functions global
         window.showOrderDetail = showOrderDetail;
         window.closeModal = closeModal;
@@ -659,7 +630,7 @@
             loadOrders();
 
             // Add filter event listeners with debouncing for search
-            const debouncedFilter = debounce(filterAndSortOrders, 300);
+            const debouncedFilter = AGU_UTILS.debounce(filterAndSortOrders, 300);
             document.getElementById('search-input').addEventListener('input', debouncedFilter);
             document.getElementById('status-filter').addEventListener('change', filterAndSortOrders);
             document.getElementById('date-from').addEventListener('change', filterAndSortOrders);

@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Sotuvchi Paneli</title>
-    <!-- AGU Navbar -->
+    <!-- AGU Components -->
     <script src="components/agu-navbar.js"></script>
     <script src="components/agu-performance.js"></script>
-    <!-- AGU Branding -->
     <script src="components/agu-branding.js"></script>
-    
+    <script src="components/agu-utils.js"></script>
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
@@ -237,24 +237,7 @@
         const API_BASE_URL = 'http://127.0.0.1:8000/api';
         let authToken = localStorage.getItem('token');
         let currentUser = null;
-        
-        // Toast function
-        function showToast(message, isError = false) {
-            const toast = document.getElementById('toast');
-            const toastMessage = document.getElementById('toast-message');
-            
-            toastMessage.textContent = message;
-            toast.className = `fixed top-5 right-5 text-white py-3 px-6 rounded-lg shadow-lg transform transition-transform duration-500 z-50 ${isError ? 'bg-red-500' : 'bg-green-500'}`;
-            
-            toast.classList.remove('translate-x-[120%]');
-            toast.classList.add('translate-x-0');
-            
-            setTimeout(() => {
-                toast.classList.remove('translate-x-0');
-                toast.classList.add('translate-x-[120%]');
-            }, 4000);
-        }
-        
+
         // Check authentication
         function checkAuth() {
             if (!authToken) {
@@ -334,7 +317,7 @@
                 
             } catch (error) {
                 console.error('Dashboard error:', error);
-                showToast('Ma\'lumotlarni yuklashda xatolik', true);
+                AGU_UTILS.showToast('Ma\'lumotlarni yuklashda xatolik', true);
             }
         }
         
@@ -416,30 +399,13 @@
 
             try {
                 await loadDashboard();
-                showToast('Ma\'lumotlar yangilandi', false);
+                AGU_UTILS.showToast('Ma\'lumotlar yangilandi', false);
             } catch (error) {
-                showToast('Yangilashda xatolik', true);
+                AGU_UTILS.showToast('Yangilashda xatolik', true);
             } finally {
                 icon.classList.remove('fa-spin');
                 refreshBtn.disabled = false;
             }
-        }
-
-        // Show toast notification
-        function showToast(message, isError = false) {
-            const toast = document.getElementById('toast');
-            const toastMessage = document.getElementById('toast-message');
-
-            toastMessage.textContent = message;
-            toast.className = `fixed top-5 right-5 text-white py-3 px-6 rounded-lg shadow-lg transform transition-transform duration-500 z-50 ${isError ? 'bg-red-500' : 'bg-green-500'}`;
-
-            toast.classList.remove('translate-x-[120%]');
-            toast.classList.add('translate-x-0');
-
-            setTimeout(() => {
-                toast.classList.remove('translate-x-0');
-                toast.classList.add('translate-x-[120%]');
-            }, 3000);
         }
 
         // Make functions global
