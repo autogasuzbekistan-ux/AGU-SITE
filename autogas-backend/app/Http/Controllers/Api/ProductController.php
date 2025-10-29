@@ -15,8 +15,9 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
-        // Faqat ommaviy ko'rinishdagi mahsulotlarni ko'rsatish (approved va active)
-        $query = Product::public();
+        // VAQTINCHALIK: Barcha mahsulotlarni ko'rsatish (migration bajarilmaganida)
+        // TODO: Migration bajarilgach Product::public() ga qaytarish kerak
+        $query = Product::query();
 
         // Filter by category
         if ($request->has('category') && $request->category) {
