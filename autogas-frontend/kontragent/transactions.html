@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tranzaksiya Monitoring - Admin Panel</title>
+    <!-- AGU Components -->
+    <script src="../components/agu-navbar-admin.js"></script>
+    <script src="../components/agu-utils.js"></script>
+    <script src="../components/agu-performance.js"></script>
+    <!-- AGU Branding -->
+    <script src="../components/agu-branding.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-50">
+    <!-- AGU Components -->
+    <div id="agu-navbar"></div>
+
+    <!-- Navigation -->
+
+    <div class="container mx-auto px-6 py-8">
+        <!-- Header -->
+        <div class="mb-8">
+            <h2 class="text-4xl font-bold text-gray-800 mb-2">
+                <i class="fas fa-chart-bar text-red-600 mr-3"></i>
+                Tranzaksiya Monitoring
+            </h2>
+            <p class="text-gray-600">Barcha pul o'tkazmalari va tranzaksiyalar</p>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="bg-gradient-to-br from-green-400 to-green-600 rounded-lg shadow-lg p-6 text-white">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm opacity-90">Bugun</p>
+                        <p class="text-3xl font-bold" id="stat-today">0</p>
+                        <p class="text-xs opacity-75">UZS</p>
+                    </div>
+                    <i class="fas fa-calendar-day text-5xl opacity-30"></i>
+                </div>
+            </div>
+
+            <div class="bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg shadow-lg p-6 text-white">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm opacity-90">Bu Oy</p>
+                        <p class="text-3xl font-bold" id="stat-month">0</p>
+                        <p class="text-xs opacity-75">UZS</p>
+                    </div>
+                    <i class="fas fa-calendar-alt text-5xl opacity-30"></i>
+                </div>
+            </div>
+
+            <div class="bg-gradient-to-br from-purple-400 to-purple-600 rounded-lg shadow-lg p-6 text-white">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm opacity-90">Jami Hajm</p>
+                        <p class="text-3xl font-bold" id="stat-total">0</p>
+                        <p class="text-xs opacity-75">UZS</p>
+                    </div>
+                    <i class="fas fa-coins text-5xl opacity-30"></i>
+                </div>
+            </div>
+
+            <div class="bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-lg shadow-lg p-6 text-white">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm opacity-90">Jami Tranzaksiya</p>
+                        <p class="text-3xl font-bold" id="stat-count">0</p>
+                        <p class="text-xs opacity-75">Soni</p>
+                    </div>
+                    <i class="fas fa-hashtag text-5xl opacity-30"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-xl font-bold text-gray-800 mb-4">
+                    <i class="fas fa-chart-pie text-red-600 mr-2"></i>
+                    Holat bo'yicha
+                </h3>
+                <canvas id="statusChart"></canvas>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-xl font-bold text-gray-800 mb-4">
+                    <i class="fas fa-chart-doughnut text-red-600 mr-2"></i>
+                    Tur bo'yicha
+                </h3>
+                <canvas id="typeChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold text-gray-800">Admin Amallar</h3>
+                <button onclick="openBalanceModal()" class="bg-gradient-to-r from-green-600 to-blue-600 text-white px-6 py-3 rounded-lg hover:shadow-lg transition">
+                    <i class="fas fa-wallet mr-2"></i>Balans Boshqarish
+                </button>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">Filtrlar</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <select id="status-filter" class="px-4 py-2 border rounded-lg" onchange="loadTransactions()">
+                    <option value="">Barcha holat</option>
+                    <option value="pending">Kutilmoqda</option>
+                    <option value="completed">Bajarildi</option>
+                    <option value="failed">Muvaffaqiyatsiz</option>
+                    <option value="cancelled">Bekor qilindi</option>
+                </select>
+
+                <select id="type-filter" class="px-4 py-2 border rounded-lg" onchange="loadTransactions()">
+                    <option value="">Barcha tur</option>
+                    <option value="transfer">Pul o'tkazmasi</option>
+                    <option value="payment">To'lov</option>
+                    <option value="product_sale">Mahsulot sotildi</option>
+                    <option value="deposit">Balansga qo'shish</option>
+                    <option value="withdrawal">Balansdan chiqarish</option>
+                    <option value="commission">Komissiya</option>
+                </select>
+
+                <input type="text" id="ref-search" placeholder="Ref # qidirish" class="px-4 py-2 border rounded-lg" />
+            </div>
+        </div>
+
+        <!-- Transactions Table -->
+        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+            <div class="p-6 border-b bg-gray-50">
+                <h3 class="text-xl font-bold text-gray-800">
+                    <i class="fas fa-list mr-2"></i>
+                    Barcha Tranzaksiyalar
+                </h3>
+            </div>
+
+            <div id="loading" class="p-8 text-center">
+                <i class="fas fa-spinner fa-spin text-4xl text-red-600"></i>
+                <p class="mt-4 text-gray-600">Yuklanmoqda...</p>
+            </div>
+
+            <div id="transactions-container" class="hidden overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-gray-100 border-b">
+                        <tr>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase">ID</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase">Ref #</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase">Tur</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase">Yuboruvchi</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase">Qabul qiluvchi</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase">Summa</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase">Holat</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase">Tavsif</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase">Sana</th>
+                        </tr>
+                    </thead>
+                    <tbody id="transactions-tbody" class="divide-y">
+                        <!-- Data will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="empty-state" class="hidden p-12 text-center">
+                <i class="fas fa-inbox text-6xl text-gray-300 mb-4"></i>
+                <p class="text-xl text-gray-500">Tranzaksiyalar topilmadi</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Balance Adjustment Modal -->
+    <div id="balance-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-md mx-4">
+            <div class="p-6 border-b">
+                <h3 class="text-2xl font-bold text-gray-800">Balans Boshqarish</h3>
+            </div>
+            <form id="balance-form" class="p-6 space-y-4">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Kontragent</label>
+                    <select id="user-select" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500">
+                        <option value="">Tanlang...</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Amal turi</label>
+                    <select id="action-type" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500">
+                        <option value="deposit">Balansga qo'shish</option>
+                        <option value="withdrawal">Balansdan chiqarish</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Summa (UZS)</label>
+                    <input type="number" id="balance-amount" required min="0.01" step="0.01" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500" />
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Sabab (tavsif)</label>
+                    <input type="text" id="balance-description" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500" />
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Qo'shimcha izoh (ixtiyoriy)</label>
+                    <textarea id="balance-notes" rows="3" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500"></textarea>
+                </div>
+
+                <div class="flex justify-end space-x-4 pt-4">
+                    <button type="button" onclick="closeBalanceModal()" class="px-6 py-2 border rounded-lg hover:bg-gray-100">
+                        Bekor qilish
+                    </button>
+                    <button type="submit" class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
+                        <i class="fas fa-check mr-2"></i>Tasdiqlash
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="hidden fixed top-5 right-5 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg z-50">
+        <span id="toast-message"></span>
+    </div>
+
+    <script>
+        const API_BASE = 'http://127.0.0.1:8000/api';
+        let authToken = localStorage.getItem('authToken');
+        let currentUser = null;
+        let statistics = null;
+
+        if (!authToken) {
+            window.location.href = '../login.html';
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadUserInfo();
+            await loadStatistics();
+            await loadKontragents();
+            await loadTransactions();
+        });
+
+        async function loadUserInfo() {
+            try {
+                const response = await fetch(`${API_BASE}/user`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    currentUser = await response.json();
+                    document.getElementById('user-info').textContent = `${currentUser.name} (${currentUser.role})`;
+                }
+            } catch (error) {
+                console.error('User info error:', error);
+            }
+        }
+
+        async function loadStatistics() {
+            try {
+                const response = await fetch(`${API_BASE}/admin/transactions/statistics`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    statistics = data.statistics;
+                    updateStatisticsCards();
+                    renderCharts();
+                }
+            } catch (error) {
+                console.error('Statistics error:', error);
+            }
+        }
+
+        function updateStatisticsCards() {
+            if (!statistics) return;
+
+            document.getElementById('stat-today').textContent = (statistics.today_volume || 0).toLocaleString('uz-UZ');
+            document.getElementById('stat-month').textContent = (statistics.this_month_volume || 0).toLocaleString('uz-UZ');
+            document.getElementById('stat-total').textContent = (statistics.total_volume || 0).toLocaleString('uz-UZ');
+            document.getElementById('stat-count').textContent = statistics.total_transactions || 0;
+        }
+
+        function renderCharts() {
+            if (!statistics) return;
+
+            // Status Chart
+            const statusCtx = document.getElementById('statusChart').getContext('2d');
+            new Chart(statusCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Bajarildi', 'Kutilmoqda', 'Muvaffaqiyatsiz'],
+                    datasets: [{
+                        data: [
+                            statistics.completed || 0,
+                            statistics.pending || 0,
+                            statistics.failed || 0
+                        ],
+                        backgroundColor: ['#10B981', '#FCD34D', '#EF4444']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+
+            // Type Chart - mock data
+            const typeCtx = document.getElementById('typeChart').getContext('2d');
+            new Chart(typeCtx, {
+                type: 'pie',
+                data: {
+                    labels: ['O\'tkazma', 'To\'lov', 'Sotuv', 'Qo\'shish', 'Chiqarish'],
+                    datasets: [{
+                        data: [40, 25, 20, 10, 5],
+                        backgroundColor: ['#3B82F6', '#10B981', '#8B5CF6', '#14B8A6', '#F97316']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        async function loadKontragents() {
+            try {
+                const response = await fetch(`${API_BASE}/admin/kontragents`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    const select = document.getElementById('user-select');
+                    data.kontragents.forEach(k => {
+                        const option = document.createElement('option');
+                        option.value = k.id;
+                        option.textContent = `${k.name} (${k.region || 'N/A'}) - Balans: ${parseFloat(k.balance || 0).toLocaleString('uz-UZ')} UZS`;
+                        select.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('Load kontragents error:', error);
+            }
+        }
+
+        async function loadTransactions() {
+            document.getElementById('loading').classList.remove('hidden');
+            document.getElementById('transactions-container').classList.add('hidden');
+            document.getElementById('empty-state').classList.add('hidden');
+
+            try {
+                let url = `${API_BASE}/admin/transactions?`;
+
+                const status = document.getElementById('status-filter').value;
+                const type = document.getElementById('type-filter').value;
+
+                if (status) url += `status=${status}&`;
+                if (type) url += `type=${type}&`;
+
+                const response = await fetch(url, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    displayTransactions(data.transactions.data);
+                } else {
+                    showToast('Xatolik yuz berdi', true);
+                }
+            } catch (error) {
+                console.error('Load transactions error:', error);
+                showToast('Serverga ulanishda xatolik', true);
+            } finally {
+                document.getElementById('loading').classList.add('hidden');
+            }
+        }
+
+        function displayTransactions(transactions) {
+            const tbody = document.getElementById('transactions-tbody');
+            tbody.innerHTML = '';
+
+            if (transactions.length === 0) {
+                document.getElementById('empty-state').classList.remove('hidden');
+                return;
+            }
+
+            document.getElementById('transactions-container').classList.remove('hidden');
+
+            transactions.forEach(t => {
+                const row = document.createElement('tr');
+                row.className = 'hover:bg-gray-50 transition';
+
+                row.innerHTML = `
+                    <td class="px-6 py-4 text-sm font-semibold text-gray-900">#${t.id}</td>
+                    <td class="px-6 py-4 text-sm font-mono text-blue-600">${t.reference_number || '-'}</td>
+                    <td class="px-6 py-4">${getTypeLabel(t.type)}</td>
+                    <td class="px-6 py-4 text-sm">
+                        ${t.sender ? `<div class="font-semibold">${t.sender.name}</div><div class="text-xs text-gray-500">${t.sender.region || 'N/A'}</div>` : '-'}
+                    </td>
+                    <td class="px-6 py-4 text-sm">
+                        ${t.receiver ? `<div class="font-semibold">${t.receiver.name}</div><div class="text-xs text-gray-500">${t.receiver.region || 'N/A'}</div>` : '-'}
+                    </td>
+                    <td class="px-6 py-4 text-lg font-bold text-green-600">${parseFloat(t.amount).toLocaleString('uz-UZ')} UZS</td>
+                    <td class="px-6 py-4">${getStatusBadge(t.status)}</td>
+                    <td class="px-6 py-4 text-sm text-gray-600">${t.description || '-'}</td>
+                    <td class="px-6 py-4 text-sm text-gray-600">${new Date(t.created_at).toLocaleString('uz-UZ')}</td>
+                `;
+
+                tbody.appendChild(row);
+            });
+        }
+
+        function getTypeLabel(type) {
+            const labels = {
+                transfer: '<span class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs">O\'tkazma</span>',
+                payment: '<span class="px-2 py-1 bg-green-100 text-green-800 rounded text-xs">To\'lov</span>',
+                product_sale: '<span class="px-2 py-1 bg-purple-100 text-purple-800 rounded text-xs">Sotuv</span>',
+                deposit: '<span class="px-2 py-1 bg-teal-100 text-teal-800 rounded text-xs">Qo\'shish</span>',
+                withdrawal: '<span class="px-2 py-1 bg-orange-100 text-orange-800 rounded text-xs">Chiqarish</span>',
+                commission: '<span class="px-2 py-1 bg-yellow-100 text-yellow-800 rounded text-xs">Komissiya</span>',
+                refund: '<span class="px-2 py-1 bg-gray-100 text-gray-800 rounded text-xs">Qaytarish</span>'
+            };
+            return labels[type] || type;
+        }
+
+        function getStatusBadge(status) {
+            const badges = {
+                pending: '<span class="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-semibold">Kutilmoqda</span>',
+                completed: '<span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-semibold">Bajarildi</span>',
+                failed: '<span class="px-3 py-1 bg-red-100 text-red-800 rounded-full text-xs font-semibold">Muvaffaqiyatsiz</span>',
+                cancelled: '<span class="px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-xs font-semibold">Bekor qilindi</span>'
+            };
+            return badges[status] || status;
+        }
+
+        function openBalanceModal() {
+            document.getElementById('balance-modal').classList.remove('hidden');
+        }
+
+        function closeBalanceModal() {
+            document.getElementById('balance-modal').classList.add('hidden');
+            document.getElementById('balance-form').reset();
+        }
+
+        document.getElementById('balance-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const formData = {
+                user_id: parseInt(document.getElementById('user-select').value),
+                type: document.getElementById('action-type').value,
+                amount: parseFloat(document.getElementById('balance-amount').value),
+                description: document.getElementById('balance-description').value,
+                notes: document.getElementById('balance-notes').value
+            };
+
+            try {
+                const response = await fetch(`${API_BASE}/admin/transactions/adjust-balance`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showToast('Balans muvaffaqiyatli o\'zgartirildi!', false);
+                    closeBalanceModal();
+                    loadStatistics();
+                    loadKontragents();
+                    loadTransactions();
+                } else {
+                    showToast(data.message || 'Xatolik yuz berdi', true);
+                }
+            } catch (error) {
+                showToast('Serverga ulanishda xatolik', true);
+            }
+        });
+
+        function showToast(message, isError = false) {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toast-message');
+            toastMessage.textContent = message;
+            toast.className = `fixed top-5 right-5 px-6 py-3 rounded-lg shadow-lg z-50 ${isError ? 'bg-red-600' : 'bg-green-600'} text-white`;
+            toast.classList.remove('hidden');
+            setTimeout(() => toast.classList.add('hidden'), 4000);
+        }
+
+        function logout() {
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('user');
+            window.location.href = '../login.html';
+        }
+    </script>
+</body>
+</html>

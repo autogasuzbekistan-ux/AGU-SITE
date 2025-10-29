@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Omborlar - Admin Panel</title>
+    <!-- AGU Components -->
+    <script src="../components/agu-navbar-admin.js"></script>
+    <script src="../components/agu-utils.js"></script>
+    <script src="../components/agu-performance.js"></script>
+    <!-- AGU Branding -->
+    <script src="../components/agu-branding.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-50">
+    <!-- AGU Components -->
+    <div id="agu-navbar"></div>
+
+    <!-- Navigation -->
+
+    <!-- Main Container -->
+    <div class="container mx-auto px-6 py-8">
+        <!-- Header -->
+        <div class="mb-6">
+            <h1 class="text-3xl font-bold text-gray-800">
+                <i class="fas fa-warehouse mr-2"></i>Omborlar Monitoring
+            </h1>
+            <p class="text-gray-600 mt-1">Barcha kontragentlar omborlari</p>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div id="statsCards" class="grid grid-cols-1 md:grid-cols-5 gap-6 mb-6">
+            <!-- Stats will be loaded here -->
+        </div>
+
+        <!-- Charts -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div class="bg-white rounded-lg shadow p-6">
+                <h3 class="text-lg font-semibold mb-4">Regionlar bo'yicha omborlar</h3>
+                <canvas id="regionChart"></canvas>
+            </div>
+            <div class="bg-white rounded-lg shadow p-6">
+                <h3 class="text-lg font-semibold mb-4">Sig'im ishlatilishi</h3>
+                <canvas id="capacityChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="bg-white rounded-lg shadow p-4 mb-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Kontragent</label>
+                    <select id="filterUser" onchange="loadWarehouses()" class="w-full border rounded-lg p-2">
+                        <option value="">Barcha kontragentlar</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Region</label>
+                    <select id="filterRegion" onchange="loadWarehouses()" class="w-full border rounded-lg p-2">
+                        <option value="">Barcha regionlar</option>
+                        <option value="Toshkent">Toshkent</option>
+                        <option value="Samarqand">Samarqand</option>
+                        <option value="Buxoro">Buxoro</option>
+                        <option value="Andijon">Andijon</option>
+                        <option value="Farg'ona">Farg'ona</option>
+                        <option value="Namangan">Namangan</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                    <select id="filterStatus" onchange="loadWarehouses()" class="w-full border rounded-lg p-2">
+                        <option value="">Hammasi</option>
+                        <option value="active">Faol</option>
+                        <option value="inactive">Faol emas</option>
+                        <option value="maintenance">Ta'mirlashda</option>
+                        <option value="full">To'lgan</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Saralash</label>
+                    <select id="sortBy" onchange="loadWarehouses()" class="w-full border rounded-lg p-2">
+                        <option value="created_at">Eng yangi</option>
+                        <option value="name">Nom</option>
+                        <option value="region">Region</option>
+                        <option value="capacity_usage_percentage">Sig'im %</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Warehouses Table -->
+        <div class="bg-white rounded-lg shadow overflow-hidden">
+            <table class="min-w-full">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ombor</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Kontragent</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Region</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Sig'im</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Mahsulotlar</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Amallar</th>
+                    </tr>
+                </thead>
+                <tbody id="warehousesTableBody" class="bg-white divide-y divide-gray-200">
+                    <!-- Warehouses will be loaded here -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <div id="pagination" class="mt-6 flex justify-between items-center">
+            <!-- Pagination will be loaded here -->
+        </div>
+    </div>
+
+    <!-- Details Modal -->
+    <div id="detailsModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-8 max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold">Ombor Tafsilotlari</h2>
+                <button onclick="closeDetailsModal()" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times text-2xl"></i>
+                </button>
+            </div>
+            <div id="detailsContent">
+                <!-- Details will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:8000/api';
+        let currentPage = 1;
+        let regionChart, capacityChart;
+        let users = [];
+
+        // Load user info
+        async function loadUserInfo() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = '../login.html';
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/user`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (!['admin', 'owner'].includes(data.role)) {
+                        window.location.href = '../index.html';
+                        return;
+                    }
+                } else {
+                    window.location.href = '../login.html';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        // Load users for filter
+        async function loadUsers() {
+            const token = localStorage.getItem('token');
+
+            try {
+                const response = await fetch(`${API_URL}/admin/kontragents`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    users = data.kontragents || [];
+
+                    const filterSelect = document.getElementById('filterUser');
+                    users.forEach(user => {
+                        filterSelect.innerHTML += `<option value="${user.id}">${user.name}</option>`;
+                    });
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        // Load warehouses
+        async function loadWarehouses(page = 1) {
+            const token = localStorage.getItem('token');
+            currentPage = page;
+
+            const userId = document.getElementById('filterUser').value;
+            const region = document.getElementById('filterRegion').value;
+            const status = document.getElementById('filterStatus').value;
+            const sortBy = document.getElementById('sortBy').value;
+
+            let url = `${API_URL}/admin/warehouses?page=${page}&sort_by=${sortBy}`;
+            if (userId) url += `&user_id=${userId}`;
+            if (region) url += `&region=${region}`;
+            if (status) url += `&status=${status}`;
+
+            try {
+                const response = await fetch(url, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    displayWarehouses(data.warehouses.data);
+                    displayPagination(data.warehouses);
+                    loadStatistics();
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        // Load statistics
+        async function loadStatistics() {
+            const token = localStorage.getItem('token');
+
+            try {
+                const response = await fetch(`${API_URL}/admin/warehouses`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    const warehouses = data.warehouses.data;
+
+                    const stats = {
+                        total: warehouses.length,
+                        active: warehouses.filter(w => w.is_active).length,
+                        inactive: warehouses.filter(w => !w.is_active).length,
+                        total_capacity: warehouses.reduce((sum, w) => sum + (parseFloat(w.total_capacity) || 0), 0),
+                        used_capacity: warehouses.reduce((sum, w) => sum + (parseFloat(w.used_capacity) || 0), 0),
+                    };
+
+                    displayStatistics(stats);
+                    updateCharts(warehouses);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        // Display statistics
+        function displayStatistics(stats) {
+            const statsCards = document.getElementById('statsCards');
+            const usagePercent = stats.total_capacity > 0 ? ((stats.used_capacity / stats.total_capacity) * 100).toFixed(1) : 0;
+
+            statsCards.innerHTML = `
+                <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow p-6 text-white">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm opacity-80">Jami Omborlar</p>
+                            <p class="text-3xl font-bold">${stats.total}</p>
+                        </div>
+                        <i class="fas fa-warehouse text-4xl opacity-50"></i>
+                    </div>
+                </div>
+                <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-lg shadow p-6 text-white">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm opacity-80">Faol</p>
+                            <p class="text-3xl font-bold">${stats.active}</p>
+                        </div>
+                        <i class="fas fa-check-circle text-4xl opacity-50"></i>
+                    </div>
+                </div>
+                <div class="bg-gradient-to-br from-gray-500 to-gray-600 rounded-lg shadow p-6 text-white">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm opacity-80">Faol Emas</p>
+                            <p class="text-3xl font-bold">${stats.inactive}</p>
+                        </div>
+                        <i class="fas fa-times-circle text-4xl opacity-50"></i>
+                    </div>
+                </div>
+                <div class="bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg shadow p-6 text-white">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm opacity-80">Umumiy Sig'im</p>
+                            <p class="text-3xl font-bold">${stats.total_capacity.toFixed(1)}</p>
+                            <p class="text-xs opacity-80">m³</p>
+                        </div>
+                        <i class="fas fa-cubes text-4xl opacity-50"></i>
+                    </div>
+                </div>
+                <div class="bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg shadow p-6 text-white">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm opacity-80">Ishlatilgan</p>
+                            <p class="text-3xl font-bold">${usagePercent}%</p>
+                        </div>
+                        <i class="fas fa-chart-pie text-4xl opacity-50"></i>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Update charts
+        function updateCharts(warehouses) {
+            // Region chart
+            const regionData = {};
+            warehouses.forEach(w => {
+                regionData[w.region] = (regionData[w.region] || 0) + 1;
+            });
+
+            if (regionChart) regionChart.destroy();
+            const regionCtx = document.getElementById('regionChart').getContext('2d');
+            regionChart = new Chart(regionCtx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(regionData),
+                    datasets: [{
+                        label: 'Omborlar soni',
+                        data: Object.values(regionData),
+                        backgroundColor: 'rgba(59, 130, 246, 0.8)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    scales: {
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
+
+            // Capacity chart
+            const capacityData = warehouses
+                .filter(w => w.total_capacity > 0)
+                .map(w => ({
+                    name: w.name,
+                    usage: parseFloat(w.capacity_usage_percentage) || 0
+                }))
+                .sort((a, b) => b.usage - a.usage)
+                .slice(0, 10);
+
+            if (capacityChart) capacityChart.destroy();
+            const capacityCtx = document.getElementById('capacityChart').getContext('2d');
+            capacityChart = new Chart(capacityCtx, {
+                type: 'bar',
+                data: {
+                    labels: capacityData.map(d => d.name),
+                    datasets: [{
+                        label: 'Sig\'im %',
+                        data: capacityData.map(d => d.usage),
+                        backgroundColor: capacityData.map(d =>
+                            d.usage > 90 ? 'rgba(239, 68, 68, 0.8)' :
+                            d.usage > 70 ? 'rgba(251, 146, 60, 0.8)' :
+                            'rgba(34, 197, 94, 0.8)'
+                        )
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100
+                        }
+                    }
+                }
+            });
+        }
+
+        // Display warehouses
+        function displayWarehouses(warehouses) {
+            const tbody = document.getElementById('warehousesTableBody');
+
+            if (warehouses.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="px-6 py-4 text-center text-gray-500">Ma\'lumot yo\'q</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = warehouses.map(warehouse => {
+                const statusColor = getStatusColor(warehouse.status);
+                const capacityPercent = warehouse.capacity_usage_percentage || 0;
+
+                return `
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4">
+                            <div>
+                                <p class="font-semibold text-gray-900">${warehouse.name}</p>
+                                <p class="text-xs text-gray-500">${warehouse.code}</p>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-600">
+                            ${warehouse.user?.name || 'N/A'}
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-600">
+                            ${warehouse.region}
+                            ${warehouse.district ? ', ' + warehouse.district : ''}
+                        </td>
+                        <td class="px-6 py-4">
+                            ${warehouse.total_capacity ? `
+                                <div class="w-32">
+                                    <div class="flex justify-between text-xs text-gray-600 mb-1">
+                                        <span>${capacityPercent}%</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="${capacityPercent > 90 ? 'bg-red-500' : capacityPercent > 70 ? 'bg-orange-500' : 'bg-green-500'} h-2 rounded-full"
+                                             style="width: ${capacityPercent}%"></div>
+                                    </div>
+                                </div>
+                            ` : '<span class="text-gray-400">-</span>'}
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-600">
+                            ${warehouse.inventory?.length || 0}
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="px-2 py-1 ${statusColor} text-white text-xs font-semibold rounded">
+                                ${warehouse.status_name}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <button onclick="viewWarehouse(${warehouse.id})" class="text-blue-600 hover:text-blue-800">
+                                <i class="fas fa-eye"></i> Ko'rish
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Display pagination
+        function displayPagination(paginationData) {
+            const container = document.getElementById('pagination');
+            const totalPages = paginationData.last_page;
+
+            container.innerHTML = `
+                <div class="text-sm text-gray-600">
+                    ${paginationData.from} - ${paginationData.to} / ${paginationData.total}
+                </div>
+                <div class="flex space-x-2">
+                    <button
+                        onclick="loadWarehouses(${currentPage - 1})"
+                        ${currentPage === 1 ? 'disabled' : ''}
+                        class="px-4 py-2 border rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <span class="px-4 py-2">${currentPage} / ${totalPages}</span>
+                    <button
+                        onclick="loadWarehouses(${currentPage + 1})"
+                        ${currentPage === totalPages ? 'disabled' : ''}
+                        class="px-4 py-2 border rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            `;
+        }
+
+        // View warehouse
+        async function viewWarehouse(id) {
+            const token = localStorage.getItem('token');
+
+            try {
+                const [warehouseRes, statsRes] = await Promise.all([
+                    fetch(`${API_URL}/admin/warehouses/${id}`, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        }
+                    }),
+                    fetch(`${API_URL}/admin/warehouses/${id}/statistics`, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                ]);
+
+                if (warehouseRes.ok && statsRes.ok) {
+                    const warehouse = await warehouseRes.json();
+                    const stats = await statsRes.json();
+
+                    displayWarehouseDetails(warehouse.warehouse, stats.statistics);
+                    document.getElementById('detailsModal').classList.remove('hidden');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        // Display warehouse details
+        function displayWarehouseDetails(warehouse, stats) {
+            const content = document.getElementById('detailsContent');
+            const statusColor = getStatusColor(warehouse.status);
+
+            content.innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="md:col-span-2 bg-gray-50 rounded-lg p-4">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-xl font-bold">${warehouse.name}</h3>
+                            <span class="px-3 py-1 ${statusColor} text-white text-sm font-semibold rounded-full">
+                                ${warehouse.status_name}
+                            </span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4 text-sm">
+                            <div>
+                                <p class="text-gray-600">Kod:</p>
+                                <p class="font-semibold">${warehouse.code}</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-600">Kontragent:</p>
+                                <p class="font-semibold">${warehouse.user?.name || 'N/A'}</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-600">Region:</p>
+                                <p class="font-semibold">${warehouse.region}${warehouse.district ? ', ' + warehouse.district : ''}</p>
+                            </div>
+                            ${warehouse.phone ? `
+                                <div>
+                                    <p class="text-gray-600">Telefon:</p>
+                                    <p class="font-semibold">${warehouse.phone}</p>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+
+                    <div class="bg-blue-50 rounded-lg p-4">
+                        <h4 class="font-semibold mb-3 text-blue-900">Mahsulotlar</h4>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Jami mahsulotlar:</span>
+                                <span class="font-bold">${stats.total_products || 0}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Umumiy qiymat:</span>
+                                <span class="font-bold">${(stats.total_value || 0).toLocaleString()} so'm</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-green-50 rounded-lg p-4">
+                        <h4 class="font-semibold mb-3 text-green-900">Stock</h4>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Jami:</span>
+                                <span class="font-bold">${stats.total_stock_quantity || 0}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Mavjud:</span>
+                                <span class="font-bold">${stats.available_quantity || 0}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Band:</span>
+                                <span class="font-bold">${stats.reserved_quantity || 0}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    ${warehouse.total_capacity ? `
+                        <div class="md:col-span-2 bg-purple-50 rounded-lg p-4">
+                            <h4 class="font-semibold mb-3 text-purple-900">Sig'im</h4>
+                            <div class="w-full bg-gray-200 rounded-full h-4">
+                                <div class="bg-purple-600 h-4 rounded-full" style="width: ${warehouse.capacity_usage_percentage || 0}%"></div>
+                            </div>
+                            <p class="text-center text-sm mt-2">${warehouse.used_capacity} / ${warehouse.total_capacity} ${warehouse.capacity_unit} (${warehouse.capacity_usage_percentage || 0}%)</p>
+                        </div>
+                    ` : ''}
+                </div>
+
+                <div class="mt-6 flex justify-end">
+                    <button onclick="closeDetailsModal()" class="px-6 py-2 border rounded-lg hover:bg-gray-50">
+                        Yopish
+                    </button>
+                </div>
+            `;
+        }
+
+        // Helper functions
+        function getStatusColor(status) {
+            const colors = {
+                'active': 'bg-green-500',
+                'inactive': 'bg-gray-500',
+                'maintenance': 'bg-yellow-500',
+                'full': 'bg-red-500'
+            };
+            return colors[status] || 'bg-gray-500';
+        }
+
+        function closeDetailsModal() {
+            document.getElementById('detailsModal').classList.add('hidden');
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            window.location.href = '../login.html';
+        }
+
+        // Initialize
+        loadUserInfo();
+        loadUsers();
+        loadWarehouses();
+
+        // Auto-refresh every 60 seconds
+        setInterval(() => {
+            loadWarehouses(currentPage);
+        }, 60000);
+    </script>
+</body>
+</html>

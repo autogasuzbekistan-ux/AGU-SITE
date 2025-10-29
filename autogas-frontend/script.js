@@ -1052,9 +1052,21 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                 setTimeout(() => {
                     closeLoginModal();
-                    updateUIForLoggedInUser(result.user);
-                    loadCartFromServer();
-                    loadWishlistFromServer();
+
+                    // Redirect based on user role
+                    const userRole = result.user.role;
+                    if (userRole === 'admin' || userRole === 'owner') {
+                        // Admin/Owner panelga yo'naltirish
+                        window.location.href = 'admin/dashboard.html';
+                    } else if (userRole === 'kontragent') {
+                        // Kontragent panelga yo'naltirish
+                        window.location.href = 'kontragent/dashboard.html';
+                    } else {
+                        // Customer - umumiy saytda qoladi
+                        updateUIForLoggedInUser(result.user);
+                        loadCartFromServer();
+                        loadWishlistFromServer();
+                    }
                 }, 1500);
             } else if (messageDiv) {
                 messageDiv.className = 'mt-4 p-3 rounded-xl bg-red-100 text-red-800';

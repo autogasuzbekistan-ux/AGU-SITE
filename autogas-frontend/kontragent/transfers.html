@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transfer Monitoring - Admin Panel</title>
+    <!-- AGU Components -->
+    <script src="../components/agu-navbar-admin.js"></script>
+    <script src="../components/agu-utils.js"></script>
+    <script src="../components/agu-performance.js"></script>
+    <!-- AGU Branding -->
+    <script src="../components/agu-branding.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-50">
+    <!-- AGU Components -->
+    <div id="agu-navbar"></div>
+
+    <!-- Navigation -->
+
+    <div class="container mx-auto px-6 py-8">
+        <!-- Header -->
+        <div class="mb-8">
+            <h2 class="text-4xl font-bold text-gray-800 mb-2">
+                <i class="fas fa-chart-line text-red-600 mr-3"></i>
+                Transfer Monitoring
+            </h2>
+            <p class="text-gray-600">Barcha viloyatlar o'rtasidagi yuk almashuvini kuzating</p>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-lg shadow-lg p-6 text-white">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm opacity-90">Kutilmoqda</p>
+                        <p class="text-4xl font-bold" id="stat-pending">0</p>
+                    </div>
+                    <i class="fas fa-clock text-5xl opacity-30"></i>
+                </div>
+            </div>
+
+            <div class="bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg shadow-lg p-6 text-white">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm opacity-90">Yo'lda</p>
+                        <p class="text-4xl font-bold" id="stat-transit">0</p>
+                    </div>
+                    <i class="fas fa-truck text-5xl opacity-30"></i>
+                </div>
+            </div>
+
+            <div class="bg-gradient-to-br from-green-400 to-green-600 rounded-lg shadow-lg p-6 text-white">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm opacity-90">Yetkazildi</p>
+                        <p class="text-4xl font-bold" id="stat-delivered">0</p>
+                    </div>
+                    <i class="fas fa-check-circle text-5xl opacity-30"></i>
+                </div>
+            </div>
+
+            <div class="bg-gradient-to-br from-purple-400 to-purple-600 rounded-lg shadow-lg p-6 text-white">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm opacity-90">Jami Qiymat</p>
+                        <p class="text-4xl font-bold" id="stat-value">0</p>
+                    </div>
+                    <i class="fas fa-dollar-sign text-5xl opacity-30"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-xl font-bold text-gray-800 mb-4">
+                    <i class="fas fa-chart-pie text-red-600 mr-2"></i>
+                    Holat bo'yicha
+                </h3>
+                <canvas id="statusChart"></canvas>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-xl font-bold text-gray-800 mb-4">
+                    <i class="fas fa-chart-bar text-red-600 mr-2"></i>
+                    Top Viloyatlar
+                </h3>
+                <canvas id="regionChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">Filtrlar</h3>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <select id="status-filter" class="px-4 py-2 border rounded-lg" onchange="loadTransfers()">
+                    <option value="">Barcha holat</option>
+                    <option value="pending">Kutilmoqda</option>
+                    <option value="approved">Tasdiqlangan</option>
+                    <option value="in_transit">Yo'lda</option>
+                    <option value="delivered">Yetkazildi</option>
+                    <option value="rejected">Rad etildi</option>
+                    <option value="cancelled">Bekor qilindi</option>
+                </select>
+
+                <select id="from-region-filter" class="px-4 py-2 border rounded-lg" onchange="loadTransfers()">
+                    <option value="">Qayerdan (barcha)</option>
+                    <option value="Toshkent">Toshkent</option>
+                    <option value="Samarqand">Samarqand</option>
+                    <option value="Buxoro">Buxoro</option>
+                    <option value="Andijon">Andijon</option>
+                    <option value="Farg'ona">Farg'ona</option>
+                </select>
+
+                <select id="to-region-filter" class="px-4 py-2 border rounded-lg" onchange="loadTransfers()">
+                    <option value="">Qayerga (barcha)</option>
+                    <option value="Toshkent">Toshkent</option>
+                    <option value="Samarqand">Samarqand</option>
+                    <option value="Buxoro">Buxoro</option>
+                    <option value="Andijon">Andijon</option>
+                    <option value="Farg'ona">Farg'ona</option>
+                </select>
+
+                <input type="text" id="tracking-search" placeholder="Tracking #" class="px-4 py-2 border rounded-lg" />
+            </div>
+        </div>
+
+        <!-- Transfers Table -->
+        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+            <div class="p-6 border-b bg-gray-50">
+                <h3 class="text-xl font-bold text-gray-800">
+                    <i class="fas fa-list mr-2"></i>
+                    Barcha Transferlar
+                </h3>
+            </div>
+
+            <div id="loading" class="p-8 text-center">
+                <i class="fas fa-spinner fa-spin text-4xl text-red-600"></i>
+                <p class="mt-4 text-gray-600">Yuklanmoqda...</p>
+            </div>
+
+            <div id="transfers-container" class="hidden overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-gray-100 border-b">
+                        <tr>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase">ID</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase">Tracking</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase">Yuboruvchi</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase">Qabul qiluvchi</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase">Mahsulot</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase">Miqdor</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase">Marshrut</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase">Summa</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase">Holat</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase">Sana</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase">Amallar</th>
+                        </tr>
+                    </thead>
+                    <tbody id="transfers-tbody" class="divide-y">
+                        <!-- Data will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="empty-state" class="hidden p-12 text-center">
+                <i class="fas fa-inbox text-6xl text-gray-300 mb-4"></i>
+                <p class="text-xl text-gray-500">Transferlar topilmadi</p>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <div id="pagination" class="mt-6 flex justify-center">
+            <!-- Pagination will be added here -->
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="hidden fixed top-5 right-5 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg z-50">
+        <span id="toast-message"></span>
+    </div>
+
+    <script>
+        const API_BASE = 'http://127.0.0.1:8000/api';
+        let authToken = localStorage.getItem('authToken');
+        let currentUser = null;
+        let allTransfers = [];
+        let statistics = null;
+
+        // Check auth
+        if (!authToken) {
+            window.location.href = '../login.html';
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadUserInfo();
+            await loadStatistics();
+            await loadTransfers();
+        });
+
+        // Load user info
+        async function loadUserInfo() {
+            try {
+                const response = await fetch(`${API_BASE}/user`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    currentUser = await response.json();
+                    document.getElementById('user-info').textContent = `${currentUser.name} (${currentUser.role})`;
+                }
+            } catch (error) {
+                console.error('User info error:', error);
+            }
+        }
+
+        // Load statistics
+        async function loadStatistics() {
+            try {
+                const response = await fetch(`${API_BASE}/admin/transfers/statistics`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    statistics = data.statistics;
+                    updateStatisticsCards();
+                    renderCharts();
+                }
+            } catch (error) {
+                console.error('Statistics error:', error);
+            }
+        }
+
+        // Update statistics cards
+        function updateStatisticsCards() {
+            if (!statistics) return;
+
+            document.getElementById('stat-pending').textContent = statistics.pending || 0;
+            document.getElementById('stat-transit').textContent = statistics.in_transit || 0;
+            document.getElementById('stat-delivered').textContent = statistics.delivered || 0;
+            document.getElementById('stat-value').textContent = (statistics.total_value || 0).toLocaleString('uz-UZ') + ' UZS';
+        }
+
+        // Render charts
+        function renderCharts() {
+            if (!statistics) return;
+
+            // Status Chart (Pie)
+            const statusCtx = document.getElementById('statusChart').getContext('2d');
+            new Chart(statusCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Kutilmoqda', 'Tasdiqlangan', 'Yo\'lda', 'Yetkazildi', 'Rad etildi', 'Bekor qilindi'],
+                    datasets: [{
+                        data: [
+                            statistics.pending || 0,
+                            statistics.approved || 0,
+                            statistics.in_transit || 0,
+                            statistics.delivered || 0,
+                            statistics.rejected || 0,
+                            statistics.cancelled || 0
+                        ],
+                        backgroundColor: [
+                            '#FCD34D',
+                            '#10B981',
+                            '#3B82F6',
+                            '#8B5CF6',
+                            '#EF4444',
+                            '#6B7280'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+
+            // Region Chart - mock data (you can calculate from transfers)
+            const regionCtx = document.getElementById('regionChart').getContext('2d');
+            new Chart(regionCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Toshkent', 'Samarqand', 'Buxoro', 'Andijon', 'Farg\'ona'],
+                    datasets: [{
+                        label: 'Transferlar soni',
+                        data: [12, 8, 6, 9, 7],
+                        backgroundColor: '#EF4444'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        // Load transfers
+        async function loadTransfers() {
+            document.getElementById('loading').classList.remove('hidden');
+            document.getElementById('transfers-container').classList.add('hidden');
+            document.getElementById('empty-state').classList.add('hidden');
+
+            try {
+                let url = `${API_BASE}/admin/transfers?`;
+
+                const status = document.getElementById('status-filter').value;
+                const fromRegion = document.getElementById('from-region-filter').value;
+                const toRegion = document.getElementById('to-region-filter').value;
+
+                if (status) url += `status=${status}&`;
+                if (fromRegion) url += `from_region=${fromRegion}&`;
+                if (toRegion) url += `to_region=${toRegion}&`;
+
+                const response = await fetch(url, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    allTransfers = data.transfers.data;
+                    displayTransfers(allTransfers);
+                } else {
+                    showToast('Xatolik yuz berdi', true);
+                }
+            } catch (error) {
+                console.error('Load transfers error:', error);
+                showToast('Serverga ulanishda xatolik', true);
+            } finally {
+                document.getElementById('loading').classList.add('hidden');
+            }
+        }
+
+        // Display transfers
+        function displayTransfers(transfers) {
+            const tbody = document.getElementById('transfers-tbody');
+            tbody.innerHTML = '';
+
+            if (transfers.length === 0) {
+                document.getElementById('empty-state').classList.remove('hidden');
+                return;
+            }
+
+            document.getElementById('transfers-container').classList.remove('hidden');
+
+            transfers.forEach(t => {
+                const row = document.createElement('tr');
+                row.className = 'hover:bg-gray-50 transition';
+
+                row.innerHTML = `
+                    <td class="px-6 py-4 text-sm font-semibold text-gray-900">#${t.id}</td>
+                    <td class="px-6 py-4 text-sm font-mono text-blue-600">${t.tracking_number}</td>
+                    <td class="px-6 py-4 text-sm">
+                        <div class="font-semibold">${t.sender.name}</div>
+                        <div class="text-xs text-gray-500">${t.sender.region || 'N/A'}</div>
+                    </td>
+                    <td class="px-6 py-4 text-sm">
+                        <div class="font-semibold">${t.receiver.name}</div>
+                        <div class="text-xs text-gray-500">${t.receiver.region || 'N/A'}</div>
+                    </td>
+                    <td class="px-6 py-4 text-sm font-semibold">${t.product.name}</td>
+                    <td class="px-6 py-4 text-sm font-bold">${t.quantity}</td>
+                    <td class="px-6 py-4 text-sm">
+                        <div class="flex items-center text-xs">
+                            <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded">${t.from_region}</span>
+                            <i class="fas fa-arrow-right mx-2 text-gray-400"></i>
+                            <span class="px-2 py-1 bg-purple-100 text-purple-800 rounded">${t.to_region}</span>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 text-sm font-semibold text-green-600">
+                        ${t.total_amount ? t.total_amount.toLocaleString('uz-UZ') + ' UZS' : '-'}
+                    </td>
+                    <td class="px-6 py-4">${getStatusBadge(t.status)}</td>
+                    <td class="px-6 py-4 text-sm text-gray-600">
+                        ${new Date(t.created_at).toLocaleDateString('uz-UZ')}
+                    </td>
+                    <td class="px-6 py-4">
+                        <button onclick="viewDetails(${t.id})" class="text-blue-600 hover:text-blue-800">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </td>
+                `;
+
+                tbody.appendChild(row);
+            });
+        }
+
+        // Get status badge
+        function getStatusBadge(status) {
+            const badges = {
+                pending: '<span class="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-semibold">Kutilmoqda</span>',
+                approved: '<span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-semibold">Tasdiqlangan</span>',
+                in_transit: '<span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-semibold">Yo\'lda</span>',
+                delivered: '<span class="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-xs font-semibold">Yetkazildi</span>',
+                rejected: '<span class="px-3 py-1 bg-red-100 text-red-800 rounded-full text-xs font-semibold">Rad etildi</span>',
+                cancelled: '<span class="px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-xs font-semibold">Bekor qilindi</span>'
+            };
+            return badges[status] || status;
+        }
+
+        // View details
+        function viewDetails(id) {
+            alert(`Transfer #${id} details - Bu funksiya keyinroq to'liq qo'shiladi`);
+        }
+
+        // Show toast
+        function showToast(message, isError = false) {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toast-message');
+            toastMessage.textContent = message;
+            toast.className = `fixed top-5 right-5 px-6 py-3 rounded-lg shadow-lg z-50 ${isError ? 'bg-red-600' : 'bg-green-600'} text-white`;
+            toast.classList.remove('hidden');
+            setTimeout(() => toast.classList.add('hidden'), 4000);
+        }
+
+        // Logout
+        function logout() {
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('user');
+            window.location.href = '../login.html';
+        }
+    </script>
+</body>
+</html>

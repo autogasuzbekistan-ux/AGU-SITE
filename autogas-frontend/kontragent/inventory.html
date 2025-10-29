@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventar - Admin Panel</title>
+    <!-- AGU Components -->
+    <script src="../components/agu-navbar-admin.js"></script>
+    <script src="../components/agu-performance.js"></script>
+    <script src="../components/agu-branding.js"></script>
+    <script src="../components/agu-utils.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-50">
+    <!-- AGU Admin Navbar -->
+    <div id="agu-navbar"></div>
+
+    <!-- Navigation -->
+
+    <!-- Main Container -->
+    <div class="container mx-auto px-6 py-8">
+        <!-- Header -->
+        <div class="mb-6">
+            <h1 class="text-3xl font-bold text-gray-800">
+                <i class="fas fa-boxes mr-2"></i>Inventar Monitoring
+            </h1>
+            <p class="text-gray-600 mt-1">Barcha kontragentlar inventari</p>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div id="statsCards" class="grid grid-cols-1 md:grid-cols-6 gap-6 mb-6">
+            <!-- Stats will be loaded here -->
+        </div>
+
+        <!-- Critical Alerts -->
+        <div id="criticalAlerts" class="mb-6">
+            <!-- Alerts will be loaded here -->
+        </div>
+
+        <!-- Charts -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+            <div class="bg-white rounded-lg shadow p-6">
+                <h3 class="text-lg font-semibold mb-4">Stock Holati</h3>
+                <canvas id="stockStatusChart"></canvas>
+            </div>
+            <div class="bg-white rounded-lg shadow p-6">
+                <h3 class="text-lg font-semibold mb-4">Top 10 Mahsulotlar (Qiymat)</h3>
+                <canvas id="topProductsChart"></canvas>
+            </div>
+            <div class="bg-white rounded-lg shadow p-6">
+                <h3 class="text-lg font-semibold mb-4">Omborlar bo'yicha Stock</h3>
+                <canvas id="warehouseStockChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="bg-white rounded-lg shadow p-4 mb-6">
+            <div class="grid grid-cols-1 md:grid-cols-6 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Kontragent</label>
+                    <select id="filterUser" onchange="loadInventory()" class="w-full border rounded-lg p-2">
+                        <option value="">Barcha kontragentlar</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Ombor</label>
+                    <select id="filterWarehouse" onchange="loadInventory()" class="w-full border rounded-lg p-2">
+                        <option value="">Barcha omborlar</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Mahsulot</label>
+                    <select id="filterProduct" onchange="loadInventory()" class="w-full border rounded-lg p-2">
+                        <option value="">Barcha mahsulotlar</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Stock Holati</label>
+                    <select id="filterStockStatus" onchange="loadInventory()" class="w-full border rounded-lg p-2">
+                        <option value="">Hammasi</option>
+                        <option value="in_stock">Mavjud</option>
+                        <option value="low_stock">Kam</option>
+                        <option value="out_of_stock">Tugagan</option>
+                        <option value="needs_reorder">Buyurtma kerak</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Muddati</label>
+                    <select id="filterExpiry" onchange="loadInventory()" class="w-full border rounded-lg p-2">
+                        <option value="">Hammasi</option>
+                        <option value="expiring_soon">Tez orada</option>
+                        <option value="expired">Muddati o'tgan</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Saralash</label>
+                    <select id="sortBy" onchange="loadInventory()" class="w-full border rounded-lg p-2">
+                        <option value="created_at">Eng yangi</option>
+                        <option value="quantity">Miqdor</option>
+                        <option value="total_value">Qiymat</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Inventory Table -->
+        <div class="bg-white rounded-lg shadow overflow-hidden">
+            <table class="min-w-full">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Mahsulot</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Kontragent</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ombor</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Miqdor</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Mavjud</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Holat</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Qiymat</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Amallar</th>
+                    </tr>
+                </thead>
+                <tbody id="inventoryTableBody" class="bg-white divide-y divide-gray-200">
+                    <!-- Inventory items will be loaded here -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <div id="pagination" class="mt-6 flex justify-between items-center">
+            <!-- Pagination will be loaded here -->
+        </div>
+    </div>
+
+    <!-- Movements Modal -->
+    <div id="movementsModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-8 max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold">Stock Harakatlar Tarixi</h2>
+                <button onclick="closeMovementsModal()" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times text-2xl"></i>
+                </button>
+            </div>
+            <div id="movementsContent">
+                <!-- Movements will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:8000/api';
+        let currentPage = 1;
+        let stockStatusChart, topProductsChart, warehouseStockChart;
+
+        // Load user info
+        async function loadUserInfo() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = '../login.html';
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/user`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (!['admin', 'owner'].includes(data.role)) {
+                        window.location.href = '../index.html';
+                        return;
+                    }
+                } else {
+                    window.location.href = '../login.html';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        // Load filters
+        async function loadFilters() {
+            const token = localStorage.getItem('token');
+
+            try {
+                const [usersRes, warehousesRes, productsRes] = await Promise.all([
+                    fetch(`${API_URL}/admin/kontragents`, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        }
+                    }),
+                    fetch(`${API_URL}/admin/warehouses`, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        }
+                    }),
+                    fetch(`${API_URL}/products`, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                ]);
+
+                if (usersRes.ok) {
+                    const data = await usersRes.json();
+                    const select = document.getElementById('filterUser');
+                    data.kontragents?.forEach(user => {
+                        select.innerHTML += `<option value="${user.id}">${user.name}</option>`;
+                    });
+                }
+
+                if (warehousesRes.ok) {
+                    const data = await warehousesRes.json();
+                    const select = document.getElementById('filterWarehouse');
+                    data.warehouses?.data?.forEach(warehouse => {
+                        select.innerHTML += `<option value="${warehouse.id}">${warehouse.name} (${warehouse.region})</option>`;
+                    });
+                }
+
+                if (productsRes.ok) {
+                    const data = await productsRes.json();
+                    const select = document.getElementById('filterProduct');
+                    data.forEach(product => {
+                        select.innerHTML += `<option value="${product.id}">${product.name}</option>`;
+                    });
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        // Load inventory
+        async function loadInventory(page = 1) {
+            const token = localStorage.getItem('token');
+            currentPage = page;
+
+            const userId = document.getElementById('filterUser').value;
+            const warehouse_id = document.getElementById('filterWarehouse').value;
+            const product_id = document.getElementById('filterProduct').value;
+            const stock_status = document.getElementById('filterStockStatus').value;
+            const sortBy = document.getElementById('sortBy').value;
+            const expiry = document.getElementById('filterExpiry').value;
+
+            let url = `${API_URL}/admin/inventory?page=${page}&sort_by=${sortBy}`;
+            if (userId) url += `&user_id=${userId}`;
+            if (warehouse_id) url += `&warehouse_id=${warehouse_id}`;
+            if (product_id) url += `&product_id=${product_id}`;
+            if (stock_status) url += `&stock_status=${stock_status}`;
+            if (expiry === 'expired') url += `&expired_only=true`;
+            if (expiry === 'expiring_soon') url += `&expiring_soon=true`;
+
+            try {
+                const response = await fetch(url, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    displayInventory(data.inventory.data);
+                    displayPagination(data.inventory);
+                    loadStatistics();
+                    loadCriticalAlerts();
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        // Load statistics
+        async function loadStatistics() {
+            const token = localStorage.getItem('token');
+
+            try {
+                const response = await fetch(`${API_URL}/admin/inventory/statistics/summary`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    displayStatistics(data.statistics);
+
+                    // Load inventory data for charts
+                    const inventoryRes = await fetch(`${API_URL}/admin/inventory`, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    if (inventoryRes.ok) {
+                        const inventoryData = await inventoryRes.json();
+                        updateCharts(inventoryData.inventory.data, data.statistics);
+                    }
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        // Display statistics
+        function displayStatistics(stats) {
+            const statsCards = document.getElementById('statsCards');
+            statsCards.innerHTML = `
+                <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow p-6 text-white">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm opacity-80">Jami</p>
+                            <p class="text-3xl font-bold">${stats.total_items || 0}</p>
+                        </div>
+                        <i class="fas fa-boxes text-4xl opacity-50"></i>
+                    </div>
+                </div>
+                <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-lg shadow p-6 text-white">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm opacity-80">Mavjud</p>
+                            <p class="text-3xl font-bold">${stats.in_stock || 0}</p>
+                        </div>
+                        <i class="fas fa-check-circle text-4xl opacity-50"></i>
+                    </div>
+                </div>
+                <div class="bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg shadow p-6 text-white">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm opacity-80">Kam</p>
+                            <p class="text-3xl font-bold">${stats.low_stock || 0}</p>
+                        </div>
+                        <i class="fas fa-exclamation-triangle text-4xl opacity-50"></i>
+                    </div>
+                </div>
+                <div class="bg-gradient-to-br from-red-500 to-red-600 rounded-lg shadow p-6 text-white">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm opacity-80">Tugagan</p>
+                            <p class="text-3xl font-bold">${stats.out_of_stock || 0}</p>
+                        </div>
+                        <i class="fas fa-times-circle text-4xl opacity-50"></i>
+                    </div>
+                </div>
+                <div class="bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-lg shadow p-6 text-white">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm opacity-80">Muddati</p>
+                            <p class="text-3xl font-bold">${stats.expired || 0}</p>
+                        </div>
+                        <i class="fas fa-clock text-4xl opacity-50"></i>
+                    </div>
+                </div>
+                <div class="bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg shadow p-6 text-white">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm opacity-80">Qiymat</p>
+                            <p class="text-2xl font-bold">${((stats.total_value || 0) / 1000000).toFixed(1)}M</p>
+                            <p class="text-xs opacity-80">so'm</p>
+                        </div>
+                        <i class="fas fa-dollar-sign text-4xl opacity-50"></i>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Load critical alerts
+        async function loadCriticalAlerts() {
+            const token = localStorage.getItem('token');
+
+            try {
+                const [lowStockRes, outOfStockRes] = await Promise.all([
+                    fetch(`${API_URL}/admin/inventory/low-stock/list`, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        }
+                    }),
+                    fetch(`${API_URL}/admin/inventory/out-of-stock/list`, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                ]);
+
+                if (lowStockRes.ok && outOfStockRes.ok) {
+                    const lowStock = await lowStockRes.json();
+                    const outOfStock = await outOfStockRes.json();
+                    displayCriticalAlerts(lowStock.low_stock_items, outOfStock.out_of_stock_items);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        // Display critical alerts
+        function displayCriticalAlerts(lowStock, outOfStock) {
+            const alertsDiv = document.getElementById('criticalAlerts');
+            let html = '';
+
+            if (outOfStock.length > 0) {
+                html += `
+                    <div class="bg-red-50 border-l-4 border-red-500 rounded-lg p-4">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <i class="fas fa-times-circle text-red-600 text-3xl mr-3"></i>
+                                <div>
+                                    <p class="font-bold text-red-800 text-lg">${outOfStock.length} mahsulot tugagan!</p>
+                                    <p class="text-sm text-red-600">Kontragentlarga xabar bering</p>
+                                </div>
+                            </div>
+                            <button onclick="showDetails('out_of_stock')" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">
+                                Batafsil
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+
+            if (lowStock.length > 0) {
+                html += `
+                    <div class="bg-orange-50 border-l-4 border-orange-500 rounded-lg p-4 ${outOfStock.length > 0 ? 'mt-4' : ''}">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <i class="fas fa-exclamation-triangle text-orange-600 text-3xl mr-3"></i>
+                                <div>
+                                    <p class="font-bold text-orange-800 text-lg">${lowStock.length} mahsulot kam qolgan</p>
+                                    <p class="text-sm text-orange-600">Tez orada tugaydi</p>
+                                </div>
+                            </div>
+                            <button onclick="showDetails('low_stock')" class="px-4 py-2 bg-orange-600 text-white rounded hover:bg-orange-700">
+                                Batafsil
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+
+            alertsDiv.innerHTML = html;
+        }
+
+        // Update charts
+        function updateCharts(inventory, stats) {
+            // Stock status pie chart
+            if (stockStatusChart) stockStatusChart.destroy();
+            const stockStatusCtx = document.getElementById('stockStatusChart').getContext('2d');
+            stockStatusChart = new Chart(stockStatusCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Mavjud', 'Kam', 'Tugagan', 'Muddati'],
+                    datasets: [{
+                        data: [
+                            stats.in_stock || 0,
+                            stats.low_stock || 0,
+                            stats.out_of_stock || 0,
+                            stats.expired || 0
+                        ],
+                        backgroundColor: [
+                            'rgba(34, 197, 94, 0.8)',
+                            'rgba(251, 146, 60, 0.8)',
+                            'rgba(239, 68, 68, 0.8)',
+                            'rgba(234, 179, 8, 0.8)'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true
+                }
+            });
+
+            // Top products by value
+            const topProducts = inventory
+                .sort((a, b) => (b.total_value || 0) - (a.total_value || 0))
+                .slice(0, 10);
+
+            if (topProductsChart) topProductsChart.destroy();
+            const topProductsCtx = document.getElementById('topProductsChart').getContext('2d');
+            topProductsChart = new Chart(topProductsCtx, {
+                type: 'bar',
+                data: {
+                    labels: topProducts.map(i => i.product?.name?.substring(0, 15) || 'N/A'),
+                    datasets: [{
+                        label: 'Qiymat (so\'m)',
+                        data: topProducts.map(i => i.total_value || 0),
+                        backgroundColor: 'rgba(147, 51, 234, 0.8)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    scales: {
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
+
+            // Warehouse stock
+            const warehouseData = {};
+            inventory.forEach(item => {
+                const warehouseName = item.warehouse?.name || 'N/A';
+                warehouseData[warehouseName] = (warehouseData[warehouseName] || 0) + (parseFloat(item.quantity) || 0);
+            });
+
+            if (warehouseStockChart) warehouseStockChart.destroy();
+            const warehouseStockCtx = document.getElementById('warehouseStockChart').getContext('2d');
+            warehouseStockChart = new Chart(warehouseStockCtx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(warehouseData).slice(0, 10),
+                    datasets: [{
+                        label: 'Stock miqdori',
+                        data: Object.values(warehouseData).slice(0, 10),
+                        backgroundColor: 'rgba(59, 130, 246, 0.8)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    scales: {
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
+        }
+
+        // Display inventory
+        function displayInventory(inventory) {
+            const tbody = document.getElementById('inventoryTableBody');
+
+            if (inventory.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" class="px-6 py-4 text-center text-gray-500">Ma\'lumot yo\'q</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = inventory.map(item => {
+                const statusColor = getStockStatusColor(item.stock_status);
+                const statusIcon = getStockStatusIcon(item.stock_status);
+
+                return `
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4">
+                            <div>
+                                <p class="font-semibold text-gray-900">${item.product?.name || 'N/A'}</p>
+                                ${item.batch_number ? `<p class="text-xs text-gray-500">Partiya: ${item.batch_number}</p>` : ''}
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-600">
+                            ${item.user?.name || 'N/A'}
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-600">
+                            ${item.warehouse?.name || 'N/A'}
+                        </td>
+                        <td class="px-6 py-4">
+                            <p class="font-semibold">${item.quantity} ${item.unit}</p>
+                        </td>
+                        <td class="px-6 py-4">
+                            <p class="font-semibold text-green-600">${item.available_quantity} ${item.unit}</p>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="px-2 py-1 ${statusColor} text-white text-xs font-semibold rounded">
+                                <i class="${statusIcon} mr-1"></i>${item.stock_status_name}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <p class="font-semibold">${(item.total_value || 0).toLocaleString()} so'm</p>
+                        </td>
+                        <td class="px-6 py-4">
+                            <button onclick="viewMovements(${item.id})" class="text-blue-600 hover:text-blue-800">
+                                <i class="fas fa-history"></i> Tarix
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Display pagination
+        function displayPagination(paginationData) {
+            const container = document.getElementById('pagination');
+            const totalPages = paginationData.last_page;
+
+            container.innerHTML = `
+                <div class="text-sm text-gray-600">
+                    ${paginationData.from} - ${paginationData.to} / ${paginationData.total}
+                </div>
+                <div class="flex space-x-2">
+                    <button
+                        onclick="loadInventory(${currentPage - 1})"
+                        ${currentPage === 1 ? 'disabled' : ''}
+                        class="px-4 py-2 border rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <span class="px-4 py-2">${currentPage} / ${totalPages}</span>
+                    <button
+                        onclick="loadInventory(${currentPage + 1})"
+                        ${currentPage === totalPages ? 'disabled' : ''}
+                        class="px-4 py-2 border rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            `;
+        }
+
+        // View movements
+        async function viewMovements(inventoryId) {
+            const token = localStorage.getItem('token');
+
+            try {
+                const response = await fetch(`${API_URL}/admin/inventory/${inventoryId}/movements`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    displayMovements(data.movements.data);
+                    document.getElementById('movementsModal').classList.remove('hidden');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        // Display movements
+        function displayMovements(movements) {
+            const content = document.getElementById('movementsContent');
+
+            if (movements.length === 0) {
+                content.innerHTML = '<p class="text-center text-gray-500">Harakatlar yo\'q</p>';
+                return;
+            }
+
+            content.innerHTML = `
+                <div class="space-y-4">
+                    ${movements.map(movement => {
+                        const typeColor = movement.direction === 'in' ? 'text-green-600' : 'text-red-600';
+                        const icon = movement.type_icon;
+
+                        return `
+                            <div class="border rounded-lg p-4">
+                                <div class="flex items-center justify-between mb-2">
+                                    <div class="flex items-center space-x-3">
+                                        <i class="fas ${icon} ${typeColor} text-xl"></i>
+                                        <div>
+                                            <p class="font-semibold">${movement.type_name}</p>
+                                            <p class="text-sm text-gray-500">${new Date(movement.created_at).toLocaleString('uz-UZ')}</p>
+                                            <p class="text-xs text-gray-500">Foydalanuvchi: ${movement.user?.name || 'N/A'}</p>
+                                        </div>
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="font-bold ${typeColor}">${movement.quantity > 0 ? '+' : ''}${movement.quantity}</p>
+                                        <p class="text-xs text-gray-500">${movement.reference_number}</p>
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-2 gap-2 text-sm">
+                                    <div>
+                                        <span class="text-gray-600">Oldin:</span>
+                                        <span class="font-semibold">${movement.quantity_before}</span>
+                                    </div>
+                                    <div>
+                                        <span class="text-gray-600">Keyin:</span>
+                                        <span class="font-semibold">${movement.quantity_after}</span>
+                                    </div>
+                                </div>
+                                ${movement.notes ? `<p class="text-sm text-gray-600 mt-2">${movement.notes}</p>` : ''}
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+        }
+
+        // Show details (filter by status)
+        function showDetails(status) {
+            document.getElementById('filterStockStatus').value = status;
+            loadInventory(1);
+        }
+
+        // Helper functions
+        function getStockStatusColor(status) {
+            const colors = {
+                'out_of_stock': 'bg-red-500',
+                'low_stock': 'bg-orange-500',
+                'needs_reorder': 'bg-yellow-500',
+                'in_stock': 'bg-green-500'
+            };
+            return colors[status] || 'bg-gray-500';
+        }
+
+        function getStockStatusIcon(status) {
+            const icons = {
+                'out_of_stock': 'fa-times-circle',
+                'low_stock': 'fa-exclamation-triangle',
+                'needs_reorder': 'fa-exclamation',
+                'in_stock': 'fa-check-circle'
+            };
+            return icons[status] || 'fa-box';
+        }
+
+        function closeMovementsModal() {
+            document.getElementById('movementsModal').classList.add('hidden');
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            window.location.href = '../login.html';
+        }
+
+        // Initialize
+        loadUserInfo();
+        loadFilters();
+        loadInventory();
+
+        // Auto-refresh every 60 seconds
+        setInterval(() => {
+            loadInventory(currentPage);
+        }, 60000);
+    </script>
+</body>
+</html>

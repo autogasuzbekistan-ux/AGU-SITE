@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shipment Monitoring - Admin Panel</title>
+    <!-- AGU Components -->
+    <script src="../components/agu-navbar-admin.js"></script>
+    <script src="../components/agu-utils.js"></script>
+    <script src="../components/agu-performance.js"></script>
+    <!-- AGU Branding -->
+    <script src="../components/agu-branding.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-50">
+    <!-- AGU Components -->
+    <div id="agu-navbar"></div>
+
+    <!-- Navigation -->
+
+    <div class="container mx-auto px-6 py-8">
+        <!-- Header -->
+        <div class="mb-8">
+            <h2 class="text-4xl font-bold text-gray-800 mb-2">
+                <i class="fas fa-truck-loading text-red-600 mr-3"></i>
+                Shipment Monitoring
+            </h2>
+            <p class="text-gray-600">Real-time yuk jo'natish kuzatuvi</p>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg shadow-lg p-6 text-white">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm opacity-90">Faol Shipmentlar</p>
+                        <p class="text-4xl font-bold" id="stat-active">0</p>
+                    </div>
+                    <i class="fas fa-truck text-5xl opacity-30"></i>
+                </div>
+            </div>
+
+            <div class="bg-gradient-to-br from-green-400 to-green-600 rounded-lg shadow-lg p-6 text-white">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm opacity-90">Topshirildi</p>
+                        <p class="text-4xl font-bold" id="stat-delivered">0</p>
+                    </div>
+                    <i class="fas fa-check-circle text-5xl opacity-30"></i>
+                </div>
+            </div>
+
+            <div class="bg-gradient-to-br from-red-400 to-red-600 rounded-lg shadow-lg p-6 text-white">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm opacity-90">Muammoli</p>
+                        <p class="text-4xl font-bold" id="stat-issues">0</p>
+                    </div>
+                    <i class="fas fa-exclamation-triangle text-5xl opacity-30"></i>
+                </div>
+            </div>
+
+            <div class="bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-lg shadow-lg p-6 text-white">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm opacity-90">Kechikkan</p>
+                        <p class="text-4xl font-bold" id="stat-delayed">0</p>
+                    </div>
+                    <i class="fas fa-clock text-5xl opacity-30"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-xl font-bold text-gray-800 mb-4">
+                    <i class="fas fa-chart-pie text-red-600 mr-2"></i>
+                    Holat bo'yicha
+                </h3>
+                <canvas id="statusChart"></canvas>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-xl font-bold text-gray-800 mb-4">
+                    <i class="fas fa-map-marked-alt text-red-600 mr-2"></i>
+                    Viloyatlar bo'yicha
+                </h3>
+                <canvas id="regionChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Quick Track -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">Tezkor Qidiruv</h3>
+            <div class="flex items-center space-x-4">
+                <input type="text" id="quick-track" placeholder="Tracking kodni kiriting..." class="flex-1 px-4 py-3 border rounded-lg focus:ring-2 focus:ring-red-500" />
+                <button onclick="quickTrack()" class="bg-red-600 text-white px-8 py-3 rounded-lg hover:bg-red-700">
+                    <i class="fas fa-search mr-2"></i>Qidirish
+                </button>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">Filtrlar</h3>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <select id="status-filter" class="px-4 py-2 border rounded-lg" onchange="loadShipments()">
+                    <option value="">Barcha holat</option>
+                    <option value="preparing">Tayyorlanmoqda</option>
+                    <option value="picked_up">Olib ketildi</option>
+                    <option value="in_transit">Yo'lda</option>
+                    <option value="arrived">Manzilga yetdi</option>
+                    <option value="delivered">Topshirildi</option>
+                    <option value="returned">Qaytarildi</option>
+                </select>
+
+                <label class="flex items-center space-x-2 px-4 py-2 border rounded-lg">
+                    <input type="checkbox" id="issues-filter" onchange="loadShipments()" class="rounded" />
+                    <span class="text-sm text-gray-700">Faqat muammoli</span>
+                </label>
+
+                <label class="flex items-center space-x-2 px-4 py-2 border rounded-lg">
+                    <input type="checkbox" id="active-filter" checked onchange="loadShipments()" class="rounded" />
+                    <span class="text-sm text-gray-700">Faqat faol</span>
+                </label>
+
+                <button onclick="loadShipments()" class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700">
+                    <i class="fas fa-sync-alt mr-2"></i>Yangilash
+                </button>
+            </div>
+        </div>
+
+        <!-- Shipments Table -->
+        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+            <div class="p-6 border-b bg-gray-50">
+                <h3 class="text-xl font-bold text-gray-800">
+                    <i class="fas fa-list mr-2"></i>
+                    Barcha Shipmentlar
+                </h3>
+            </div>
+
+            <div id="loading" class="p-8 text-center">
+                <i class="fas fa-spinner fa-spin text-4xl text-red-600"></i>
+                <p class="mt-4 text-gray-600">Yuklanmoqda...</p>
+            </div>
+
+            <div id="shipments-container" class="hidden overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-gray-100 border-b">
+                        <tr>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase">ID</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase">Tracking</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase">Mahsulot</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase">Yuboruvchi</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase">Qabul qiluvchi</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase">Marshrut</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase">Holat</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase">Progress</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase">Amallar</th>
+                        </tr>
+                    </thead>
+                    <tbody id="shipments-tbody" class="divide-y">
+                        <!-- Data will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="empty-state" class="hidden p-12 text-center">
+                <i class="fas fa-inbox text-6xl text-gray-300 mb-4"></i>
+                <p class="text-xl text-gray-500">Shipmentlar topilmadi</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Shipment Details Modal -->
+    <div id="details-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-y-auto">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-4xl mx-4 my-8">
+            <div class="p-6 border-b flex justify-between items-center">
+                <h3 class="text-2xl font-bold text-gray-800">Shipment Tafsilotlari</h3>
+                <button onclick="closeDetailsModal()" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times text-2xl"></i>
+                </button>
+            </div>
+            <div id="details-content" class="p-6 max-h-[70vh] overflow-y-auto">
+                <!-- Details will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="hidden fixed top-5 right-5 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg z-50">
+        <span id="toast-message"></span>
+    </div>
+
+    <script>
+        const API_BASE = 'http://127.0.0.1:8000/api';
+        let authToken = localStorage.getItem('authToken');
+        let currentUser = null;
+        let statistics = null;
+
+        if (!authToken) {
+            window.location.href = '../login.html';
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadUserInfo();
+            await loadStatistics();
+            await loadShipments();
+        });
+
+        async function loadUserInfo() {
+            try {
+                const response = await fetch(`${API_BASE}/user`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    currentUser = await response.json();
+                    document.getElementById('user-info').textContent = `${currentUser.name} (${currentUser.role})`;
+                }
+            } catch (error) {
+                console.error('User info error:', error);
+            }
+        }
+
+        async function loadStatistics() {
+            try {
+                const response = await fetch(`${API_BASE}/admin/shipments/statistics`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    statistics = data.statistics;
+                    updateStatisticsCards();
+                    renderCharts();
+                }
+            } catch (error) {
+                console.error('Statistics error:', error);
+            }
+        }
+
+        function updateStatisticsCards() {
+            if (!statistics) return;
+
+            document.getElementById('stat-active').textContent = statistics.active_shipments || 0;
+            document.getElementById('stat-delivered').textContent = statistics.delivered || 0;
+            document.getElementById('stat-issues').textContent = statistics.with_issues || 0;
+            document.getElementById('stat-delayed').textContent = statistics.delayed || 0;
+        }
+
+        function renderCharts() {
+            if (!statistics) return;
+
+            // Status Chart
+            const statusCtx = document.getElementById('statusChart').getContext('2d');
+            new Chart(statusCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Tayyorlanmoqda', 'Olib ketildi', 'Yo\'lda', 'Manzilga yetdi', 'Topshirildi'],
+                    datasets: [{
+                        data: [
+                            statistics.preparing || 0,
+                            statistics.picked_up || 0,
+                            statistics.in_transit || 0,
+                            statistics.arrived || 0,
+                            statistics.delivered || 0
+                        ],
+                        backgroundColor: ['#FCD34D', '#FB923C', '#3B82F6', '#8B5CF6', '#10B981']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+
+            // Region Chart - mock data
+            const regionCtx = document.getElementById('regionChart').getContext('2d');
+            new Chart(regionCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Toshkent', 'Samarqand', 'Buxoro', 'Andijon', 'Farg\'ona'],
+                    datasets: [{
+                        label: 'Shipments',
+                        data: [15, 12, 8, 10, 9],
+                        backgroundColor: '#EF4444'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        async function loadShipments() {
+            document.getElementById('loading').classList.remove('hidden');
+            document.getElementById('shipments-container').classList.add('hidden');
+            document.getElementById('empty-state').classList.add('hidden');
+
+            try {
+                let url = `${API_BASE}/admin/shipments?`;
+
+                const status = document.getElementById('status-filter').value;
+                const hasIssues = document.getElementById('issues-filter').checked;
+                const activeOnly = document.getElementById('active-filter').checked;
+
+                if (status) url += `status=${status}&`;
+                if (hasIssues) url += `has_issues=true&`;
+                if (activeOnly) url += `active_only=true&`;
+
+                const response = await fetch(url, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    displayShipments(data.shipments.data);
+                } else {
+                    showToast('Xatolik yuz berdi', true);
+                }
+            } catch (error) {
+                console.error('Load shipments error:', error);
+                showToast('Serverga ulanishda xatolik', true);
+            } finally {
+                document.getElementById('loading').classList.add('hidden');
+            }
+        }
+
+        function displayShipments(shipments) {
+            const tbody = document.getElementById('shipments-tbody');
+            tbody.innerHTML = '';
+
+            if (shipments.length === 0) {
+                document.getElementById('empty-state').classList.remove('hidden');
+                return;
+            }
+
+            document.getElementById('shipments-container').classList.remove('hidden');
+
+            shipments.forEach(s => {
+                const row = document.createElement('tr');
+                row.className = 'hover:bg-gray-50 transition';
+
+                const progressPercentage = getProgressPercentage(s.status);
+                const issueBadge = s.has_issues ? '<i class="fas fa-exclamation-triangle text-red-600 ml-2"></i>' : '';
+
+                row.innerHTML = `
+                    <td class="px-6 py-4 text-sm font-semibold text-gray-900">#${s.id}</td>
+                    <td class="px-6 py-4 text-sm font-mono text-blue-600">${s.tracking_code}${issueBadge}</td>
+                    <td class="px-6 py-4 text-sm">
+                        <div class="font-semibold">${s.transfer.product.name}</div>
+                        <div class="text-xs text-gray-500">${s.transfer.quantity} dona</div>
+                    </td>
+                    <td class="px-6 py-4 text-sm">
+                        <div class="font-semibold">${s.transfer.sender.name}</div>
+                        <div class="text-xs text-gray-500">${s.transfer.sender.region || 'N/A'}</div>
+                    </td>
+                    <td class="px-6 py-4 text-sm">
+                        <div class="font-semibold">${s.transfer.receiver.name}</div>
+                        <div class="text-xs text-gray-500">${s.transfer.receiver.region || 'N/A'}</div>
+                    </td>
+                    <td class="px-6 py-4 text-sm">
+                        <div class="flex items-center text-xs">
+                            <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded">${s.origin_city}</span>
+                            <i class="fas fa-arrow-right mx-2 text-gray-400"></i>
+                            <span class="px-2 py-1 bg-purple-100 text-purple-800 rounded">${s.destination_city}</span>
+                        </div>
+                        ${s.current_location ? `<div class="text-xs text-gray-600 mt-1"><i class="fas fa-map-marker-alt mr-1"></i>${s.current_location}</div>` : ''}
+                    </td>
+                    <td class="px-6 py-4">${getStatusBadge(s.status)}</td>
+                    <td class="px-6 py-4">
+                        <div class="w-24">
+                            <div class="text-xs text-gray-600 mb-1">${progressPercentage}%</div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-blue-600 h-2 rounded-full" style="width: ${progressPercentage}%"></div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <button onclick="viewDetails(${s.id})" class="text-blue-600 hover:text-blue-800">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </td>
+                `;
+
+                tbody.appendChild(row);
+            });
+        }
+
+        function getStatusBadge(status) {
+            const badges = {
+                preparing: '<span class="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-semibold">Tayyorlanmoqda</span>',
+                picked_up: '<span class="px-3 py-1 bg-orange-100 text-orange-800 rounded-full text-xs font-semibold">Olib ketildi</span>',
+                in_transit: '<span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-semibold">Yo\'lda</span>',
+                arrived: '<span class="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-xs font-semibold">Manzilga yetdi</span>',
+                delivered: '<span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-semibold">Topshirildi</span>',
+                returned: '<span class="px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-xs font-semibold">Qaytarildi</span>',
+                cancelled: '<span class="px-3 py-1 bg-red-100 text-red-800 rounded-full text-xs font-semibold">Bekor qilindi</span>'
+            };
+            return badges[status] || status;
+        }
+
+        function getProgressPercentage(status) {
+            const percentages = {
+                preparing: 10,
+                picked_up: 30,
+                in_transit: 60,
+                arrived: 90,
+                delivered: 100,
+                returned: 100,
+                cancelled: 0
+            };
+            return percentages[status] || 0;
+        }
+
+        async function viewDetails(id) {
+            try {
+                const response = await fetch(`${API_BASE}/admin/shipments/${id}`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    displayDetails(data.shipment);
+                }
+            } catch (error) {
+                showToast('Xatolik yuz berdi', true);
+            }
+        }
+
+        function displayDetails(shipment) {
+            const content = document.getElementById('details-content');
+
+            content.innerHTML = `
+                <div class="space-y-6">
+                    <!-- Header -->
+                    <div class="border-b pb-4">
+                        <h4 class="text-2xl font-bold text-gray-800">${shipment.tracking_code}</h4>
+                        <p class="text-gray-600 mt-1">${shipment.transfer.product.name} - ${shipment.transfer.quantity} dona</p>
+                        ${shipment.has_issues ? '<p class="text-red-600 mt-2"><i class="fas fa-exclamation-triangle mr-1"></i>Muammo: ' + shipment.issues_description + '</p>' : ''}
+                    </div>
+
+                    <!-- Info Grid -->
+                    <div class="grid grid-cols-3 gap-6">
+                        <div>
+                            <h5 class="font-semibold text-gray-700 mb-3">Transfer</h5>
+                            <div class="space-y-2 text-sm">
+                                <div>
+                                    <span class="text-gray-600">Yuboruvchi:</span>
+                                    <p class="font-semibold">${shipment.transfer.sender.name} (${shipment.transfer.sender.region})</p>
+                                </div>
+                                <div>
+                                    <span class="text-gray-600">Qabul qiluvchi:</span>
+                                    <p class="font-semibold">${shipment.transfer.receiver.name} (${shipment.transfer.receiver.region})</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h5 class="font-semibold text-gray-700 mb-3">Tashuvchi</h5>
+                            <div class="space-y-2 text-sm">
+                                <div>
+                                    <span class="text-gray-600">Ism:</span>
+                                    <p class="font-semibold">${shipment.carrier_name || '-'}</p>
+                                </div>
+                                <div>
+                                    <span class="text-gray-600">Telefon:</span>
+                                    <p class="font-semibold">${shipment.carrier_phone || '-'}</p>
+                                </div>
+                                <div>
+                                    <span class="text-gray-600">Transport:</span>
+                                    <p class="font-semibold">${shipment.vehicle_number || '-'}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h5 class="font-semibold text-gray-700 mb-3">Quti Ma'lumotlari</h5>
+                            <div class="space-y-2 text-sm">
+                                <div>
+                                    <span class="text-gray-600">Og'irlik:</span>
+                                    <p class="font-semibold">${shipment.weight ? shipment.weight + ' kg' : '-'}</p>
+                                </div>
+                                <div>
+                                    <span class="text-gray-600">O'lcham:</span>
+                                    <p class="font-semibold">${shipment.package_dimensions || '-'}</p>
+                                </div>
+                                <div>
+                                    <span class="text-gray-600">Soni:</span>
+                                    <p class="font-semibold">${shipment.package_count} ta</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Timeline -->
+                    <div>
+                        <h5 class="font-semibold text-gray-700 mb-3">Timeline</h5>
+                        <div class="space-y-4">
+                            ${shipment.events.map(event => `
+                                <div class="flex items-start space-x-4 border-l-2 border-red-500 pl-4">
+                                    <i class="fas ${getEventIcon(event.event_type)} text-red-600 mt-1"></i>
+                                    <div class="flex-1">
+                                        <p class="font-semibold text-gray-800">${event.description}</p>
+                                        ${event.location ? `<p class="text-sm text-gray-600"><i class="fas fa-map-marker-alt mr-1"></i>${event.location}</p>` : ''}
+                                        ${event.notes ? `<p class="text-sm text-gray-600 italic">${event.notes}</p>` : ''}
+                                        <p class="text-xs text-gray-500 mt-1">${new Date(event.created_at).toLocaleString('uz-UZ')}</p>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('details-modal').classList.remove('hidden');
+        }
+
+        function getEventIcon(eventType) {
+            const icons = {
+                status_changed: 'fa-sync-alt',
+                location_updated: 'fa-map-marker-alt',
+                note_added: 'fa-sticky-note',
+                issue_reported: 'fa-exclamation-triangle'
+            };
+            return icons[eventType] || 'fa-info-circle';
+        }
+
+        function closeDetailsModal() {
+            document.getElementById('details-modal').classList.add('hidden');
+        }
+
+        async function quickTrack() {
+            const code = document.getElementById('quick-track').value.trim();
+            if (!code) {
+                showToast('Tracking kodni kiriting', true);
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/shipments/track?tracking_code=${code}`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Accept': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+                if (response.ok) {
+                    displayDetails(data.shipment);
+                } else {
+                    showToast(data.message, true);
+                }
+            } catch (error) {
+                showToast('Xatolik yuz berdi', true);
+            }
+        }
+
+        function showToast(message, isError = false) {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toast-message');
+            toastMessage.textContent = message;
+            toast.className = `fixed top-5 right-5 px-6 py-3 rounded-lg shadow-lg z-50 ${isError ? 'bg-red-600' : 'bg-green-600'} text-white`;
+            toast.classList.remove('hidden');
+            setTimeout(() => toast.classList.add('hidden'), 4000);
+        }
+
+        function logout() {
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('user');
+            window.location.href = '../login.html';
+        }
+    </script>
+</body>
+</html>
