@@ -1,5 +1,6 @@
 // AGU Admin Navbar Component
 // Barcha admin sahifalari uchun bir xil navbar
+// Improved: Grouped dropdown menu
 
 const AGU_ADMIN_NAVBAR = {
     // Current page detection
@@ -18,23 +19,69 @@ const AGU_ADMIN_NAVBAR = {
         return 'dashboard';
     },
 
-    // Menu items
-    menuItems: [
-        { id: 'dashboard', label: 'Bosh sahifa', icon: 'fa-home', url: 'dashboard.html' },
-        { id: 'kontragents', label: 'Kontragentlar', icon: 'fa-users', url: 'kontragents.html' },
-        { id: 'warehouses', label: 'Omborlar', icon: 'fa-warehouse', url: 'warehouses.html' },
-        { id: 'inventory', label: 'Inventar', icon: 'fa-boxes', url: 'inventory.html' },
-        { id: 'transfers', label: 'Transferlar', icon: 'fa-exchange-alt', url: 'transfers.html' },
-        { id: 'transactions', label: 'Tranzaksiyalar', icon: 'fa-money-bill-wave', url: 'transactions.html' },
-        { id: 'shipments', label: 'Jo\'natmalar', icon: 'fa-truck', url: 'shipments.html' },
-        { id: 'notifications', label: 'Bildirishnomalar', icon: 'fa-bell', url: 'notifications.html' }
+    // Grouped menu items
+    menuGroups: [
+        {
+            id: 'main',
+            label: 'Asosiy',
+            icon: 'fa-home',
+            items: [
+                { id: 'dashboard', label: 'Dashboard', icon: 'fa-tachometer-alt', url: 'dashboard.html' },
+                { id: 'kontragents', label: 'Kontragentlar', icon: 'fa-users', url: 'kontragents.html' }
+            ]
+        },
+        {
+            id: 'warehouse',
+            label: 'Ombor',
+            icon: 'fa-warehouse',
+            items: [
+                { id: 'warehouses', label: 'Omborlar', icon: 'fa-warehouse', url: 'warehouses.html' },
+                { id: 'inventory', label: 'Inventar', icon: 'fa-boxes', url: 'inventory.html' }
+            ]
+        },
+        {
+            id: 'logistics',
+            label: 'Logistika',
+            icon: 'fa-truck',
+            items: [
+                { id: 'transfers', label: 'Transferlar', icon: 'fa-exchange-alt', url: 'transfers.html' },
+                { id: 'shipments', label: 'Jo\'natmalar', icon: 'fa-shipping-fast', url: 'shipments.html' }
+            ]
+        },
+        {
+            id: 'finance',
+            label: 'Moliya',
+            icon: 'fa-money-bill-wave',
+            items: [
+                { id: 'transactions', label: 'Tranzaksiyalar', icon: 'fa-dollar-sign', url: 'transactions.html' },
+                { id: 'notifications', label: 'Bildirishnomalar', icon: 'fa-bell', url: 'notifications.html' }
+            ]
+        }
     ],
+
+    // Check if group contains current page
+    isGroupActive: (group) => {
+        const currentPage = AGU_ADMIN_NAVBAR.getCurrentPage();
+        return group.items.some(item => item.id === currentPage);
+    },
 
     // Mobile menu toggle
     toggleMobileMenu: () => {
         const mobileMenu = document.getElementById('mobileMenu');
         if (mobileMenu) {
             mobileMenu.classList.toggle('hidden');
+        }
+    },
+
+    // Toggle dropdown
+    toggleDropdown: (groupId) => {
+        const dropdown = document.getElementById(`dropdown-${groupId}`);
+        const icon = document.getElementById(`icon-${groupId}`);
+        if (dropdown) {
+            dropdown.classList.toggle('hidden');
+            if (icon) {
+                icon.style.transform = dropdown.classList.contains('hidden') ? 'rotate(0deg)' : 'rotate(180deg)';
+            }
         }
     },
 
@@ -45,24 +92,61 @@ const AGU_ADMIN_NAVBAR = {
         let menuHTML = '';
         let mobileMenuHTML = '';
 
-        AGU_ADMIN_NAVBAR.menuItems.forEach(item => {
-            const isActive = item.id === currentPage;
-            const activeClass = isActive ? 'text-white font-semibold' : 'text-gray-300 hover:text-white';
-            const mobileActiveClass = isActive ? 'bg-blue-700 text-white font-semibold' : 'text-gray-300 hover:bg-blue-800 hover:text-white';
+        // Desktop menu - Dropdown groups
+        AGU_ADMIN_NAVBAR.menuGroups.forEach(group => {
+            const isGroupActive = AGU_ADMIN_NAVBAR.isGroupActive(group);
+            const activeClass = isGroupActive ? 'text-white font-semibold' : 'text-gray-300 hover:text-white';
 
-            // Desktop menu
             menuHTML += `
-                <a href="${item.url}" class="${activeClass} transition-colors hidden lg:block">
-                    <i class="fas ${item.icon} mr-1"></i><span class="hidden xl:inline">${item.label}</span>
-                </a>
+                <div class="relative group hidden lg:block">
+                    <button class="${activeClass} px-3 py-2 rounded-lg transition-all flex items-center space-x-2">
+                        <i class="fas ${group.icon}"></i>
+                        <span class="hidden xl:inline">${group.label}</span>
+                        <i class="fas fa-chevron-down text-xs"></i>
+                    </button>
+                    <div class="absolute left-0 mt-2 w-56 bg-white rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                        ${group.items.map(item => {
+                            const isActive = item.id === currentPage;
+                            const itemActiveClass = isActive ? 'bg-blue-50 text-blue-600 font-semibold' : 'text-gray-700 hover:bg-gray-50';
+                            return `
+                                <a href="${item.url}" class="${itemActiveClass} px-4 py-3 flex items-center space-x-3 transition-colors first:rounded-t-lg last:rounded-b-lg">
+                                    <i class="fas ${item.icon} w-5 text-sm"></i>
+                                    <span class="text-sm">${item.label}</span>
+                                </a>
+                            `;
+                        }).join('')}
+                    </div>
+                </div>
             `;
+        });
 
-            // Mobile menu
+        // Mobile menu - Expandable groups
+        AGU_ADMIN_NAVBAR.menuGroups.forEach(group => {
+            const isGroupActive = AGU_ADMIN_NAVBAR.isGroupActive(group);
+            const groupActiveClass = isGroupActive ? 'bg-blue-700 text-white' : 'text-gray-300 hover:bg-blue-800 hover:text-white';
+
             mobileMenuHTML += `
-                <a href="${item.url}" class="${mobileActiveClass} px-4 py-3 rounded-lg transition-colors flex items-center space-x-3">
-                    <i class="fas ${item.icon} w-5"></i>
-                    <span>${item.label}</span>
-                </a>
+                <div class="border-b border-gray-700 last:border-0">
+                    <button onclick="AGU_ADMIN_NAVBAR.toggleDropdown('${group.id}')" class="${groupActiveClass} w-full px-4 py-3 rounded-lg transition-colors flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <i class="fas ${group.icon} w-5"></i>
+                            <span class="font-medium">${group.label}</span>
+                        </div>
+                        <i class="fas fa-chevron-down text-xs transition-transform" id="icon-${group.id}"></i>
+                    </button>
+                    <div id="dropdown-${group.id}" class="hidden pl-8 py-2 space-y-1">
+                        ${group.items.map(item => {
+                            const isActive = item.id === currentPage;
+                            const itemActiveClass = isActive ? 'bg-blue-600 text-white font-semibold' : 'text-gray-400 hover:bg-blue-700 hover:text-white';
+                            return `
+                                <a href="${item.url}" class="${itemActiveClass} px-4 py-2 rounded-lg transition-colors flex items-center space-x-3 text-sm">
+                                    <i class="fas ${item.icon} w-4 text-xs"></i>
+                                    <span>${item.label}</span>
+                                </a>
+                            `;
+                        }).join('')}
+                    </div>
+                </div>
             `;
         });
 
@@ -84,12 +168,15 @@ const AGU_ADMIN_NAVBAR = {
                         </a>
 
                         <!-- Desktop Menu -->
-                        <div class="hidden lg:flex items-center space-x-4 xl:space-x-6">
+                        <div class="hidden lg:flex items-center space-x-2 xl:space-x-3">
                             ${menuHTML}
-                            <span id="userName" class="text-white font-medium text-sm">${userName}</span>
-                            <button onclick="logout()" class="px-3 py-2 xl:px-4 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all text-sm">
-                                <i class="fas fa-sign-out-alt mr-1 xl:mr-2"></i><span class="hidden xl:inline">Chiqish</span>
-                            </button>
+                            <div class="border-l border-gray-600 pl-3 ml-2 flex items-center space-x-3">
+                                <span id="userName" class="text-white font-medium text-sm">${userName}</span>
+                                <button onclick="logout()" class="px-3 py-2 xl:px-4 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all text-sm flex items-center space-x-2">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                    <span class="hidden xl:inline">Chiqish</span>
+                                </button>
+                            </div>
                         </div>
 
                         <!-- Mobile Menu Button -->
@@ -151,6 +238,32 @@ const AGU_ADMIN_NAVBAR = {
                 @keyframes pulse {
                     0%, 100% { transform: scale(1); }
                     50% { transform: scale(1.05); }
+                }
+
+                /* Dropdown hover effects */
+                .group:hover > div {
+                    display: block;
+                }
+
+                /* Smooth dropdown animation */
+                @keyframes dropdownFade {
+                    from {
+                        opacity: 0;
+                        transform: translateY(-10px);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                }
+
+                .group:hover > div {
+                    animation: dropdownFade 0.2s ease-out;
+                }
+
+                /* Mobile dropdown animation */
+                .dropdown-enter {
+                    animation: slideDown 0.3s ease-out;
                 }
             </style>
         `);
