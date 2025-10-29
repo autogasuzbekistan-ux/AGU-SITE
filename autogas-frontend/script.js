@@ -1303,8 +1303,155 @@ document.addEventListener('DOMContentLoaded', async () => {
             closeWishlistModal();
             closeProductDetailModal();
             closeCheckoutModal();
+            closeAddProductModal();
         }
     });
+
+    // =========================================================
+    // ADD PRODUCT FUNCTIONALITY (Admin Only)
+    // =========================================================
+
+    const addProductBtn = document.getElementById('add-product-btn');
+    const addProductModal = document.getElementById('add-product-modal');
+    const closeAddProductModalBtn = document.getElementById('close-add-product-modal');
+    const cancelAddProductBtn = document.getElementById('cancel-add-product');
+    const addProductForm = document.getElementById('add-product-form');
+
+    // Show "Add Product" button only for logged-in users (admin/owner)
+    function checkAdminAccess() {
+        const token = localStorage.getItem('token');
+        const userRole = localStorage.getItem('userRole');
+
+        if (token && (userRole === 'admin' || userRole === 'owner')) {
+            if (addProductBtn) addProductBtn.classList.remove('hidden');
+        } else {
+            if (addProductBtn) addProductBtn.classList.add('hidden');
+        }
+    }
+
+    // Open add product modal
+    function openAddProductModal() {
+        if (addProductModal) {
+            addProductModal.classList.remove('hidden');
+            setTimeout(() => {
+                const modalContent = addProductModal.querySelector('.bg-white');
+                if (modalContent) {
+                    modalContent.classList.remove('scale-95', 'opacity-0');
+                    modalContent.classList.add('scale-100', 'opacity-100');
+                }
+            }, 10);
+            document.body.style.overflow = 'hidden';
+        }
+    }
+
+    // Close add product modal
+    function closeAddProductModal() {
+        if (addProductModal) {
+            const modalContent = addProductModal.querySelector('.bg-white');
+            if (modalContent) {
+                modalContent.classList.remove('scale-100', 'opacity-100');
+                modalContent.classList.add('scale-95', 'opacity-0');
+            }
+            setTimeout(() => {
+                addProductModal.classList.add('hidden');
+                document.body.style.overflow = '';
+                if (addProductForm) addProductForm.reset();
+            }, 300);
+        }
+    }
+
+    // Event listeners for add product modal
+    if (addProductBtn) {
+        addProductBtn.addEventListener('click', openAddProductModal);
+    }
+
+    if (closeAddProductModalBtn) {
+        closeAddProductModalBtn.addEventListener('click', closeAddProductModal);
+    }
+
+    if (cancelAddProductBtn) {
+        cancelAddProductBtn.addEventListener('click', closeAddProductModal);
+    }
+
+    if (addProductModal) {
+        addProductModal.addEventListener('click', (e) => {
+            if (e.target === addProductModal) {
+                closeAddProductModal();
+            }
+        });
+    }
+
+    // Submit add product form
+    if (addProductForm) {
+        addProductForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const token = localStorage.getItem('token');
+            if (!token) {
+                showNotification('Iltimos, tizimga kiring!', 'error');
+                return;
+            }
+
+            const submitBtn = addProductForm.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<svg class="w-5 h-5 inline-block mr-1 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>Saqlanmoqda...';
+
+            const productData = {
+                name: document.getElementById('new-product-name').value.trim(),
+                category: document.getElementById('new-product-category').value,
+                price: parseFloat(document.getElementById('new-product-price').value),
+                quantity: parseInt(document.getElementById('new-product-quantity').value) || 0,
+                stockStatus: document.getElementById('new-product-status').value,
+                imageUrl: document.getElementById('new-product-image').value.trim() || null,
+                description: document.getElementById('new-product-description').value.trim() || null
+            };
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/admin/products`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(productData)
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    showNotification('Mahsulot muvaffaqiyatli qo\'shildi!', 'success');
+                    closeAddProductModal();
+                    // Reload products
+                    await fetchAndDisplayProducts();
+                } else {
+                    showNotification(data.message || 'Xatolik yuz berdi!', 'error');
+                }
+            } catch (error) {
+                console.error('Add product error:', error);
+                showNotification('Tarmoq xatosi yuz berdi!', 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+            }
+        });
+    }
+
+    // Check admin access on page load and after login
+    checkAdminAccess();
+
+    // Re-check admin access after login/logout
+    const originalShowLoginModal = showLoginModal;
+    window.showLoginModal = function() {
+        originalShowLoginModal();
+        setTimeout(checkAdminAccess, 100);
+    };
+
+    const originalLogout = logout;
+    window.logout = function() {
+        originalLogout();
+        checkAdminAccess();
+    };
 
     // Fade-in animation observer
     const observerOptions = {
