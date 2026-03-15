@@ -42,11 +42,13 @@ function runLoadingAnimation() {
       });
 }
 
-// GSAP CDN yuklanishini kutish
-if (document.readyState === 'complete') {
-    runLoadingAnimation();
-} else {
-    window.addEventListener('load', runLoadingAnimation);
+// GSAP CDN yuklanishini kutish — faqat asosiy sahifada ishlaydi
+if (document.getElementById('loading-screen')) {
+    if (document.readyState === 'complete') {
+        runLoadingAnimation();
+    } else {
+        window.addEventListener('load', runLoadingAnimation);
+    }
 }
 
 // =========================================================
@@ -446,11 +448,13 @@ document.getElementById('city-card-close')?.addEventListener('click', () => {
     document.getElementById('city-card')?.classList.add('hidden');
 });
 
-// Build markers on DOMContentLoaded
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', buildCityMarkers);
-} else {
-    buildCityMarkers();
+// Build markers — faqat asosiy sahifada
+if (document.getElementById('city-markers') || document.readyState === 'loading') {
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', buildCityMarkers);
+    } else {
+        buildCityMarkers();
+    }
 }
 
 // =========================================================
