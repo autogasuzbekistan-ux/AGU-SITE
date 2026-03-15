@@ -151,26 +151,73 @@ document.querySelectorAll('.faq-question').forEach(btn => {
 });
 
 // =========================================================
-// CONTACT FORM
+// CONTACT FORM — TELEGRAM BOT
 // =========================================================
+
+const TG_TOKEN = '8714281179:AAEdKaZeFolzivxokqLaCGkanC8hScD8-RE';
+const TG_CHAT_ID = '7012145516';
 
 const contactForm = document.getElementById('contact-form');
 const formMessage = document.getElementById('form-message');
+const submitBtn = contactForm?.querySelector('button[type="submit"]');
 
-contactForm?.addEventListener('submit', (e) => {
+contactForm?.addEventListener('submit', async (e) => {
     e.preventDefault();
 
     const name = document.getElementById('contact-name')?.value.trim();
     const phone = document.getElementById('contact-phone')?.value.trim();
+    const message = document.getElementById('contact-message')?.value.trim();
 
     if (!name || !phone) {
         showFormMessage('Iltimos, ism va telefon raqamini kiriting.', false);
         return;
     }
 
-    // Show success message
-    showFormMessage('Xabaringiz qabul qilindi! Tez orada siz bilan bog\'lanamiz.', true);
-    contactForm.reset();
+    // Tugmani bloklash
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Yuborilmoqda...';
+    }
+
+    const now = new Date().toLocaleString('uz-UZ', { timeZone: 'Asia/Tashkent' });
+
+    const text = [
+        '📩 <b>Yangi murojaat — AGU Sayt</b>',
+        '',
+        `👤 <b>Ism:</b> ${name}`,
+        `📞 <b>Telefon:</b> ${phone}`,
+        message ? `💬 <b>Xabar:</b> ${message}` : '',
+        '',
+        `🕐 <i>${now}</i>`,
+    ].filter(Boolean).join('\n');
+
+    try {
+        const res = await fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                chat_id: TG_CHAT_ID,
+                text,
+                parse_mode: 'HTML',
+            }),
+        });
+
+        const data = await res.json();
+
+        if (data.ok) {
+            showFormMessage('✅ Xabaringiz yuborildi! Tez orada siz bilan bog\'lanamiz.', true);
+            contactForm.reset();
+        } else {
+            showFormMessage('Xatolik yuz berdi. Iltimos, telefon orqali bog\'laning.', false);
+        }
+    } catch {
+        showFormMessage('Internet xatosi. Iltimos, qayta urinib ko\'ring.', false);
+    } finally {
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Xabar Yuborish';
+        }
+    }
 });
 
 function showFormMessage(text, isSuccess) {
@@ -179,9 +226,7 @@ function showFormMessage(text, isSuccess) {
     formMessage.className = `mt-4 p-4 rounded-xl ${isSuccess ? 'bg-green-500/20 border border-green-400 text-green-100' : 'bg-red-500/20 border border-red-400 text-red-100'}`;
     formMessage.classList.remove('hidden');
 
-    setTimeout(() => {
-        formMessage.classList.add('hidden');
-    }, 5000);
+    setTimeout(() => formMessage.classList.add('hidden'), 6000);
 }
 
 // =========================================================
