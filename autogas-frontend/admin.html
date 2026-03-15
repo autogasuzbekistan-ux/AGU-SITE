@@ -504,8 +504,8 @@ function updateStorageStatus() {
     const cities = localStorage.getItem('agu_cities_override');
     const settings = localStorage.getItem('agu_settings');
     const lines = [
-        brands ? `✅ Brandlar: ${JSON.parse(brands).length} ta o'zgartirish saqlangan` : '⬜ Brandlar: o'zgartirishsiz (standart)',
-        cities ? `✅ Do'konlar: ${JSON.parse(cities).length} ta o'zgartirish saqlangan` : '⬜ Do'konlar: o'zgartirishsiz (standart)',
+        brands ? `✅ Brandlar: ${JSON.parse(brands).length} ta o'zgartirish saqlangan` : "⬜ Brandlar: o'zgartirishsiz (standart)",
+        cities ? `✅ Do'konlar: ${JSON.parse(cities).length} ta o'zgartirish saqlangan` : "⬜ Do'konlar: o'zgartirishsiz (standart)",
         settings ? '✅ Sozlamalar: saqlangan' : '⬜ Sozlamalar: standart',
     ];
     document.getElementById('storage-status').innerHTML = lines.map(l => `<div class="mb-1">${l}</div>`).join('');
