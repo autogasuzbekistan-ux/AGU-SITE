@@ -229,15 +229,18 @@ const CITIES = [
         phone2: '+998 (87) 002-07-77',
         address: "Qo'qon shahar, Burkchilik ko'chasi",
         branches: 3,
-        branchList: ["Filial 1 — Markaziy ofis", "Filial 2 — Servís markazi", "Filial 3 — Do'kon"],
-        services: ["Metan/Propan o'rnatish", "Gaz quyish stansiyasi", "Laboratoriya xizmatlari", "Diagnostika"]
+        services: [
+            "Metan va propan balonlarni tekshirish (laboratoriya)",
+            "Gaz uskunalarini o'rnatish",
+            "Konsultatsiya berish",
+            "Premium metan va propan service xizmati"
+        ]
     },
     {
         id: 'toshkent', name: "AGU Toshkent", x: 618, y: 248, hq: false,
         phone: '+998 XX XXX XX XX',
         address: "Toshkent shahar",
-        branches: 2,
-        branchList: ["Filial 1", "Filial 2"]
+        branches: 2
     },
     { id: 'andijon',   name: "AGU Andijon",   x: 762, y: 285, hq: false, phone: '+998 XX XXX XX XX', address: "Andijon shahar" },
     { id: 'namangan',  name: "AGU Namangan",  x: 736, y: 268, hq: false, phone: '+998 XX XXX XX XX', address: "Namangan shahar" },
@@ -247,6 +250,7 @@ const CITIES = [
     { id: 'qarshi',    name: "AGU Qarshi",    x: 455, y: 386, hq: false, phone: '+998 XX XXX XX XX', address: "Qarshi shahar, Qashqadaryo viloyati" },
     { id: 'denov',     name: "AGU Denov",     x: 558, y: 418, hq: false, phone: '+998 XX XXX XX XX', address: "Denov shahar, Surxondaryo viloyati" },
     { id: 'xorazm',    name: "AGU Xorazm",   x: 210, y: 236, hq: false, phone: '+998 XX XXX XX XX', address: "Urganch shahar, Xorazm viloyati" },
+    { id: 'nukus',     name: "AGU Nukus",     x: 165, y: 190, hq: false, phone: '+998 XX XXX XX XX', address: "Nukus shahar, Qoraqalpog'iston" },
 ];
 
 // Label offset: har shahar uchun belgi ustidagi yozuv yo'nalishi
@@ -261,11 +265,14 @@ const LABEL_OFFSET = {
     qarshi:    { dx: 0,   dy: -18 },
     denov:     { dx: 16,  dy: 0   },
     xorazm:    { dx: 0,   dy: -18 },
+    nukus:     { dx: 0,   dy: -18 },
 };
+
+let activeCityId = null;
 
 function buildCityMarkers() {
     const mapG = document.getElementById('city-markers');
-    const cityList = document.getElementById('city-list');
+    const panelList = document.getElementById('panel-city-list');
     if (!mapG) return;
 
     CITIES.forEach(city => {
@@ -329,20 +336,63 @@ function buildCityMarkers() {
         mapG.appendChild(g);
 
         // Click handler
-        g.addEventListener('click', () => showCityCard(city));
+        g.addEventListener('click', () => {
+            setActiveCity(city.id);
+            showCityCard(city);
+        });
 
-        // City list button (mobile)
-        if (cityList) {
+        // Panel list item
+        if (panelList) {
             const btn = document.createElement('button');
-            btn.className = 'flex items-center gap-2 bg-white rounded-xl px-3 py-2 shadow-sm hover:shadow-md transition-all duration-200 text-sm font-medium text-left';
-            btn.style.borderLeft = `3px solid ${color}`;
-            btn.innerHTML = `<span style="color:${color}">●</span> ${city.name}`;
+            btn.className = 'panel-city-item';
+            btn.setAttribute('data-city-id', city.id);
+            btn.innerHTML = `
+                <span class="panel-city-dot" style="background:${color};"></span>
+                <span class="panel-city-name">${city.name}</span>
+                ${city.branches && city.branches > 1 ? `<span class="panel-city-branches">${city.branches} filial</span>` : ''}
+            `;
             btn.addEventListener('click', () => {
+                setActiveCity(city.id);
                 showCityCard(city);
-                document.getElementById('uzbek-map')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
             });
-            cityList.appendChild(btn);
+            panelList.appendChild(btn);
         }
+    });
+
+    // Search filter
+    const searchInput = document.getElementById('city-search');
+    searchInput?.addEventListener('input', () => {
+        const q = searchInput.value.trim().toLowerCase();
+        const items = panelList?.querySelectorAll('.panel-city-item');
+        let anyVisible = false;
+        items?.forEach(item => {
+            const id = item.getAttribute('data-city-id');
+            const city = CITIES.find(c => c.id === id);
+            const match = !q || city.name.toLowerCase().includes(q) || city.address.toLowerCase().includes(q);
+            item.style.display = match ? '' : 'none';
+            if (match) anyVisible = true;
+        });
+        // Show/hide no-results
+        let noRes = panelList?.querySelector('.panel-no-results');
+        if (!anyVisible) {
+            if (!noRes) {
+                noRes = document.createElement('p');
+                noRes.className = 'panel-no-results';
+                noRes.textContent = 'Topilmadi';
+                panelList.appendChild(noRes);
+            }
+            noRes.style.display = '';
+        } else if (noRes) {
+            noRes.style.display = 'none';
+        }
+    });
+}
+
+function setActiveCity(id) {
+    activeCityId = id;
+    // Update panel items
+    document.querySelectorAll('.panel-city-item').forEach(item => {
+        item.classList.toggle('active', item.getAttribute('data-city-id') === id);
     });
 }
 
