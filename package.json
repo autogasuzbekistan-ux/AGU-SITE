@@ -1,0 +1,10 @@
+{
+  "name": "agu-site",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "serve autogas-frontend -l $PORT"
+  },
+  "dependencies": {
+    "serve": "^14.2.3"
+  }
+}
