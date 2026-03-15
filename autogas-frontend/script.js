@@ -446,6 +446,249 @@ if (document.readyState === 'loading') {
 }
 
 // =========================================================
+// HAMKOR BRANDLAR — PARTNERS CAROUSEL
+// =========================================================
+
+const PARTNERS = [
+    // ── TURKIYA ──────────────────────────────────────────
+    {
+        name: 'ATIKER', flag: '🇹🇷', country: 'Turkiya', countryColor: '#E30613',
+        city: 'Konya, Turkiya',
+        products: ['LPG/CNG to\'liq konversiya to\'plamlari', 'Ketma-ket inyeksiya tizimi', 'ECU boshqaruv bloki', 'Bug\'latgich-reduktorlar', 'LPG injektorlar va rampalar'],
+        desc: 'ATIKER Otomotiv A.Ş. — Turkiyaning eng yirik va mashhur LPG/CNG uskunalari ishlab chiqaruvchisi. 1980-yillardan buyon 50+ mamlakatga eksport qiladi.',
+        search: 'ATIKER auto gas',
+    },
+    {
+        name: 'SAKA', flag: '🇹🇷', country: 'Turkiya', countryColor: '#E30613',
+        city: 'Turkiya',
+        products: ['LPG vaporizer (bug\'latgich)', 'Bosim regulyatorlari', 'LPG reduktorlar', 'Gaz filtrlari'],
+        desc: 'SAKA — yuqori sifatli LPG bug\'latgich va reduktor tizimlari ishlab chiqaruvchisi. Avtomobil gaz uskunalari sohasida ishonchli turkiya brendi.',
+        search: 'SAKA LPG auto gas',
+    },
+    {
+        name: 'FESA', flag: '🇹🇷', country: 'Turkiya', countryColor: '#E30613',
+        city: 'Turkiya',
+        products: ['LPG injektorlar', 'Inyeksiya rampalari (rail)', 'Gaz filtrlari', 'Bosim sensorlari'],
+        desc: 'FESA — LPG ketma-ket inyeksiya tizimi uchun yuqori aniqlikdagi injektorlar va rampalar ishlab chiqaruvchi turkiya kompaniyasi.',
+        search: 'FESA LPG auto gas',
+    },
+    {
+        name: 'ALBIEN', flag: '🇹🇷', country: 'Turkiya', countryColor: '#E30613',
+        city: 'Turkiya',
+        products: ['LPG avtomobil uskunalari', 'Konversiya to\'plamlari', 'Gaz armaturalari'],
+        desc: 'ALBIEN — avtomobil LPG uskunalari sohasida tajribali turkiya ishlab chiqaruvchisi. Markaziy Osiyo bozorida keng tarqalgan.',
+        search: 'ALBIEN LPG auto gas',
+    },
+    {
+        name: 'TORELLI', flag: '🇹🇷', country: 'Turkiya', countryColor: '#E30613',
+        city: 'Turkiya',
+        products: ['Silindrli LPG ballonlar', 'Toroidal (halqasimon) ballonlar', 'Tank klapanlari', 'Multivalve'],
+        desc: 'TORELLI — avtomobil LPG ballonlari (silindrli va toroidal) hamda armatura ishlab chiqaruvchi brend. ECE R67 standartiga sertifikatlangan.',
+        search: 'TORELLI LPG balloon auto gas',
+    },
+    {
+        name: 'STEP', flag: '🇹🇷', country: 'Turkiya', countryColor: '#E30613',
+        city: 'Turkiya',
+        products: ['LPG boshqaruv modullari', 'Gaz boshlash tizimlari', 'Solenoyd klapanlar', 'Elektron komponentlar'],
+        desc: 'STEP — LPG avtomobil tizimining elektron boshqaruv va kommutatsiya komponentlarini ishlab chiqaruvchi turkiya kompaniyasi.',
+        search: 'STEP LPG auto gas',
+    },
+
+    // ── ITALIYA ───────────────────────────────────────────
+    {
+        name: 'ALEX OPTIMA', flag: '🇮🇹', country: 'Italiya', countryColor: '#1b5bb5',
+        city: 'Modena, Italiya',
+        products: ['Ketma-ket LPG inyeksiya tizimi', 'AEB ECU boshqaruv bloki', 'LPG inyektorlar', 'OBD diagnostika moduli'],
+        desc: 'Alex Optima (AEB Group) — Italiyaning Modena shahridagi zamonaviy LPG ketma-ket inyeksiya tizimlari ishlab chiqaruvchisi. Butun dunyo bo\'ylab 80+ davlatga eksport qiladi.',
+        search: 'AEB Alex Optima LPG auto gas',
+    },
+    {
+        name: 'LAVATO', flag: '🇮🇹', country: 'Italiya', countryColor: '#1b5bb5',
+        city: 'Ferrara, Italiya',
+        products: ['LPG ketma-ket inyeksiya', 'CNG konversiya to\'plamlari', 'Reduktorlar', 'Tank bosim sensori'],
+        desc: 'Landi Lavato — Italiyaning Ferrara shahridagi eng qadimiy LPG brendi (1954-yildan). Birinchi LPG ketma-ket inyeksiya tizimini ishlab chiqqan kompaniya.',
+        search: 'Landi Lavato LPG auto gas',
+    },
+    {
+        name: 'RAIL', flag: '🇮🇹', country: 'Italiya', countryColor: '#1b5bb5',
+        city: 'Italiya',
+        products: ['LPG inyeksiya rampalari', 'Yuqori aniqlikdagi injektorlar', 'Gaz filtrlari'],
+        desc: 'RAIL — italiya ishlab chiqaruvchisi, LPG ketma-ket inyeksiya uchun yuqori sifatli rampalar va injektorlar tayyorlaydi.',
+        search: 'RAIL LPG injector auto gas',
+    },
+    {
+        name: 'TAMOSETTE', flag: '🇮🇹', country: 'Italiya', countryColor: '#1b5bb5',
+        city: 'Italiya',
+        products: ['LPG inyektor nozzles', 'Plastik inyeksiya komponentlari', 'Gaz filtrlari'],
+        desc: 'TAMOSETTE — LPG inyeksiya tizimi uchun yuqori sifatli nozzle va injektorlar ishlab chiqaruvchi italiya kompaniyasi.',
+        search: 'TAMOSETTE LPG nozzle auto gas',
+    },
+
+    // ── NIDERLANDIYA ──────────────────────────────────────
+    {
+        name: 'PRINS', flag: '🇳🇱', country: 'Niderlandiya', countryColor: '#1b5bb5',
+        city: 'Eindhoven, Niderlandiya',
+        products: ['VSI — Bug\'simon inyeksiya tizimi', 'VSI-2.0 — Zamonaviy LPG', 'DI — To\'g\'ridan-to\'g\'ri inyeksiya', 'ECU va kalibrovka dasturi'],
+        desc: 'PRINS Autogassystemen — Gollandiyaning Eindhoven shahridagi yetakchi LPG ishlab chiqaruvchisi. VSI (Vapour Sequential Injection) tizimini ixtiro qilgan kompaniya. 30+ yillik tajriba.',
+        search: 'PRINS VSI LPG auto gas',
+    },
+
+    // ── POLSHA ────────────────────────────────────────────
+    {
+        name: 'FAGUMIT', flag: '🇵🇱', country: 'Polsha', countryColor: '#1b5bb5',
+        city: 'Połaniec, Polsha',
+        products: ['LPG bug\'latgich-reduktorlar', 'Bosim regulyatorlari', 'Menbranali reduktorlar'],
+        desc: 'FAGUMIT — Polshaning Połaniec shahridagi LPG bug\'latgich va reduktor ishlab chiqaruvchisi. Barqaror sifat va arzon narxi bilan tanilgan.',
+        search: 'FAGUMIT LPG reducer auto gas',
+    },
+    {
+        name: 'SZAJA', flag: '🇵🇱', country: 'Polsha', countryColor: '#1b5bb5',
+        city: 'Polsha',
+        products: ['LPG starter modullari', 'Klapan boshqaruv tizimlari', 'Elektron kommutatorlar'],
+        desc: 'SZAJA — LPG boshqaruv va starterlar sohasida ixtisoslashgan polsha kompaniyasi. Sodda va ishonchli elektronika bilan mashhur.',
+        search: 'SZAJA LPG auto gas',
+    },
+
+    // ── YEVROPA (BOSHQA) ──────────────────────────────────
+    {
+        name: 'GREENGAS', flag: '🇪🇺', country: 'Yevropa', countryColor: '#1b5bb5',
+        city: 'Yevropa',
+        products: ['CNG/LPG uskunalari', 'Yashil energiya echimlari', 'Kompozit tsilindrlar'],
+        desc: 'GREENGAS — CNG va LPG texnologiyalari asosida yashil transport yechimlarini taqdim etuvchi yevropa kompaniyasi.',
+        search: 'GREENGAS CNG LPG auto gas',
+    },
+
+    // ── BELARUS ───────────────────────────────────────────
+    {
+        name: 'NOVOZGAZ', flag: '🇧🇾', country: 'Belarus', countryColor: '#166534',
+        city: 'Belarus',
+        products: ['LPG avtomobil reduktorlari', 'Gaz solenoyd klapanlari', 'Menbranali reduktorlar'],
+        desc: 'NOVOZGAZ — Belarus ishlab chiqaruvchisi, avtomobil LPG reduktor va boshqaruv klapanlari tayyorlaydi. MDH mamlakatlarida keng tarqalgan.',
+        search: 'NOVOZGAZ LPG auto gas Belarus',
+    },
+    {
+        name: 'CVETLIT', flag: '🇧🇾', country: 'Belarus', countryColor: '#166534',
+        city: 'Belarus',
+        products: ['Po\'lat LPG tsilindrlar', 'Kompozit CNG tsilindrlar', 'Tank klapanlari', 'Gaz quvurlari'],
+        desc: 'CVETLIT — Belarus metall va kompozit material ishlab chiqaruvchisi. CNG va LPG tsilindrlar, armatura va gaz quvurlari sohasida ixtisoslashgan.',
+        search: 'CVETLIT CNG cylinder auto gas Belarus',
+    },
+
+    // ── XITOY ─────────────────────────────────────────────
+    {
+        name: 'ANHUI', flag: '🇨🇳', country: 'Xitoy', countryColor: '#c41e3a',
+        city: 'Anhui viloyati, Xitoy',
+        products: ['CNG po\'lat tsilindrlar (Tip-1)', 'Kompozit CNG tsilindrlar (Tip-2, Tip-3)', 'Yuqori bosimli ballonlar (200-300 bar)'],
+        desc: 'Anhui viloyati Xitoyning CNG tsilindr ishlab chiqarishda yetakchi hududlaridan biri. ISO 11439 va ECE R110 standartlariga sertifikatlangan silindrlar.',
+        search: 'Anhui CNG cylinder auto gas China',
+    },
+    {
+        name: 'ANHUI DAPAN', flag: '🇨🇳', country: 'Xitoy', countryColor: '#c41e3a',
+        city: 'Anhui viloyati, Xitoy',
+        products: ['CNG uskunalar to\'plami', 'Gaz bosim regulyatorlari', 'CNG tsilindr klapanlari', 'Bosim ko\'rsatgichlari'],
+        desc: 'Anhui Dapan Industrial — CNG va LPG uskunalari ishlab chiqaruvchi xitoy kompaniyasi. Keng assortiment va raqobatbardosh narxlar bilan tanilgan.',
+        search: 'Anhui Dapan CNG auto gas China',
+    },
+    {
+        name: 'TIANEN', flag: '🇨🇳', country: 'Xitoy', countryColor: '#c41e3a',
+        city: 'Tianjin, Xitoy',
+        products: ['Yuqori bosimli CNG tsilindrlar', 'Po\'lat va alyuminiy tsilindrlar', 'Klapan va fitinglar'],
+        desc: 'Tianjin area CNG tsilindr ishlab chiqaruvchisi. Avtomobil va sanoat uchun yuqori bosimga chidamli tsilindrlar tayyorlaydi.',
+        search: 'Tianen CNG cylinder auto gas Tianjin',
+    },
+    {
+        name: 'YONH NUO', flag: '🇨🇳', country: 'Xitoy', countryColor: '#c41e3a',
+        city: 'Xitoy',
+        products: ['CNG tsilindr klapanlari', 'Yuqori bosimli fitinglar', 'Gaz to\'ldirish klapanlari', 'Xavfsizlik ventillari'],
+        desc: 'YONH NUO — CNG tizimi uchun klapan va fitinglar ishlab chiqaruvchi xitoy kompaniyasi. ISO 9001 sertifikatiga ega.',
+        search: 'Yonh Nuo CNG valve auto gas China',
+    },
+    {
+        name: 'SINOMA', flag: '🇨🇳', country: 'Xitoy', countryColor: '#c41e3a',
+        city: 'Xitoy',
+        products: ['Karbon tolali CNG tsilindrlar (Tip-4)', 'Kompozit yuqori bosim ballonlari', 'Yengil va mustahkam konstruksiya'],
+        desc: 'SINOMA (China National Materials Corp.) — kompozit material sohasidagi Xitoy davlat korxonasi. Eng yengil va mustahkam CNG tsilindrlar ishlab chiqaradi.',
+        search: 'SINOMA CNG composite cylinder China',
+    },
+];
+
+function buildBrandsCarousel() {
+    const track = document.getElementById('brands-track');
+    if (!track) return;
+
+    // Render cards twice for seamless infinite loop
+    [0, 1].forEach(() => {
+        PARTNERS.forEach(p => {
+            const card = document.createElement('div');
+            card.className = 'brand-card';
+            card.innerHTML = `
+                <span class="brand-card-flag">${p.flag}</span>
+                <div class="brand-card-name">${p.name}</div>
+                <span class="brand-card-country" style="background:${p.countryColor};">${p.country}</span>
+                <div class="brand-card-products">${p.products[0]}</div>
+            `;
+            card.addEventListener('click', () => openBrandModal(p));
+            track.appendChild(card);
+        });
+    });
+}
+
+function openBrandModal(p) {
+    const modal = document.getElementById('brand-modal');
+    const body  = document.getElementById('brand-modal-body');
+    if (!modal || !body) return;
+
+    body.innerHTML = `
+        <div class="flex items-start gap-4 mb-5">
+            <span style="font-size:2.5rem;">${p.flag}</span>
+            <div>
+                <h3 style="font-size:1.5rem;font-weight:800;color:var(--dark-gray);margin:0 0 4px;">${p.name}</h3>
+                <span style="background:${p.countryColor};color:white;font-size:0.7rem;font-weight:700;padding:3px 10px;border-radius:20px;">${p.country}</span>
+                <span style="color:#9ca3af;font-size:0.75rem;margin-left:8px;">📍 ${p.city}</span>
+            </div>
+        </div>
+        <p style="color:#4b5563;font-size:0.9rem;line-height:1.7;margin-bottom:16px;">${p.desc}</p>
+        <div style="background:#f8fafc;border-radius:12px;padding:14px 16px;margin-bottom:16px;">
+            <div style="font-size:0.75rem;font-weight:700;color:var(--dark-gray);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px;">Mahsulotlar</div>
+            <ul style="margin:0;padding:0;list-style:none;">
+                ${p.products.map(pr => `<li style="font-size:0.82rem;color:#374151;padding:4px 0;border-bottom:1px solid #e5e7eb;">
+                    <span style="color:${p.countryColor};margin-right:6px;">▸</span>${pr}
+                </li>`).join('')}
+            </ul>
+        </div>
+        <div style="background:#eff6ff;border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:8px;">
+            <span style="font-size:1rem;">🔍</span>
+            <div>
+                <div style="font-size:0.65rem;color:#6b7280;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Qidiruv uchun</div>
+                <div style="font-size:0.8rem;color:var(--primary-blue);font-weight:700;">"${p.search}"</div>
+            </div>
+        </div>
+    `;
+
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
+
+document.getElementById('brand-modal-close')?.addEventListener('click', () => {
+    document.getElementById('brand-modal')?.classList.add('hidden');
+    document.body.style.overflow = '';
+});
+
+document.getElementById('brand-modal')?.addEventListener('click', (e) => {
+    if (e.target === document.getElementById('brand-modal')) {
+        document.getElementById('brand-modal').classList.add('hidden');
+        document.body.style.overflow = '';
+    }
+});
+
+// Build carousel on DOMContentLoaded
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', buildBrandsCarousel);
+} else {
+    buildBrandsCarousel();
+}
+
+// =========================================================
 // SMOOTH SCROLL FOR NAV LINKS
 // =========================================================
 

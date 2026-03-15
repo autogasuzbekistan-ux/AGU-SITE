@@ -548,6 +548,171 @@ html {
     padding: 20px;
 }
 
+/* =========================================================
+   SUPPLY NETWORK MAP
+   ========================================================= */
+.supply-map-wrap {
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 8px 40px rgba(27, 91, 181, 0.10);
+    margin-bottom: 4px;
+}
+
+#supply-map {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+/* Animated supply lines */
+@keyframes sn-dash-flow {
+    to { stroke-dashoffset: -26; }
+}
+
+.sn-line {
+    animation: sn-dash-flow 1.8s linear infinite;
+}
+
+.sn-node circle[r="48"],
+.sn-node circle[r="46"],
+.sn-node circle[r="40"] {
+    transition: filter 0.3s;
+}
+
+/* =========================================================
+   BRAND CAROUSEL (Infinite Scroll)
+   ========================================================= */
+@keyframes brands-scroll {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+}
+
+.brands-carousel {
+    overflow: hidden;
+    padding: 16px 0;
+    -webkit-mask-image: linear-gradient(to right, transparent 0, black 80px, black calc(100% - 80px), transparent 100%);
+    mask-image: linear-gradient(to right, transparent 0, black 80px, black calc(100% - 80px), transparent 100%);
+}
+
+.brands-track {
+    display: flex;
+    gap: 14px;
+    width: max-content;
+    animation: brands-scroll 50s linear infinite;
+}
+
+.brands-track:hover {
+    animation-play-state: paused;
+}
+
+.brand-card {
+    flex-shrink: 0;
+    width: 190px;
+    background: white;
+    border-radius: 16px;
+    padding: 18px 14px 14px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    border: 1.5px solid #f3f4f6;
+    cursor: pointer;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    text-align: center;
+    user-select: none;
+}
+
+.brand-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 28px rgba(27, 91, 181, 0.14);
+    border-color: #bfdbfe;
+}
+
+.brand-card-flag {
+    font-size: 1.6rem;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.brand-card-name {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: var(--dark-gray);
+    margin-bottom: 4px;
+    letter-spacing: 0.3px;
+}
+
+.brand-card-country {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 20px;
+    display: inline-block;
+    margin-bottom: 8px;
+}
+
+.brand-card-products {
+    font-size: 0.68rem;
+    color: #9ca3af;
+    line-height: 1.4;
+}
+
+/* =========================================================
+   BRAND DETAIL MODAL
+   ========================================================= */
+.brand-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.55);
+    backdrop-filter: blur(6px);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.brand-modal-card {
+    background: white;
+    border-radius: 24px;
+    padding: 32px;
+    max-width: 480px;
+    width: 100%;
+    position: relative;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.2);
+    animation: cardSlide 0.3s ease;
+}
+
+.brand-modal-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: #f3f4f6;
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+    cursor: pointer;
+    color: #6b7280;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.brand-modal-close:hover {
+    background: #fee2e2;
+    color: var(--accent-red);
+}
+
+/* =========================================================
+   RESPONSIVE — PARTNERS
+   ========================================================= */
+@media (max-width: 767px) {
+    .brand-card { width: 160px; padding: 14px 10px; }
+    .brand-card-name { font-size: 0.85rem; }
+    .supply-map-wrap { border-radius: 14px; }
+}
+
 @media (max-width: 767px) {
     .regions-layout {
         grid-template-columns: 1fr;
