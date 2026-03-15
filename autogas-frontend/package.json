@@ -1,18 +1,11 @@
 {
-  "name": "shop-frontend",
-  "version": "0.1.0",
+  "name": "agu-site",
+  "version": "1.0.0",
   "private": true,
-  "type": "module",
   "scripts": {
-    "test": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js",
-    "test:watch": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --watchAll"
+    "start": "serve . -l $PORT"
   },
-  "devDependencies": {
-    "jest": "^29.6.1",
-    "jest-environment-jsdom": "^29.0.0",
-    "jsdom": "^22.1.0"
-  },
-  "jest": {
-    "testEnvironment": "jsdom"
+  "dependencies": {
+    "serve": "^14.2.3"
   }
 }
