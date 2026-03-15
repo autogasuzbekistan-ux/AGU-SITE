@@ -564,15 +564,6 @@ html {
     height: auto;
 }
 
-/* Animated supply lines */
-@keyframes sn-dash-flow {
-    to { stroke-dashoffset: -26; }
-}
-
-.sn-line {
-    animation: sn-dash-flow 1.8s linear infinite;
-}
-
 .sn-node circle[r="48"],
 .sn-node circle[r="46"],
 .sn-node circle[r="40"] {
@@ -625,9 +616,19 @@ html {
     border-color: #bfdbfe;
 }
 
+.brand-lm {
+    width: 54px;
+    height: 54px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 8px;
+}
+
 .brand-card-flag {
-    font-size: 1.6rem;
-    margin-bottom: 8px;
+    font-size: 1.3rem;
+    margin-bottom: 6px;
     display: block;
 }
 

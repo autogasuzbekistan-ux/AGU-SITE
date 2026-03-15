@@ -629,7 +629,11 @@ function buildBrandsCarousel() {
         PARTNERS.forEach(p => {
             const card = document.createElement('div');
             card.className = 'brand-card';
+            const initials = p.name.replace(/[^A-Z0-9]/g, '').substring(0, 3) || p.name.substring(0, 3).toUpperCase();
             card.innerHTML = `
+                <div class="brand-lm" style="background:linear-gradient(135deg,${p.countryColor}1a 0%,${p.countryColor}33 100%);border:2px solid ${p.countryColor}44;">
+                    <span style="color:${p.countryColor};font-weight:900;font-size:0.82rem;letter-spacing:-0.3px;">${initials}</span>
+                </div>
                 <span class="brand-card-flag">${p.flag}</span>
                 <div class="brand-card-name">${p.name}</div>
                 <span class="brand-card-country" style="background:${p.countryColor};">${p.country}</span>

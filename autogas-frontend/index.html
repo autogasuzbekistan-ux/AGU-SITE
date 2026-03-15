@@ -616,8 +616,16 @@
                             <stop offset="0%" stop-color="#eff6ff"/>
                             <stop offset="100%" stop-color="#dbeafe"/>
                         </radialGradient>
+                        <linearGradient id="uzGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#1b5bb5"/>
+                            <stop offset="100%" stop-color="#E30613"/>
+                        </linearGradient>
                         <filter id="sn-glow">
                             <feGaussianBlur stdDeviation="4" result="b"/>
+                            <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+                        </filter>
+                        <filter id="ln-glow">
+                            <feGaussianBlur stdDeviation="2.5" result="b"/>
                             <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
                         </filter>
                         <pattern id="sn-dots" x="0" y="0" width="22" height="22" patternUnits="userSpaceOnUse">
@@ -634,10 +642,33 @@
                     <circle cx="530" cy="205" r="260" fill="none" stroke="#c7d2fe" stroke-width="1" stroke-dasharray="4,8" opacity="0.3"/>
 
                     <!-- Animated supply lines (source → Uzbekistan) -->
-                    <line class="sn-line sn-line-eu"  x1="155" y1="205" x2="508" y2="200" stroke="#1b5bb5" stroke-width="1.8" stroke-dasharray="9,5"/>
-                    <line class="sn-line sn-line-tr"  x1="258" y1="326" x2="516" y2="217" stroke="#E30613" stroke-width="1.8" stroke-dasharray="9,5"/>
-                    <line class="sn-line sn-line-by"  x1="202" y1="115" x2="513" y2="193" stroke="#166534" stroke-width="1.8" stroke-dasharray="9,5"/>
-                    <line class="sn-line sn-line-cn"  x1="732" y1="210" x2="553" y2="205" stroke="#c41e3a" stroke-width="1.8" stroke-dasharray="9,5"/>
+                    <!-- EU line: base glow trail + animated dots -->
+                    <line x1="155" y1="205" x2="508" y2="200" stroke="#1b5bb5" stroke-width="3" opacity="0.12"/>
+                    <line x1="155" y1="205" x2="508" y2="200" stroke="#1b5bb5" stroke-width="1.5" opacity="0.35" filter="url(#ln-glow)"/>
+                    <line x1="155" y1="205" x2="508" y2="200" stroke="#1b5bb5" stroke-width="2" stroke-dasharray="10,8" stroke-linecap="round" opacity="0.9">
+                        <animate attributeName="stroke-dashoffset" from="0" to="-18" dur="1.6s" repeatCount="indefinite"/>
+                    </line>
+
+                    <!-- Turkey line -->
+                    <line x1="258" y1="326" x2="516" y2="217" stroke="#E30613" stroke-width="3" opacity="0.12"/>
+                    <line x1="258" y1="326" x2="516" y2="217" stroke="#E30613" stroke-width="1.5" opacity="0.35" filter="url(#ln-glow)"/>
+                    <line x1="258" y1="326" x2="516" y2="217" stroke="#E30613" stroke-width="2" stroke-dasharray="10,8" stroke-linecap="round" opacity="0.9">
+                        <animate attributeName="stroke-dashoffset" from="0" to="-18" dur="1.9s" repeatCount="indefinite"/>
+                    </line>
+
+                    <!-- Belarus line -->
+                    <line x1="202" y1="115" x2="513" y2="193" stroke="#166534" stroke-width="3" opacity="0.12"/>
+                    <line x1="202" y1="115" x2="513" y2="193" stroke="#166534" stroke-width="1.5" opacity="0.35" filter="url(#ln-glow)"/>
+                    <line x1="202" y1="115" x2="513" y2="193" stroke="#166534" stroke-width="2" stroke-dasharray="10,8" stroke-linecap="round" opacity="0.9">
+                        <animate attributeName="stroke-dashoffset" from="0" to="-18" dur="2.2s" repeatCount="indefinite"/>
+                    </line>
+
+                    <!-- China line -->
+                    <line x1="732" y1="210" x2="553" y2="205" stroke="#c41e3a" stroke-width="3" opacity="0.12"/>
+                    <line x1="732" y1="210" x2="553" y2="205" stroke="#c41e3a" stroke-width="1.5" opacity="0.35" filter="url(#ln-glow)"/>
+                    <line x1="732" y1="210" x2="553" y2="205" stroke="#c41e3a" stroke-width="2" stroke-dasharray="10,8" stroke-linecap="round" opacity="0.9">
+                        <animate attributeName="stroke-dashoffset" from="0" to="-18" dur="1.4s" repeatCount="indefinite"/>
+                    </line>
 
                     <!-- EUROPE node -->
                     <g class="sn-node">
@@ -690,21 +721,26 @@
                         <text x="790" y="238" text-anchor="middle" font-size="6.5" fill="#9ca3af" font-family="Arial, sans-serif">ANHUI · TIANEN · SINOMA</text>
                     </g>
 
-                    <!-- UZBEKISTAN hub (center) -->
+                    <!-- UZBEKISTAN hub (center) — premium multi-ring -->
                     <g>
-                        <circle cx="530" cy="205" r="18" fill="#1b5bb5" opacity="0.12">
-                            <animate attributeName="r" values="14;32;14" dur="2.8s" repeatCount="indefinite"/>
-                            <animate attributeName="opacity" values="0.15;0;0.15" dur="2.8s" repeatCount="indefinite"/>
+                        <!-- Outer pulse ring 1 -->
+                        <circle cx="530" cy="205" r="44" fill="none" stroke="url(#uzGrad)" stroke-width="1" opacity="0">
+                            <animate attributeName="r" values="32;58;32" dur="3s" repeatCount="indefinite"/>
+                            <animate attributeName="opacity" values="0.35;0;0.35" dur="3s" repeatCount="indefinite"/>
                         </circle>
-                        <circle cx="530" cy="205" r="28" fill="white" stroke="url(#uzGrad)" stroke-width="2.5" filter="url(#sn-glow)"/>
-                        <defs>
-                            <linearGradient id="uzGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" stop-color="#1b5bb5"/>
-                                <stop offset="100%" stop-color="#E30613"/>
-                            </linearGradient>
-                        </defs>
-                        <text x="530" y="199" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#E30613" font-family="Arial, sans-serif">AGU</text>
-                        <text x="530" y="212" text-anchor="middle" font-size="7.5" font-weight="bold" fill="#1b5bb5" font-family="Arial, sans-serif">UZB ★</text>
+                        <!-- Outer pulse ring 2 (offset) -->
+                        <circle cx="530" cy="205" r="44" fill="none" stroke="url(#uzGrad)" stroke-width="1" opacity="0">
+                            <animate attributeName="r" values="32;58;32" dur="3s" begin="1s" repeatCount="indefinite"/>
+                            <animate attributeName="opacity" values="0.25;0;0.25" dur="3s" begin="1s" repeatCount="indefinite"/>
+                        </circle>
+                        <!-- Filled glow disc -->
+                        <circle cx="530" cy="205" r="38" fill="url(#uzGrad)" opacity="0.08"/>
+                        <!-- Main hub circle -->
+                        <circle cx="530" cy="205" r="32" fill="white" stroke="url(#uzGrad)" stroke-width="2.5" filter="url(#sn-glow)"/>
+                        <!-- Inner accent ring -->
+                        <circle cx="530" cy="205" r="28" fill="none" stroke="url(#uzGrad)" stroke-width="0.8" opacity="0.4"/>
+                        <text x="530" y="201" text-anchor="middle" font-size="9" font-weight="900" fill="#E30613" font-family="Arial, sans-serif" letter-spacing="1">AGU</text>
+                        <text x="530" y="214" text-anchor="middle" font-size="7.5" font-weight="700" fill="#1b5bb5" font-family="Arial, sans-serif">UZB ★</text>
                     </g>
 
                     <!-- Map footer label -->
