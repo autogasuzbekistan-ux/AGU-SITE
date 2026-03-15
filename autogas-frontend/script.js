@@ -225,32 +225,35 @@ function showFormMessage(text, isSuccess) {
 const CITIES = [
     {
         id: 'qoqon', name: "AGU Qo'qon", x: 702, y: 300, hq: true,
+        type: 'hq',
         phone: '+998 (87) 001-07-77',
         phone2: '+998 (87) 002-07-77',
         address: "Qo'qon shahar, Burkchilik ko'chasi",
-        branches: 3,
+        shops: 3,
+        hasService: true,
         services: [
             "Metan va propan balonlarni tekshirish (laboratoriya)",
-            "Gaz uskunalarini o'rnatish",
+            "Gaz uskunalarini o'rnatish (2026-yildan)",
             "Konsultatsiya berish",
             "Premium metan va propan service xizmati"
         ]
     },
     {
         id: 'toshkent', name: "AGU Toshkent", x: 618, y: 248, hq: false,
+        type: 'shop',
         phone: '+998 XX XXX XX XX',
         address: "Toshkent shahar",
-        branches: 2
+        shops: 2
     },
-    { id: 'andijon',   name: "AGU Andijon",   x: 762, y: 285, hq: false, phone: '+998 XX XXX XX XX', address: "Andijon shahar" },
-    { id: 'namangan',  name: "AGU Namangan",  x: 736, y: 268, hq: false, phone: '+998 XX XXX XX XX', address: "Namangan shahar" },
-    { id: 'guliston',  name: "AGU Guliston",  x: 588, y: 278, hq: false, phone: '+998 XX XXX XX XX', address: "Guliston shahar, Sirdaryo viloyati" },
-    { id: 'samarqand', name: "AGU Samarqand", x: 510, y: 342, hq: false, phone: '+998 XX XXX XX XX', address: "Samarqand shahar" },
-    { id: 'buxoro',    name: "AGU Buxoro",    x: 386, y: 336, hq: false, phone: '+998 XX XXX XX XX', address: "Buxoro shahar" },
-    { id: 'qarshi',    name: "AGU Qarshi",    x: 455, y: 386, hq: false, phone: '+998 XX XXX XX XX', address: "Qarshi shahar, Qashqadaryo viloyati" },
-    { id: 'denov',     name: "AGU Denov",     x: 558, y: 418, hq: false, phone: '+998 XX XXX XX XX', address: "Denov shahar, Surxondaryo viloyati" },
-    { id: 'xorazm',    name: "AGU Xorazm",   x: 210, y: 236, hq: false, phone: '+998 XX XXX XX XX', address: "Urganch shahar, Xorazm viloyati" },
-    { id: 'nukus',     name: "AGU Nukus",     x: 165, y: 190, hq: false, phone: '+998 XX XXX XX XX', address: "Nukus shahar, Qoraqalpog'iston" },
+    { id: 'andijon',   name: "AGU Andijon",   x: 762, y: 285, type: 'shop', hq: false, phone: '+998 XX XXX XX XX', address: "Andijon shahar", shops: 1 },
+    { id: 'namangan',  name: "AGU Namangan",  x: 736, y: 268, type: 'shop', hq: false, phone: '+998 XX XXX XX XX', address: "Namangan shahar", shops: 1 },
+    { id: 'guliston',  name: "AGU Guliston",  x: 588, y: 278, type: 'shop', hq: false, phone: '+998 XX XXX XX XX', address: "Guliston shahar, Sirdaryo viloyati", shops: 1 },
+    { id: 'samarqand', name: "AGU Samarqand", x: 510, y: 342, type: 'shop', hq: false, phone: '+998 XX XXX XX XX', address: "Samarqand shahar", shops: 1 },
+    { id: 'buxoro',    name: "AGU Buxoro",    x: 386, y: 336, type: 'shop', hq: false, phone: '+998 XX XXX XX XX', address: "Buxoro shahar", shops: 1 },
+    { id: 'qarshi',    name: "AGU Qarshi",    x: 455, y: 386, type: 'shop', hq: false, phone: '+998 XX XXX XX XX', address: "Qarshi shahar, Qashqadaryo viloyati", shops: 1 },
+    { id: 'denov',     name: "AGU Denov",     x: 558, y: 418, type: 'shop', hq: false, phone: '+998 XX XXX XX XX', address: "Denov shahar, Surxondaryo viloyati", shops: 1 },
+    { id: 'xorazm',    name: "AGU Xorazm",   x: 210, y: 236, type: 'shop', hq: false, phone: '+998 XX XXX XX XX', address: "Urganch shahar, Xorazm viloyati", shops: 1 },
+    { id: 'nukus',     name: "AGU Nukus",     x: 165, y: 190, type: 'shop', hq: false, phone: '+998 XX XXX XX XX', address: "Nukus shahar, Qoraqalpog'iston", shops: 1 },
 ];
 
 // Label offset: har shahar uchun belgi ustidagi yozuv yo'nalishi
@@ -349,7 +352,8 @@ function buildCityMarkers() {
             btn.innerHTML = `
                 <span class="panel-city-dot" style="background:${color};"></span>
                 <span class="panel-city-name">${city.name}</span>
-                ${city.branches && city.branches > 1 ? `<span class="panel-city-branches">${city.branches} filial</span>` : ''}
+                ${city.shops && city.shops > 1 ? `<span class="panel-city-branches">${city.shops} do'kon</span>` : ''}
+                ${city.hasService ? `<span class="panel-city-branches" style="background:#dcfce7;color:#166534;">service</span>` : ''}
             `;
             btn.addEventListener('click', () => {
                 setActiveCity(city.id);
@@ -403,17 +407,21 @@ function showCityCard(city) {
     const color = city.hq ? '#E30613' : '#1b5bb5';
 
     document.getElementById('city-card-badge').style.background = color;
-    document.getElementById('city-card-badge').textContent = city.hq ? '★ Bosh ofis' : 'Filial';
+    document.getElementById('city-card-badge').textContent = city.hq ? '★ Bosh ofis' : 'Savdo do\'koni';
     document.getElementById('city-card-name').textContent = city.name;
     document.getElementById('city-card-phone').innerHTML =
         city.phone + (city.phone2 ? `<br><a href="tel:${city.phone2.replace(/\D/g,'')}" style="color:inherit">${city.phone2}</a>` : '');
     document.getElementById('city-card-address').textContent = city.address;
 
-    // Filiallar soni
+    // Do'konlar soni va service
     const branchEl = document.getElementById('city-card-branches');
     if (branchEl) {
-        if (city.branches && city.branches > 1) {
-            branchEl.textContent = `${city.branches} ta filial`;
+        const shopCount = city.shops || 1;
+        const parts = [];
+        if (shopCount > 1) parts.push(`${shopCount} ta do'kon`);
+        if (city.hasService) parts.push('+ service markazi');
+        if (parts.length) {
+            branchEl.textContent = parts.join(' ');
             branchEl.classList.remove('hidden');
         } else {
             branchEl.classList.add('hidden');
