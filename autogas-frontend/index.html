@@ -3,21 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Auto Gas Uzbekistan - Metan va Propan Ehtiyot Qismlari</title>
-    
+    <title>Auto Gas Uzbekistan | Rasmiy Sayt</title>
+    <meta name="description" content="Auto Gas Uzbekistan — avtomobillarga metan va propan gaz uskunalarini o'rnatish, texnik xizmat va sertifikatlash bo'yicha yetakchi kompaniya.">
+
     <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
-    
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⛽</text></svg>">
+
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
+
     <!-- GSAP Animation Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-    
+
     <!-- Custom Styles -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="font-sans">
+
     <!-- Loading Screen -->
     <div id="loading-screen" class="loading-screen">
         <div class="logo-container-loader">
@@ -35,69 +37,25 @@
     <header id="main-header" class="bg-white shadow-lg fixed w-full top-0 z-50 transition-all duration-300">
         <nav class="container mx-auto px-6 py-4">
             <div class="flex justify-between items-center">
-                <a href="#home" id="logo-link" class="flex items-center cursor-pointer">
+                <!-- Logo -->
+                <a href="#home" class="flex items-center cursor-pointer">
                     <div class="logo-container-main">
                         <div class="agu-logo-main">
-                            <span class="red-part" id="logo-ag">AG</span><span class="blue-part" id="logo-u">U</span><sup class="registered-main" id="logo-reg">®</sup>
+                            <span class="red-part">AG</span><span class="blue-part">U</span><sup class="registered-main">®</sup>
                         </div>
                         <div class="subtitle-main">Auto Gas Uzbekistan</div>
                     </div>
                 </a>
-                
+
                 <!-- Desktop Menu -->
                 <div class="hidden md:flex items-center space-x-8">
-                    <a href="#home" class="text-gray-700 hover:text-orange-500 transition duration-300 font-medium">Bosh sahifa</a>
-                    <a href="#products" class="text-gray-700 hover:text-orange-500 transition duration-300 font-medium">Mahsulotlar</a>
-                    <a href="#categories" class="text-gray-700 hover:text-orange-500 transition duration-300 font-medium">Kategoriyalar</a>
-                    <a href="#about" class="text-gray-700 hover:text-orange-500 transition duration-300 font-medium">Biz haqimizda</a>
-                    <a href="#partners" class="text-gray-700 hover:text-orange-500 transition duration-300 font-medium">Hamkorlarimiz</a>
-                    <a href="#contact" class="text-gray-700 hover:text-orange-500 transition duration-300 font-medium">Aloqa</a>
-                    <a href="#faq" class="text-gray-700 hover:text-orange-500 transition duration-300 font-medium">FAQ</a>
-                    
-                    <!-- Cart Button -->
-                    <button id="cart-btn" class="relative text-gray-700 hover:text-orange-500 transition duration-300 ml-4">
-                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-                        <span id="cart-item-count" class="absolute -top-2 -right-3 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">0</span>
-                    </button>
-
-                    <!-- Wishlist Button -->
-                    <button id="wishlist-btn" class="relative text-gray-700 hover:text-orange-500 transition duration-300 ml-2 hidden">
-                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 016.364 0L12 7.5l1.318-1.182a4.5 4.5 0 116.364 6.364L12 20.5l-7.682-7.682a4.5 4.5 0 010-6.364z"></path></svg>
-                        <span id="wishlist-item-count" class="absolute -top-2 -right-3 bg-blue-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">0</span>
-                    </button>
-
-                    <!-- Add Product Button (Admin Only) -->
-                    <button id="add-product-btn" class="hidden bg-gradient-to-r from-orange-500 to-red-500 text-white px-4 py-2 rounded-lg hover:from-orange-600 hover:to-red-600 transition duration-300 ml-4 font-semibold">
-                        <svg class="w-5 h-5 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                        Mahsulot Qo'shish
-                    </button>
-
-                    <!-- Auth Buttons -->
-                    <div id="auth-buttons" class="flex items-center space-x-3">
-                        <button id="show-login-modal-btn" class="btn-primary text-white px-6 py-2 rounded-full font-semibold">
-                            Kirish
-                        </button>
-                        <button id="show-register-modal-btn" class="border-2 border-blue-500 text-blue-500 px-6 py-2 rounded-full font-semibold hover:bg-blue-500 hover:text-white transition duration-300">
-                            Ro'yxatdan o'tish
-                        </button>
-                    </div>
-                    
-                    <!-- User Profile -->
-                    <div id="user-profile" class="hidden flex items-center space-x-3">
-                        <div class="flex items-center space-x-2">
-                            <div class="w-10 h-10 rounded-full flex items-center justify-center" style="background: linear-gradient(135deg, var(--secondary-orange), var(--accent-red));">
-                                <span id="user-initial" class="text-white text-sm font-semibold">U</span>
-                            </div>
-                            <span id="user-name" class="text-gray-700 font-medium">User</span>
-                        </div>
-                        <button id="logout-btn" class="text-gray-500 hover:text-red-600 transition duration-300 interactive-icon">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" title="Chiqish">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
-                            </svg>
-                        </button>
-                    </div>
+                    <a href="#home" class="nav-link text-gray-700 hover:text-blue-600 font-medium transition duration-300">Bosh sahifa</a>
+                    <a href="#about" class="nav-link text-gray-700 hover:text-blue-600 font-medium transition duration-300">Biz haqimizda</a>
+                    <a href="#services" class="nav-link text-gray-700 hover:text-blue-600 font-medium transition duration-300">Xizmatlar</a>
+                    <a href="#partners" class="nav-link text-gray-700 hover:text-blue-600 font-medium transition duration-300">Hamkorlar</a>
+                    <a href="#contact" class="btn-primary text-white px-6 py-2 rounded-full font-semibold text-sm">Bog'lanish</a>
                 </div>
-                
+
                 <!-- Mobile Menu Button -->
                 <button id="mobile-menu-btn" class="md:hidden text-gray-700 interactive-icon">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -105,7 +63,7 @@
                     </svg>
                 </button>
             </div>
-            
+
             <!-- Mobile Menu -->
             <div id="mobile-menu" class="mobile-menu md:hidden fixed left-0 top-0 h-full w-64 bg-white shadow-lg z-40">
                 <div class="p-6">
@@ -114,6 +72,7 @@
                             <div class="agu-logo-main">
                                 <span class="red-part">AG</span><span class="blue-part">U</span><sup class="registered-main">®</sup>
                             </div>
+                            <div class="subtitle-main">Auto Gas Uzbekistan</div>
                         </div>
                         <button id="close-menu" class="text-gray-700 interactive-icon">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -121,196 +80,241 @@
                             </svg>
                         </button>
                     </div>
-                    <div class="space-y-4">
-                        <a href="#home" class="block text-gray-700 hover:text-orange-500 py-2 font-medium">Bosh sahifa</a>
-                        <a href="#products" class="block text-gray-700 hover:text-orange-500 py-2 font-medium">Mahsulotlar</a>
-                        <a href="#categories" class="block text-gray-700 hover:text-orange-500 py-2 font-medium">Bo'limlar</a>
-                        <a href="#about" class="block text-gray-700 hover:text-orange-500 py-2 font-medium">Biz haqimizda</a>
-                        <a href="#partners" class="block text-gray-700 hover:text-orange-500 py-2 font-medium">Hamkorlarimiz</a>
-                        <a href="#contact" class="block text-gray-700 hover:text-orange-500 py-2 font-medium">Aloqa</a>
-                        <a href="#faq" class="block text-gray-700 hover:text-orange-500 py-2 font-medium">FAQ</a>
-                        
-                        <!-- Mobile Cart -->
-                        <a href="#" id="mobile-cart-link" class="flex items-center text-gray-700 hover:text-orange-500 py-2 font-medium">
-                            <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-                            Savatcha
-                            <span id="mobile-cart-item-count" class="ml-auto bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">0</span>
-                        </a>
-
-                        <!-- Mobile Wishlist -->
-                        <a href="#" id="mobile-wishlist-link" class="flex items-center text-gray-700 hover:text-orange-500 py-2 font-medium hidden">
-                            <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 016.364 0L12 7.5l1.318-1.182a4.5 4.5 0 116.364 6.364L12 20.5l-7.682-7.682a4.5 4.5 0 010-6.364z"></path></svg>
-                            Sevimlilar
-                            <span id="mobile-wishlist-item-count" class="ml-auto bg-blue-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">0</span>
-                        </a>
-
-                        <!-- Mobile Auth Buttons -->
-                        <div id="mobile-auth-buttons" class="pt-4 border-t border-gray-200 space-y-3">
-                            <button id="mobile-show-login-btn" class="w-full btn-primary text-white py-3 rounded-full font-semibold">
-                                Kirish
-                            </button>
-                            <button id="mobile-show-register-btn" class="w-full border-2 border-blue-500 text-blue-500 py-3 rounded-full font-semibold hover:bg-blue-500 hover:text-white transition duration-300">
-                                Ro'yxatdan o'tish
-                            </button>
-                        </div>
-                        
-                        <!-- Mobile User Profile -->
-                        <div id="mobile-user-profile" class="hidden pt-4 border-t border-gray-200">
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center space-x-3">
-                                    <div class="w-10 h-10 rounded-full flex items-center justify-center" style="background: linear-gradient(135deg, var(--secondary-orange), var(--accent-red));">
-                                        <span id="mobile-user-initial" class="text-white font-semibold">U</span>
-                                    </div>
-                                    <span id="mobile-user-name" class="text-gray-700 font-medium">User</span>
-                                </div>
-                                <button id="mobile-logout-btn" class="text-red-600 hover:text-red-700 transition duration-300">
-                                    Chiqish
-                                </button>
-                            </div>
-                        </div>
+                    <div class="space-y-2">
+                        <a href="#home" class="mobile-nav-link block text-gray-700 hover:text-blue-600 py-3 font-medium border-b border-gray-100">Bosh sahifa</a>
+                        <a href="#about" class="mobile-nav-link block text-gray-700 hover:text-blue-600 py-3 font-medium border-b border-gray-100">Biz haqimizda</a>
+                        <a href="#services" class="mobile-nav-link block text-gray-700 hover:text-blue-600 py-3 font-medium border-b border-gray-100">Xizmatlar</a>
+                        <a href="#partners" class="mobile-nav-link block text-gray-700 hover:text-blue-600 py-3 font-medium border-b border-gray-100">Hamkorlar</a>
+                        <a href="#contact" class="mobile-nav-link block text-gray-700 hover:text-blue-600 py-3 font-medium">Bog'lanish</a>
                     </div>
                 </div>
             </div>
+            <div id="mobile-overlay" class="hidden fixed inset-0 bg-black bg-opacity-40 z-30"></div>
         </nav>
     </header>
 
     <!-- Hero Section -->
-    <section id="home" class="gradient-bg text-white min-h-full flex items-center pt-20">
+    <section id="home" class="gradient-bg text-white min-h-screen flex items-center pt-20">
         <div class="container mx-auto px-6 py-20">
-            <div class="text-center fade-in">
-                <h1 class="text-5xl md:text-7xl font-bold mb-6">
-                    Metan va Propan <span style="color: var(--secondary-orange);">Ehtiyot Qismlari</span>
+            <div class="max-w-4xl mx-auto text-center fade-in">
+                <div class="inline-block bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2 text-sm font-medium mb-6">
+                    O'zbekistonda gaz uskunalari bo'yicha yetakchi kompaniya
+                </div>
+                <h1 class="text-5xl md:text-7xl font-bold mb-6 leading-tight">
+                    Avtomobilingizni<br>
+                    <span style="color: var(--secondary-orange);">Gazga O'tkazing</span>
                 </h1>
-                <p class="text-xl md:text-2xl mb-8 max-w-3xl mx-auto opacity-90">
-                    Gaz uskunalari uchun sifatli ehtiyot qismlarini topish endi oson!
+                <p class="text-xl md:text-2xl mb-10 max-w-3xl mx-auto opacity-90 leading-relaxed">
+                    Metan (CNG) va Propan (LPG) gaz uskunalarini o'rnatish, texnik xizmat va sertifikatlash — 15 yillik tajriba bilan.
                 </p>
-                <div class="space-x-4">
-                    <a href="#products" class="btn-primary text-white px-8 py-4 rounded-full font-semibold text-lg inline-block">
-                        Mahsulotlarni Ko'rish
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <a href="#services" class="btn-primary text-white px-8 py-4 rounded-full font-semibold text-lg inline-block text-center">
+                        Xizmatlarimiz
                     </a>
-                    <a href="#categories" class="border-2 border-white text-white px-8 py-4 rounded-full font-semibold hover:bg-white hover:text-gray-900 transition duration-300 inline-block">
-                        Katalog
+                    <a href="#contact" class="border-2 border-white text-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-white hover:text-gray-900 transition duration-300 inline-block text-center">
+                        Bog'lanish
                     </a>
+                </div>
+            </div>
+        </div>
+        <!-- Scroll indicator -->
+        <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+            <svg class="w-6 h-6 text-white opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="py-16 bg-white">
+        <div class="container mx-auto px-6">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                <div class="text-center fade-in">
+                    <div class="text-4xl font-bold mb-2" style="color: var(--primary-blue);">15+</div>
+                    <div class="text-gray-600 font-medium">Yil tajriba</div>
+                </div>
+                <div class="text-center fade-in">
+                    <div class="text-4xl font-bold mb-2" style="color: var(--accent-red);">5000+</div>
+                    <div class="text-gray-600 font-medium">Mamnun mijoz</div>
+                </div>
+                <div class="text-center fade-in">
+                    <div class="text-4xl font-bold mb-2" style="color: var(--secondary-orange);">13</div>
+                    <div class="text-gray-600 font-medium">Viloyat bo'ylab</div>
+                </div>
+                <div class="text-center fade-in">
+                    <div class="text-4xl font-bold mb-2" style="color: var(--primary-blue);">100%</div>
+                    <div class="text-gray-600 font-medium">Sifat kafolati</div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Products Section -->
-    <section id="products" class="py-20 bg-gray-50">
+    <!-- Services Section -->
+    <section id="services" class="py-20 bg-gray-50">
         <div class="container mx-auto px-6">
             <div class="text-center mb-16 fade-in">
-                <h2 class="text-4xl font-bold mb-4" style="color: var(--dark-gray);">Mashhur Mahsulotlar</h2>
+                <h2 class="text-4xl font-bold mb-4" style="color: var(--dark-gray);">Bizning Xizmatlar</h2>
                 <p class="text-xl text-gray-600 max-w-2xl mx-auto">
-                    Eng ko'p sotilayotgan va sifatli ehtiyot qismlarimiz
+                    Avtomobilingiz uchun to'liq gaz xizmatlari — o'rnatishdan sertifikatlashgacha
                 </p>
             </div>
-            
-            <!-- Search and Sort Controls -->
-            <div class="mb-12 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-                <div class="relative w-full md:w-1/2 lg:w-1/3">
-                    <input type="text" id="search-input" placeholder="Mahsulotlarni qidirish..." class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-full focus:border-orange-500 focus:outline-none transition duration-300 shadow-sm">
-                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Service 1 -->
+                <div class="bg-white rounded-2xl p-8 shadow-sm hover:shadow-xl transition-all duration-300 fade-in group">
+                    <div class="w-16 h-16 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300" style="background: linear-gradient(135deg, var(--primary-blue), #3b82f6);">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
                         </svg>
                     </div>
+                    <h3 class="text-xl font-bold mb-3" style="color: var(--dark-gray);">Metan (CNG) O'rnatish</h3>
+                    <p class="text-gray-600 leading-relaxed">
+                        Avtomobilingizga sertifikatlangan metan gaz uskunasini kasbiy o'rnatish. Barcha rusumli avtomobillar uchun.
+                    </p>
                 </div>
-                <div class="relative">
-                    <select id="sort-select" class="appearance-none bg-white border border-gray-300 rounded-full px-6 py-3 pr-12 focus:border-orange-500 focus:outline-none transition duration-300 shadow-sm">
-                        <option value="default">Saralash</option>
-                        <option value="price-asc">Narx: Arzonidan</option>
-                        <option value="price-desc">Narx: Qimmatidan</option>
-                    </select>
-                    <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
-                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4"></path></svg>
+
+                <!-- Service 2 -->
+                <div class="bg-white rounded-2xl p-8 shadow-sm hover:shadow-xl transition-all duration-300 fade-in group">
+                    <div class="w-16 h-16 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300" style="background: linear-gradient(135deg, var(--secondary-orange), #f59e0b);">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"></path>
+                        </svg>
                     </div>
+                    <h3 class="text-xl font-bold mb-3" style="color: var(--dark-gray);">Propan (LPG) O'rnatish</h3>
+                    <p class="text-gray-600 leading-relaxed">
+                        LPG gaz uskunasini o'rnatish va sozlash. Tejamkor va ekologik toza yoqilg'iga o'tish endi oson.
+                    </p>
+                </div>
+
+                <!-- Service 3 -->
+                <div class="bg-white rounded-2xl p-8 shadow-sm hover:shadow-xl transition-all duration-300 fade-in group">
+                    <div class="w-16 h-16 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300" style="background: linear-gradient(135deg, #10b981, #059669);">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3" style="color: var(--dark-gray);">Texnik Ko'rik va Sertifikatlash</h3>
+                    <p class="text-gray-600 leading-relaxed">
+                        Davlat talablariga mos rasmiy sertifikatlash va texnik ko'rik xizmati. Hujjatlar to'liq rasmiylashtiriladi.
+                    </p>
+                </div>
+
+                <!-- Service 4 -->
+                <div class="bg-white rounded-2xl p-8 shadow-sm hover:shadow-xl transition-all duration-300 fade-in group">
+                    <div class="w-16 h-16 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3" style="color: var(--dark-gray);">Diagnostika va Ta'mirlash</h3>
+                    <p class="text-gray-600 leading-relaxed">
+                        Gaz uskunalarini kompyuter diagnostikasi, nosozliklarni aniqlash va kasbiy ta'mirlash xizmati.
+                    </p>
+                </div>
+
+                <!-- Service 5 -->
+                <div class="bg-white rounded-2xl p-8 shadow-sm hover:shadow-xl transition-all duration-300 fade-in group">
+                    <div class="w-16 h-16 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300" style="background: linear-gradient(135deg, var(--accent-red), #f43f5e);">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3" style="color: var(--dark-gray);">Texnik Xizmat Ko'rsatish</h3>
+                    <p class="text-gray-600 leading-relaxed">
+                        Gaz uskunalarini muntazam texnik xizmatlash, filtrlar almashtirish va profilaktik ko'rik.
+                    </p>
+                </div>
+
+                <!-- Service 6 -->
+                <div class="bg-white rounded-2xl p-8 shadow-sm hover:shadow-xl transition-all duration-300 fade-in group">
+                    <div class="w-16 h-16 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300" style="background: linear-gradient(135deg, #0891b2, #0e7490);">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3" style="color: var(--dark-gray);">Konsultatsiya va O'qitish</h3>
+                    <p class="text-gray-600 leading-relaxed">
+                        Gaz uskunalari bo'yicha bepul maslahat, to'g'ri foydalanish bo'yicha o'qitish va yo'riqnoma.
+                    </p>
                 </div>
             </div>
-            
-            <!-- Products Grid -->
-            <div class="grid md:grid-cols-3 gap-8 items-start" id="products-grid">
-                <!-- Products will be loaded here by JavaScript -->
-            </div>
-        </div>
-
-        <!-- Pagination -->
-        <div id="pagination-container" class="flex justify-center items-center space-x-2 mt-12">
-            <!-- Pagination buttons will be inserted here -->
-        </div>
-    </section>
-
-    <!-- Categories Section -->
-    <section id="categories" class="py-20 bg-white">
-        <div class="container mx-auto px-6">
-            <div class="text-center mb-16 fade-in">
-                <h2 class="text-4xl font-bold mb-4" style="color: var(--dark-gray);">Mahsulot Kategoriyalari</h2>
-                <p class="text-xl text-gray-600 max-w-2xl mx-auto">
-                    Barcha gaz uskunalari uchun kerakli qismlar
-                </p>
-            </div>
-            
-            <div id="categories-grid" class="grid md:grid-cols-2 lg:grid-cols-4 gap-6"></div>
         </div>
     </section>
 
     <!-- About Section -->
-    <section id="about" class="py-20 bg-gray-50">
+    <section id="about" class="py-20 bg-white">
         <div class="container mx-auto px-6">
-            <div class="grid md:grid-cols-2 gap-12 items-center">
+            <div class="grid md:grid-cols-2 gap-16 items-center">
                 <div class="fade-in">
-                    <h2 class="text-4xl font-bold mb-6" style="color: var(--dark-gray);">Biz Haqimizda</h2>
-                    <p class="text-lg text-gray-600 mb-6">
-                        15 yildan ortiq tajriba bilan Metan va Propan ehtiyot qismlarini yetkazib beramiz. 
-                        Bizning sayt orqali eng sifatli mahsulotlarni topishingiz mumkin.
+                    <div class="inline-block bg-blue-50 text-blue-700 rounded-full px-4 py-1 text-sm font-semibold mb-4">Biz haqimizda</div>
+                    <h2 class="text-4xl font-bold mb-6" style="color: var(--dark-gray);">AGU — Ishonchli Hamkoringiz</h2>
+                    <p class="text-lg text-gray-600 mb-6 leading-relaxed">
+                        Auto Gas Uzbekistan 2009-yildan buyon O'zbekiston bo'ylab avtomobillarga gaz uskunalari o'rnatish sohasida faoliyat yuritib kelmoqda. Biz mijozlarga eng yuqori sifatli xizmat ko'rsatishni maqsad qilganmiz.
+                    </p>
+                    <p class="text-lg text-gray-600 mb-8 leading-relaxed">
+                        Jahon yetakchi brendlari — SAKA, FESA, Prins va Alex Optima bilan hamkorlik qilib, faqat original va sertifikatlangan uskunalar o'rnatamiz.
                     </p>
                     <div class="space-y-4">
-                        <div class="flex items-center">
-                            <div class="w-6 h-6 rounded-full flex items-center justify-center mr-4" style="background: var(--secondary-orange);">
+                        <div class="flex items-center gap-4">
+                            <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style="background: var(--primary-blue);">
                                 <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
                                 </svg>
                             </div>
-                            <span class="text-gray-700 font-medium">700+ sifatli mahsulot</span>
+                            <span class="text-gray-700 font-medium">Rasmiy litsenziyaga ega servis markazi</span>
                         </div>
-                        <div class="flex items-center">
-                            <div class="w-6 h-6 rounded-full flex items-center justify-center mr-4" style="background: var(--secondary-orange);">
+                        <div class="flex items-center gap-4">
+                            <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style="background: var(--primary-blue);">
                                 <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
                                 </svg>
                             </div>
-                            <span class="text-gray-700 font-medium">Tez yetkazib berish</span>
+                            <span class="text-gray-700 font-medium">Malakali muhandislar jamoasi</span>
                         </div>
-                        <div class="flex items-center">
-                            <div class="w-6 h-6 rounded-full flex items-center justify-center mr-4" style="background: var(--secondary-orange);">
+                        <div class="flex items-center gap-4">
+                            <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style="background: var(--primary-blue);">
                                 <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
                                 </svg>
                             </div>
-                            <span class="text-gray-700 font-medium">Kafolat va xizmat</span>
+                            <span class="text-gray-700 font-medium">O'rnatishga 1 yil kafolat</span>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style="background: var(--primary-blue);">
+                                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                            </div>
+                            <span class="text-gray-700 font-medium">O'zbekiston bo'ylab 13 ta viloyatda xizmat</span>
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="fade-in">
-                    <div class="rounded-2xl p-8 text-white" style="background: linear-gradient(135deg, var(--primary-blue) 0%, var(--dark-gray) 50%, var(--accent-red) 100%);">
-                        <div class="grid grid-cols-2 gap-6">
-                            <div class="text-center">
-                                <div class="text-3xl font-bold mb-2">700+</div>
-                                <div class="text-sm opacity-90">Mahsulotlar</div>
+                    <div class="rounded-3xl p-10 text-white" style="background: linear-gradient(135deg, var(--primary-blue) 0%, var(--dark-gray) 60%, var(--accent-red) 100%);">
+                        <div class="grid grid-cols-2 gap-8">
+                            <div class="text-center p-4 bg-white/10 rounded-2xl">
+                                <div class="text-4xl font-bold mb-2">2009</div>
+                                <div class="text-sm opacity-90 font-medium">Tashkil etilgan yil</div>
                             </div>
-                            <div class="text-center">
-                                <div class="text-3xl font-bold mb-2">15+</div>
-                                <div class="text-sm opacity-90">Yil tajriba</div>
+                            <div class="text-center p-4 bg-white/10 rounded-2xl">
+                                <div class="text-4xl font-bold mb-2">15+</div>
+                                <div class="text-sm opacity-90 font-medium">Yil tajriba</div>
                             </div>
-                            <div class="text-center">
-                                <div class="text-3xl font-bold mb-2">99%</div>
-                                <div class="text-sm opacity-90">Sifat kafolati</div>
+                            <div class="text-center p-4 bg-white/10 rounded-2xl">
+                                <div class="text-4xl font-bold mb-2">50+</div>
+                                <div class="text-sm opacity-90 font-medium">Mutaxassis</div>
                             </div>
-                            <div class="text-center">
-                                <div class="text-3xl font-bold mb-2">24/7</div>
-                                <div class="text-sm opacity-90">Onlayn savdo</div>
+                            <div class="text-center p-4 bg-white/10 rounded-2xl">
+                                <div class="text-4xl font-bold mb-2">4</div>
+                                <div class="text-sm opacity-90 font-medium">Jahon brendlari</div>
                             </div>
+                        </div>
+                        <div class="mt-8 text-center">
+                            <a href="#contact" class="inline-block bg-white font-semibold px-8 py-3 rounded-full transition duration-300 hover:bg-gray-100" style="color: var(--primary-blue);">
+                                Bepul Konsultatsiya
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -319,26 +323,38 @@
     </section>
 
     <!-- Partners Section -->
-    <section id="partners" class="py-20 bg-white">
+    <section id="partners" class="py-20 bg-gray-50">
         <div class="container mx-auto px-6">
             <div class="text-center mb-16 fade-in">
                 <h2 class="text-4xl font-bold mb-4" style="color: var(--dark-gray);">Bizning Hamkorlarimiz</h2>
                 <p class="text-xl text-gray-600 max-w-2xl mx-auto">
-                    Biz jahonning yetakchi brendlari bilan ishlaymiz
+                    Jahonning yetakchi gaz uskunalari brendlari bilan rasmiy hamkorlik
                 </p>
             </div>
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-x-8 gap-y-12 items-center">
-                <div class="flex justify-center fade-in">
-                    <img src="https://i.postimg.cc/vHf68PzM/Untitled-design-37.jpg" alt="SAKA Logo" class="partner-logo h-12">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-x-12 gap-y-12 items-center">
+                <div class="flex flex-col items-center fade-in group">
+                    <div class="bg-white rounded-2xl p-6 shadow-sm w-full flex items-center justify-center h-28 group-hover:shadow-lg transition-all duration-300">
+                        <img src="https://i.postimg.cc/vHf68PzM/Untitled-design-37.jpg" alt="SAKA" class="partner-logo h-14 object-contain">
+                    </div>
+                    <span class="mt-3 text-sm font-semibold text-gray-500">SAKA</span>
                 </div>
-                <div class="flex justify-center fade-in">
-                    <img src="https://i.postimg.cc/HLxxM3Qy/Untitled-design.png" alt="FESA Logo" class="partner-logo h-12">
+                <div class="flex flex-col items-center fade-in group">
+                    <div class="bg-white rounded-2xl p-6 shadow-sm w-full flex items-center justify-center h-28 group-hover:shadow-lg transition-all duration-300">
+                        <img src="https://i.postimg.cc/HLxxM3Qy/Untitled-design.png" alt="FESA" class="partner-logo h-14 object-contain">
+                    </div>
+                    <span class="mt-3 text-sm font-semibold text-gray-500">FESA</span>
                 </div>
-                <div class="flex justify-center fade-in">
-                    <img src="https://i.postimg.cc/KcMMJwxr/logo-Prins-FC.jpg" alt="Prins Logo" class="partner-logo h-20">
+                <div class="flex flex-col items-center fade-in group">
+                    <div class="bg-white rounded-2xl p-6 shadow-sm w-full flex items-center justify-center h-28 group-hover:shadow-lg transition-all duration-300">
+                        <img src="https://i.postimg.cc/KcMMJwxr/logo-Prins-FC.jpg" alt="Prins" class="partner-logo h-16 object-contain">
+                    </div>
+                    <span class="mt-3 text-sm font-semibold text-gray-500">Prins</span>
                 </div>
-                <div class="flex justify-center fade-in">
-                    <img src="https://i.postimg.cc/cLb1q1cr/logo-alex.png" alt="Alex Optima Logo" class="partner-logo h-16">
+                <div class="flex flex-col items-center fade-in group">
+                    <div class="bg-white rounded-2xl p-6 shadow-sm w-full flex items-center justify-center h-28 group-hover:shadow-lg transition-all duration-300">
+                        <img src="https://i.postimg.cc/cLb1q1cr/logo-alex.png" alt="Alex Optima" class="partner-logo h-14 object-contain">
+                    </div>
+                    <span class="mt-3 text-sm font-semibold text-gray-500">Alex Optima</span>
                 </div>
             </div>
         </div>
@@ -350,39 +366,68 @@
             <div class="text-center mb-16 fade-in">
                 <h2 class="text-4xl font-bold mb-4" style="color: var(--dark-gray);">Tez-tez So'raladigan Savollar</h2>
                 <p class="text-xl text-gray-600 max-w-2xl mx-auto">
-                    Eng ko'p beriladigan savollarga javoblar
+                    Gaz uskunalari haqida eng ko'p beriladigan savollarga javoblar
                 </p>
             </div>
-            
+
             <div id="faq-accordion" class="max-w-3xl mx-auto space-y-4">
-                <!-- FAQ Item 1 -->
                 <div class="faq-item border border-gray-200 rounded-xl overflow-hidden fade-in">
                     <button class="faq-question w-full text-left p-6 flex justify-between items-center">
-                        <span class="text-lg font-semibold" style="color: var(--dark-gray);">Qanday qilib mahsulot sotib olsam bo'ladi?</span>
-                        <svg class="faq-icon w-6 h-6 text-gray-500 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                        <span class="text-lg font-semibold pr-4" style="color: var(--dark-gray);">Gazga o'tish qancha turadi?</span>
+                        <svg class="faq-icon w-6 h-6 flex-shrink-0 text-gray-500 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
                     </button>
-                    <div class="faq-answer p-6 pt-0 text-gray-600">
-                        <p>Mahsulot sotib olish uchun avval saytdan ro'yxatdan o'tishingiz kerak. Shundan so'ng, kerakli mahsulotni tanlab, "Savatga qo'shish" tugmasini bosing. Barcha kerakli mahsulotlarni savatga qo'shgach, savatcha oynasidan "Xaridni Rasmiylashtirish" tugmasini bosishingiz mumkin.</p>
+                    <div class="faq-answer px-6 text-gray-600">
+                        <p class="pb-6">Narx avtomobil turiga, gaz uskunasi brendiga va o'rnatish murakkabligiga qarab farq qiladi. Aniq narxni bilish uchun biz bilan bog'laning — bepul konsultatsiya va hisob-kitob qilamiz.</p>
                     </div>
                 </div>
-                <!-- FAQ Item 2 -->
+
                 <div class="faq-item border border-gray-200 rounded-xl overflow-hidden fade-in">
                     <button class="faq-question w-full text-left p-6 flex justify-between items-center">
-                        <span class="text-lg font-semibold" style="color: var(--dark-gray);">Yetkazib berish xizmati bormi?</span>
-                        <svg class="faq-icon w-6 h-6 text-gray-500 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                        <span class="text-lg font-semibold pr-4" style="color: var(--dark-gray);">O'rnatish qancha vaqt oladi?</span>
+                        <svg class="faq-icon w-6 h-6 flex-shrink-0 text-gray-500 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
                     </button>
-                    <div class="faq-answer p-6 pt-0 text-gray-600">
-                        <p>Ha, biz O'zbekistonning barcha hududlariga yetkazib berish xizmatini taklif qilamiz. Xaridni rasmiylashtirish jarayonida sizga yetkazib berish manzili va shartlari haqida batafsil ma'lumot beriladi.</p>
+                    <div class="faq-answer px-6 text-gray-600">
+                        <p class="pb-6">Oddiy o'rnatish 1 kun davomida tugallanadi. Metan yoki propan gaz uskunasini o'rnatish odatda 4-8 soat vaqt oladi. Sertifikatlash jarayoni esa 1-2 ish kuni davom etadi.</p>
                     </div>
                 </div>
-                <!-- FAQ Item 3 -->
+
                 <div class="faq-item border border-gray-200 rounded-xl overflow-hidden fade-in">
                     <button class="faq-question w-full text-left p-6 flex justify-between items-center">
-                        <span class="text-lg font-semibold" style="color: var(--dark-gray);">Mahsulotlarga kafolat beriladimi?</span>
-                        <svg class="faq-icon w-6 h-6 text-gray-500 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                        <span class="text-lg font-semibold pr-4" style="color: var(--dark-gray);">Qaysi avtomobillarga o'rnatish mumkin?</span>
+                        <svg class="faq-icon w-6 h-6 flex-shrink-0 text-gray-500 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
                     </button>
-                    <div class="faq-answer p-6 pt-0 text-gray-600">
-                        <p>Albatta. Biz sotayotgan barcha mahsulotlar ishlab chiqaruvchining rasmiy kafolatiga ega. Kafolat muddati va shartlari har bir mahsulot uchun alohida bo'lishi mumkin. Batafsil ma'lumotni mahsulot sahifasida topishingiz mumkin.</p>
+                    <div class="faq-answer px-6 text-gray-600">
+                        <p class="pb-6">Benzin dvigateliga ega deyarli barcha avtomobillarga gaz uskunasi o'rnatish mumkin: Cobalt, Spark, Nexia, Malibu, Lacetti, Damas, hamda import avtomobillar. Mutaxassisimiz avtomobilingizni ko'rib, mos echimni tavsiya qiladi.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item border border-gray-200 rounded-xl overflow-hidden fade-in">
+                    <button class="faq-question w-full text-left p-6 flex justify-between items-center">
+                        <span class="text-lg font-semibold pr-4" style="color: var(--dark-gray);">Kafolat qanday ishlaydi?</span>
+                        <svg class="faq-icon w-6 h-6 flex-shrink-0 text-gray-500 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                    </button>
+                    <div class="faq-answer px-6 text-gray-600">
+                        <p class="pb-6">O'rnatilgan uskunalarga 12 oy (1 yil) kafolat beramiz. Kafolat muddatida yuzaga keladigan nosozliklar bepul ta'mirlanadi. Uskunalar ishlab chiqaruvchining o'z kafolati bilan ham ta'minlangan.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item border border-gray-200 rounded-xl overflow-hidden fade-in">
+                    <button class="faq-question w-full text-left p-6 flex justify-between items-center">
+                        <span class="text-lg font-semibold pr-4" style="color: var(--dark-gray);">Gaz tejamkormi? Qancha tejash mumkin?</span>
+                        <svg class="faq-icon w-6 h-6 flex-shrink-0 text-gray-500 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                    </button>
+                    <div class="faq-answer px-6 text-gray-600">
+                        <p class="pb-6">Ha, gaz benzinga nisbatan ancha arzon. O'rtacha hisob-kitobga ko'ra, oy ichida 40-60% yoqilg'i xarajatlarini tejash mumkin. O'rnatish xarajati odatda 6-12 oyda qoplanadi.</p>
                     </div>
                 </div>
             </div>
@@ -395,69 +440,92 @@
             <div class="text-center mb-16 fade-in">
                 <h2 class="text-4xl font-bold mb-4">Biz Bilan Bog'laning</h2>
                 <p class="text-xl opacity-90 max-w-2xl mx-auto">
-                    Savollaringiz bormi? Biz sizga yordam berishga tayyormiz
+                    Savollaringiz bormi? Bepul konsultatsiya uchun bugun murojaat qiling
                 </p>
             </div>
-            
+
             <div class="grid md:grid-cols-2 gap-12">
                 <div class="fade-in">
                     <form id="contact-form" class="space-y-6">
                         <div>
                             <label class="block text-sm font-medium mb-2">Ismingiz</label>
-                            <input type="text" id="name" class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl focus:border-orange-400 focus:outline-none transition duration-300 text-white placeholder-white/60" placeholder="Ismingizni kiriting" required>
+                            <input type="text" id="contact-name" class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl focus:border-orange-400 focus:outline-none transition duration-300 text-white placeholder-white/60" placeholder="Ismingizni kiriting" required>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium mb-2">Email</label>
-                            <input type="email" id="email" class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl focus:border-orange-400 focus:outline-none transition duration-300 text-white placeholder-white/60" placeholder="Email manzilingiz" required>
+                            <label class="block text-sm font-medium mb-2">Telefon raqam</label>
+                            <input type="tel" id="contact-phone" class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl focus:border-orange-400 focus:outline-none transition duration-300 text-white placeholder-white/60" placeholder="+998 90 000 00 00" required>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium mb-2">Xabar</label>
-                            <textarea id="message" rows="4" class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl focus:border-orange-400 focus:outline-none transition duration-300 text-white placeholder-white/60" placeholder="Xabaringizni yozing" required></textarea>
+                            <label class="block text-sm font-medium mb-2">Xabar (ixtiyoriy)</label>
+                            <textarea id="contact-message" rows="4" class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl focus:border-orange-400 focus:outline-none transition duration-300 text-white placeholder-white/60" placeholder="Qanday xizmat kerak? Qaysi avtomobil?"></textarea>
                         </div>
-                        <button type="submit" class="w-full btn-primary text-white py-3 rounded-xl font-semibold text-lg">
+                        <button type="submit" class="w-full btn-primary text-white py-4 rounded-xl font-semibold text-lg">
                             Xabar Yuborish
                         </button>
                     </form>
-                    
                     <div id="form-message" class="mt-4 p-4 rounded-xl hidden"></div>
                 </div>
-                
-                <div class="fade-in">
-                    <div class="space-y-8">
-                        <div class="flex items-start">
-                            <div class="w-12 h-12 rounded-full flex items-center justify-center mr-4 flex-shrink-0" style="background: var(--secondary-orange);">
-                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                </svg>
-                            </div>
-                            <div>
-                                <h3 class="text-xl font-semibold mb-2">Manzil</h3>
-                                <p class="opacity-90">Qo'qon shahar, Burkchilik ko'chasi</p>
-                            </div>
+
+                <div class="fade-in space-y-8">
+                    <div class="flex items-start gap-5">
+                        <div class="w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0" style="background: var(--secondary-orange);">
+                            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            </svg>
                         </div>
-                        
-                        <div class="flex items-start">
-                            <div class="w-12 h-12 rounded-full flex items-center justify-center mr-4 flex-shrink-0" style="background: var(--secondary-orange);">
-                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
-                                </svg>
-                            </div>
-                            <div>
-                                <h3 class="text-xl font-semibold mb-2">Telefon</h3>
-                                <p class="opacity-90">+998 88 107 00 10</p>
-                            </div>
+                        <div>
+                            <h3 class="text-xl font-semibold mb-1">Manzil</h3>
+                            <p class="opacity-80">Qo'qon shahar, Burkchilik ko'chasi</p>
                         </div>
-                        
-                        <div class="flex items-start">
-                            <div class="w-12 h-12 rounded-full flex items-center justify-center mr-4 flex-shrink-0" style="background: var(--secondary-orange);">
-                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-                                </svg>
+                    </div>
+
+                    <div class="flex items-start gap-5">
+                        <div class="w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0" style="background: var(--secondary-orange);">
+                            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold mb-1">Telefon</h3>
+                            <a href="tel:+998881070010" class="opacity-80 hover:opacity-100 transition-opacity text-lg">+998 88 107 00 10</a>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-5">
+                        <div class="w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0" style="background: var(--secondary-orange);">
+                            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold mb-1">Email</h3>
+                            <a href="mailto:info@autogasuzbekistan.com" class="opacity-80 hover:opacity-100 transition-opacity">info@autogasuzbekistan.com</a>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-5">
+                        <div class="w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0" style="background: var(--secondary-orange);">
+                            <svg class="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold mb-1">Telegram</h3>
+                            <a href="https://t.me/autogasuzbekistan" target="_blank" class="opacity-80 hover:opacity-100 transition-opacity">@autogasuzbekistan</a>
+                        </div>
+                    </div>
+
+                    <div class="bg-white/10 rounded-2xl p-6 mt-4">
+                        <h3 class="text-lg font-semibold mb-3">Ish vaqti</h3>
+                        <div class="space-y-2 opacity-80">
+                            <div class="flex justify-between">
+                                <span>Dushanba – Shanba</span>
+                                <span class="font-medium">08:00 – 18:00</span>
                             </div>
-                            <div>
-                                <h3 class="text-xl font-semibold mb-2">Email</h3>
-                                <p class="opacity-90">info@autogasuzbekistan.com</p>
+                            <div class="flex justify-between">
+                                <span>Yakshanba</span>
+                                <span class="font-medium text-orange-300">Dam olish kuni</span>
                             </div>
                         </div>
                     </div>
@@ -470,86 +538,64 @@
     <footer class="text-white py-12" style="background-color: var(--dark-gray);">
         <div class="container mx-auto px-6">
             <div class="grid md:grid-cols-4 gap-8">
-                <div>
-                    <div class="logo-container-main footer">
+                <div class="md:col-span-2">
+                    <div class="logo-container-main footer mb-4">
                         <div class="agu-logo-main">
                             <span class="red-part">AG</span><span class="blue-part">U</span><sup class="registered-main">®</sup>
                         </div>
                         <div class="subtitle-main">Auto Gas Uzbekistan</div>
                     </div>
-                    <p class="text-gray-400 mb-4 mt-4">
-                        Metan va propan ehtiyot qismlari uchun ishonchli marketplace
+                    <p class="text-gray-400 mb-4 max-w-xs leading-relaxed">
+                        O'zbekistonda avtomobillarga gaz uskunalarini o'rnatish bo'yicha ishonchli hamkor. 15 yillik tajriba, 5000+ mamnun mijoz.
                     </p>
                     <div class="flex space-x-4">
-                        <a href="#" class="text-gray-400 hover:text-orange-400 transition duration-300 interactive-icon">
-                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/>
+                        <a href="https://t.me/autogasuzbekistan" target="_blank" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-orange-500 transition duration-300">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
                             </svg>
                         </a>
-                        <a href="#" class="text-gray-400 hover:text-orange-400 transition duration-300 interactive-icon">
-                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z"/>
-                            </svg>
-                        </a>
-                        <a href="#" class="text-gray-400 hover:text-orange-400 transition duration-300 interactive-icon">
-                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                        <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-orange-500 transition duration-300">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                                 <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
                             </svg>
                         </a>
                     </div>
                 </div>
-                
+
                 <div>
-                    <h3 class="text-lg font-semibold mb-4">Mahsulotlar</h3>
+                    <h3 class="text-lg font-semibold mb-4">Xizmatlar</h3>
                     <ul class="space-y-2 text-gray-400">
-                        <li><a href="#" class="hover:text-orange-400 transition duration-300">Gaz Filtrlari</a></li>
-                        <li><a href="#" class="hover:text-orange-400 transition duration-300">Elektr Klapanlar</a></li>
-                        <li><a href="#" class="hover:text-orange-400 transition duration-300">Bosim Sensorlari</a></li>
-                        <li><a href="#" class="hover:text-orange-400 transition duration-300">Boshqa Qismlar</a></li>
+                        <li><a href="#services" class="hover:text-orange-400 transition duration-300">Metan (CNG) O'rnatish</a></li>
+                        <li><a href="#services" class="hover:text-orange-400 transition duration-300">Propan (LPG) O'rnatish</a></li>
+                        <li><a href="#services" class="hover:text-orange-400 transition duration-300">Texnik Ko'rik</a></li>
+                        <li><a href="#services" class="hover:text-orange-400 transition duration-300">Diagnostika</a></li>
+                        <li><a href="#services" class="hover:text-orange-400 transition duration-300">Sertifikatlash</a></li>
                     </ul>
                 </div>
-                
+
                 <div>
                     <h3 class="text-lg font-semibold mb-4">Kompaniya</h3>
                     <ul class="space-y-2 text-gray-400">
-                        <li><a href="#" class="hover:text-orange-400 transition duration-300">Biz haqimizda</a></li>
-                        <li><a href="#" class="hover:text-orange-400 transition duration-300">Jamoa</a></li>
-                        <li><a href="#" class="hover:text-orange-400 transition duration-300">Karyera</a></li>
-                        <li><a href="#" class="hover:text-orange-400 transition duration-300">Yangiliklar</a></li>
+                        <li><a href="#about" class="hover:text-orange-400 transition duration-300">Biz haqimizda</a></li>
+                        <li><a href="#partners" class="hover:text-orange-400 transition duration-300">Hamkorlar</a></li>
+                        <li><a href="#faq" class="hover:text-orange-400 transition duration-300">FAQ</a></li>
+                        <li><a href="#contact" class="hover:text-orange-400 transition duration-300">Bog'lanish</a></li>
                     </ul>
 
-                    <h3 class="text-lg font-semibold mb-4 mt-6">Tizimga Kirish</h3>
+                    <h3 class="text-lg font-semibold mb-4 mt-6">Tizimga kirish</h3>
                     <ul class="space-y-2 text-gray-400">
                         <li>
-                            <button onclick="showLoginModal()" class="hover:text-orange-400 transition duration-300 flex items-center gap-2">
+                            <a href="/admin" class="hover:text-orange-400 transition duration-300 flex items-center gap-2">
                                 <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 0 0010 11z" clip-rule="evenodd"/>
                                 </svg>
-                                Admin/Owner Paneli
-                            </button>
+                                Admin paneli
+                            </a>
                         </li>
-                        <li>
-                            <button onclick="showLoginModal()" class="hover:text-orange-400 transition duration-300 flex items-center gap-2">
-                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
-                                </svg>
-                                Kontragent Paneli
-                            </button>
-                        </li>
-                    </ul>
-                </div>
-                
-                <div>
-                    <h3 class="text-lg font-semibold mb-4">Qo'llab-quvvatlash</h3>
-                    <ul class="space-y-2 text-gray-400">
-                        <li><a href="#" class="hover:text-orange-400 transition duration-300">Yordam markazi</a></li>
-                        <li><a href="#" class="hover:text-orange-400 transition duration-300">FAQ</a></li>
-                        <li><a href="#" class="hover:text-orange-400 transition duration-300">Aloqa</a></li>
-                        <li><a href="#" class="hover:text-orange-400 transition duration-300">Maxfiylik</a></li>
                     </ul>
                 </div>
             </div>
-            
+
             <div class="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400">
                 <p>&copy; 2025 Auto Gas Uzbekistan. Barcha huquqlar himoyalangan.</p>
             </div>
@@ -559,295 +605,10 @@
     </div> <!-- main-content end -->
 
     <!-- Toast Notification -->
-    <div id="toast-notification" class="fixed top-5 right-5 bg-red-500 text-white py-3 px-6 rounded-lg shadow-lg transform translate-x-[120%] transition-transform duration-500 ease-in-out z-[100]">
-        <span id="toast-message">Xatolik yuz berdi.</span>
+    <div id="toast-notification" class="fixed top-5 right-5 text-white py-3 px-6 rounded-lg shadow-lg transform translate-x-[120%] transition-transform duration-500 ease-in-out z-[100] bg-green-600">
+        <span id="toast-message">Xabar yuborildi!</span>
     </div>
 
-    <!-- Login Modal -->
-    <div id="login-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
-        <div class="bg-white rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-2xl font-bold" style="color: var(--dark-gray);">Kirish</h3>
-                <button id="close-login-modal-btn" class="text-gray-500 hover:text-gray-700 interactive-icon">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                    </svg>
-                </button>
-            </div>
-            
-            <form id="login-form" class="space-y-4">
-                <div>
-                    <label class="block text-sm font-medium mb-2" style="color: var(--dark-gray);">Email</label>
-                    <input type="email" id="login-email" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:border-orange-500 focus:outline-none transition duration-300" required>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium mb-2" style="color: var(--dark-gray);">Parol</label>
-                    <input type="password" id="login-password" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:border-orange-500 focus:outline-none transition duration-300" required>
-                </div>
-                <button type="submit" class="w-full btn-primary text-white py-3 rounded-xl font-semibold">
-                    Kirish
-                </button>
-            </form>
-            
-            <div class="mt-6 text-center">
-                <p class="text-gray-600">Hisobingiz yo'qmi? 
-                    <button id="switch-to-register-btn" class="font-semibold hover:underline" style="color: var(--secondary-orange);">
-                        Ro'yxatdan o'ting
-                    </button>
-                </p>
-            </div>
-            
-            <div id="login-message" class="mt-4 p-3 rounded-xl hidden"></div>
-        </div>
-    </div>
-
-    <!-- Register Modal -->
-    <div id="register-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
-        <div class="bg-white rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-2xl font-bold" style="color: var(--dark-gray);">Ro'yxatdan O'tish</h3>
-                <button id="close-register-modal-btn" class="text-gray-500 hover:text-gray-700 interactive-icon">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                    </svg>
-                </button>
-            </div>
-            
-            <form id="register-form" class="space-y-4">
-                <div>
-                    <label class="block text-sm font-medium mb-2" style="color: var(--dark-gray);">Ism</label>
-                    <input type="text" id="register-name" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:border-orange-500 focus:outline-none transition duration-300" required>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium mb-2" style="color: var(--dark-gray);">Email</label>
-                    <input type="email" id="register-email" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:border-orange-500 focus:outline-none transition duration-300" required>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium mb-2" style="color: var(--dark-gray);">Telefon</label>
-                    <input type="tel" id="register-phone" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:border-orange-500 focus:outline-none transition duration-300" required>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium mb-2" style="color: var(--dark-gray);">Parol</label>
-                    <input type="password" id="register-password" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:border-orange-500 focus:outline-none transition duration-300" required>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium mb-2" style="color: var(--dark-gray);">Parolni Tasdiqlash</label>
-                    <input type="password" id="register-confirm-password" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:border-orange-500 focus:outline-none transition duration-300" required>
-                </div>
-                <button type="submit" class="w-full btn-primary text-white py-3 rounded-xl font-semibold">
-                    Ro'yxatdan O'tish
-                </button>
-            </form>
-            
-            <div class="mt-6 text-center">
-                <p class="text-gray-600">Hisobingiz bormi? 
-                    <button id="switch-to-login-btn" class="font-semibold hover:underline" style="color: var(--secondary-orange);">
-                        Kirish
-                    </button>
-                </p>
-            </div>
-            
-            <div id="register-message" class="mt-4 p-3 rounded-xl hidden"></div>
-        </div>
-    </div>
-
-    <!-- Product Detail Modal -->
-    <div id="product-detail-modal" class="fixed inset-0 bg-black bg-opacity-60 hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-3xl w-full mx-auto shadow-2xl transform transition-all duration-300 scale-95 opacity-0">
-            <div class="relative">
-                <button id="close-product-detail-modal-btn" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 bg-white/50 rounded-full p-2 z-10 interactive-icon">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                </button>
-                <div class="grid md:grid-cols-2 gap-6">
-                    <div id="detail-modal-image" class="w-full h-64 md:h-full bg-gray-100 rounded-l-2xl flex items-center justify-center"></div>
-                    <div class="p-8">
-                        <h3 id="detail-modal-name" class="text-3xl font-bold mb-3" style="color: var(--dark-gray);">Mahsulot Nomi</h3>
-                        <div class="mb-4">
-                            <span id="detail-modal-category" class="text-sm font-medium text-white px-3 py-1 rounded-full" style="background-color: var(--primary-blue);">Kategoriya</span>
-                        </div>
-                        <div id="detail-modal-stock-status" class="hidden mb-4 bg-red-100 text-red-700 text-sm font-bold px-4 py-2 rounded-lg">
-                            Ushbu mahsulot hozirda stokda mavjud emas.
-                        </div>
-                        <p id="detail-modal-description" class="text-gray-600 mb-6">Mahsulot haqida batafsil ma'lumot.</p>
-                        <div class="flex justify-between items-center">
-                            <span id="detail-modal-price" class="text-4xl font-bold" style="color: var(--secondary-orange);">$0.00</span>
-                            <button id="detail-modal-add-to-cart-button" class="btn-primary text-white px-8 py-3 rounded-full font-semibold disabled:bg-gray-400 disabled:cursor-not-allowed">
-                                Savatga qo'shish
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Cart Modal -->
-    <div id="cart-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
-        <div id="cart-overlay" class="absolute inset-0"></div>
-        <div class="transform transition-transform duration-500 ease-in-out translate-x-full absolute top-0 right-0 h-full w-full max-w-md bg-white shadow-2xl flex flex-col">
-            <div class="flex justify-between items-center p-6 border-b border-gray-200">
-                <h3 class="text-2xl font-bold" style="color: var(--dark-gray);">Sizning Savatingiz</h3>
-                <button id="close-cart-modal-btn" class="text-gray-500 hover:text-gray-700 interactive-icon">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                </button>
-            </div>
-            
-            <div id="cart-items-container" class="flex-grow p-6 overflow-y-auto">
-                <p class="text-center text-gray-500">Savatingiz bo'sh.</p>
-            </div>
-            
-            <div class="p-6 border-t border-gray-200 bg-gray-50">
-                <div class="flex justify-between items-center mb-4">
-                    <span class="text-lg font-semibold text-gray-700">Umumiy summa:</span>
-                    <span id="cart-total-price" class="text-2xl font-bold" style="color: var(--secondary-orange);">$0.00</span>
-                </div>
-                <button id="checkout-btn" class="w-full btn-primary text-white py-3 rounded-xl font-semibold text-lg disabled:bg-gray-400 disabled:cursor-not-allowed">
-                    Xaridni Rasmiylashtirish
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Wishlist Modal -->
-    <div id="wishlist-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
-        <div id="wishlist-overlay" class="absolute inset-0"></div>
-        <div class="transform transition-transform duration-500 ease-in-out translate-x-full absolute top-0 right-0 h-full w-full max-w-md bg-white shadow-2xl flex flex-col">
-            <div class="flex justify-between items-center p-6 border-b border-gray-200">
-                <h3 class="text-2xl font-bold" style="color: var(--dark-gray);">Sevimlilar Ro'yxati</h3>
-                <button id="close-wishlist-modal-btn" class="text-gray-500 hover:text-gray-700 interactive-icon">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                </button>
-            </div>
-            
-            <div id="wishlist-items-container" class="flex-grow p-6 overflow-y-auto">
-                <p class="text-center text-gray-500">Sevimlilar ro'yxati bo'sh.</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Checkout Modal -->
-    <div id="checkout-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl p-8 max-w-lg w-full mx-auto shadow-2xl transform transition-all duration-300 scale-95 opacity-0">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-2xl font-bold" style="color: var(--dark-gray);">Xaridni Rasmiylashtirish</h3>
-                <button id="close-checkout-modal-btn" class="text-gray-500 hover:text-gray-700 interactive-icon">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                </button>
-            </div>
-            
-            <div id="checkout-content">
-                <form id="checkout-form" class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium mb-2">To'liq Ism</label>
-                        <input type="text" id="checkout-name" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:border-orange-500 focus:outline-none transition-colors" required>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium mb-2">Telefon Raqam</label>
-                        <input type="tel" id="checkout-phone" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:border-orange-500 focus:outline-none transition-colors" required>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium mb-2">Yetkazib berish manzili</label>
-                        <textarea id="checkout-address" rows="3" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:border-orange-500 focus:outline-none transition-colors" placeholder="Shahar, tuman, ko'cha, uy raqami" required></textarea>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium mb-2">Qabul qilish filiali (Viloyat)</label>
-                        <select id="checkout-region" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:border-orange-500 focus:outline-none transition-colors bg-white" required></select>
-                    </div>
-                    <div class="pt-4">
-                        <div class="flex justify-between items-center mb-4">
-                            <span class="text-lg font-semibold text-gray-700">Jami to'lov:</span>
-                            <span id="checkout-total-price" class="text-2xl font-bold" style="color: var(--secondary-orange);">$0.00</span>
-                        </div>
-                        <button type="submit" class="w-full btn-primary text-white py-3 rounded-xl font-semibold text-lg">
-                            Buyurtma Berish
-                        </button>
-                    </div>
-                </form>
-            </div>
-            <div id="checkout-success-message" class="hidden text-center py-8"></div>
-        </div>
-    </div>
-
-    <!-- Add Product Modal (Admin Only) -->
-    <div id="add-product-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl p-8 max-w-2xl w-full mx-auto shadow-2xl max-h-[90vh] overflow-y-auto">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-2xl font-bold bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">Yangi Mahsulot Qo'shish</h3>
-                <button id="close-add-product-modal" class="text-gray-500 hover:text-gray-700 transition">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                </button>
-            </div>
-
-            <form id="add-product-form" class="space-y-4">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <!-- Mahsulot Nomi -->
-                    <div class="md:col-span-2">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Mahsulot Nomi *</label>
-                        <input type="text" id="new-product-name" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:border-orange-500 focus:outline-none transition" placeholder="Masalan: Gaz Balloni 12L">
-                    </div>
-
-                    <!-- Kategoriya -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Kategoriya *</label>
-                        <select id="new-product-category" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:border-orange-500 focus:outline-none transition bg-white">
-                            <option value="">Tanlang</option>
-                            <option value="Gaz Ballonlari">Gaz Ballonlari</option>
-                            <option value="Gaz Uskunalari">Gaz Uskunalari</option>
-                            <option value="Ehtiyot Qismlar">Ehtiyot Qismlar</option>
-                            <option value="Aksessuarlar">Aksessuarlar</option>
-                        </select>
-                    </div>
-
-                    <!-- Narx -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Narx (so'm) *</label>
-                        <input type="number" id="new-product-price" required min="0" step="0.01" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:border-orange-500 focus:outline-none transition" placeholder="100000">
-                    </div>
-
-                    <!-- Miqdor -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Miqdor (dona) *</label>
-                        <input type="number" id="new-product-quantity" required min="0" step="1" value="0" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:border-orange-500 focus:outline-none transition" placeholder="0">
-                    </div>
-
-                    <!-- Status -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Status *</label>
-                        <select id="new-product-status" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:border-orange-500 focus:outline-none transition bg-white">
-                            <option value="in_stock">Mavjud</option>
-                            <option value="out_of_stock">Tugagan</option>
-                        </select>
-                    </div>
-
-                    <!-- Rasm URL -->
-                    <div class="md:col-span-2">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Rasm URL</label>
-                        <input type="url" id="new-product-image" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:border-orange-500 focus:outline-none transition" placeholder="https://example.com/image.jpg">
-                        <p class="text-xs text-gray-500 mt-1">Rasm havolasini kiriting (ixtiyoriy)</p>
-                    </div>
-
-                    <!-- Tavsif -->
-                    <div class="md:col-span-2">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Tavsif</label>
-                        <textarea id="new-product-description" rows="3" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:border-orange-500 focus:outline-none transition" placeholder="Mahsulot haqida qisqacha ma'lumot..."></textarea>
-                    </div>
-                </div>
-
-                <!-- Action Buttons -->
-                <div class="flex justify-end space-x-4 pt-4 border-t">
-                    <button type="button" id="cancel-add-product" class="px-6 py-3 bg-gray-500 text-white rounded-xl hover:bg-gray-600 transition font-semibold">
-                        Bekor qilish
-                    </button>
-                    <button type="submit" class="px-6 py-3 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-xl hover:from-orange-600 hover:to-red-600 transition font-semibold">
-                        <svg class="w-5 h-5 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                        Saqlash
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Main JavaScript -->
     <script src="script.js"></script>
 </body>
 </html>
