@@ -278,7 +278,7 @@ function buildCityMarkers() {
     const panelList = document.getElementById('panel-city-list');
     if (!mapG) return;
 
-    CITIES.forEach(city => {
+    getActiveCities().forEach(city => {
         const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
         g.setAttribute('class', 'city-marker');
         g.setAttribute('data-id', city.id);
@@ -620,20 +620,50 @@ const PARTNERS = [
     },
 ];
 
+// =========================================================
+// ADMIN OVERRIDES — localStorage integration
+// =========================================================
+
+function getActiveBrands() {
+    try {
+        const stored = localStorage.getItem('agu_brands_override');
+        if (!stored) return PARTNERS;
+        const overrides = JSON.parse(stored);
+        return PARTNERS.map(p => {
+            const ov = overrides.find(o => o.name === p.name);
+            return ov ? Object.assign({}, p, ov) : p;
+        });
+    } catch (e) { return PARTNERS; }
+}
+
+function getActiveCities() {
+    try {
+        const stored = localStorage.getItem('agu_cities_override');
+        if (!stored) return CITIES;
+        const overrides = JSON.parse(stored);
+        return CITIES.map(c => {
+            const ov = overrides.find(o => o.id === c.id);
+            return ov ? Object.assign({}, c, ov) : c;
+        });
+    } catch (e) { return CITIES; }
+}
+
 function buildBrandsCarousel() {
     const track = document.getElementById('brands-track');
     if (!track) return;
+    const activeBrands = getActiveBrands();
 
     // Render cards twice for seamless infinite loop
     [0, 1].forEach(() => {
-        PARTNERS.forEach(p => {
+        activeBrands.forEach(p => {
             const card = document.createElement('div');
             card.className = 'brand-card';
             const initials = p.name.replace(/[^A-Z0-9]/g, '').substring(0, 3) || p.name.substring(0, 3).toUpperCase();
+            const logoHtml = p.logo
+                ? `<img src="${p.logo}" style="width:52px;height:52px;object-fit:contain;border-radius:12px;margin:0 auto 8px;display:block;border:1.5px solid #e2e8f0;" alt="${p.name}">`
+                : `<div class="brand-lm" style="background:linear-gradient(135deg,${p.countryColor}1a 0%,${p.countryColor}33 100%);border:2px solid ${p.countryColor}44;"><span style="color:${p.countryColor};font-weight:900;font-size:0.82rem;letter-spacing:-0.3px;">${initials}</span></div>`;
             card.innerHTML = `
-                <div class="brand-lm" style="background:linear-gradient(135deg,${p.countryColor}1a 0%,${p.countryColor}33 100%);border:2px solid ${p.countryColor}44;">
-                    <span style="color:${p.countryColor};font-weight:900;font-size:0.82rem;letter-spacing:-0.3px;">${initials}</span>
-                </div>
+                ${logoHtml}
                 <span class="brand-card-flag">${p.flag}</span>
                 <div class="brand-card-name">${p.name}</div>
                 <span class="brand-card-country" style="background:${p.countryColor};">${p.country}</span>
@@ -650,9 +680,12 @@ function openBrandModal(p) {
     const body  = document.getElementById('brand-modal-body');
     if (!modal || !body) return;
 
+    const logoEl = p.logo
+        ? `<img src="${p.logo}" style="width:64px;height:64px;object-fit:contain;border-radius:14px;border:2px solid #e2e8f0;flex-shrink:0;" alt="${p.name}">`
+        : `<span style="font-size:2.5rem;">${p.flag}</span>`;
     body.innerHTML = `
         <div class="flex items-start gap-4 mb-5">
-            <span style="font-size:2.5rem;">${p.flag}</span>
+            ${logoEl}
             <div>
                 <h3 style="font-size:1.5rem;font-weight:800;color:var(--dark-gray);margin:0 0 4px;">${p.name}</h3>
                 <span style="background:${p.countryColor};color:white;font-size:0.7rem;font-weight:700;padding:3px 10px;border-radius:20px;">${p.country}</span>

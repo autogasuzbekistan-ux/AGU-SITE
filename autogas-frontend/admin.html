@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AGU Admin Panel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --blue: #1b5bb5;
+            --orange: #ed8f36;
+            --red: #E30613;
+        }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f1f5f9; }
+
+        /* LOGIN */
+        #login-screen {
+            min-height: 100vh;
+            display: flex; align-items: center; justify-content: center;
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%);
+        }
+        .login-card {
+            background: white; border-radius: 24px; padding: 40px;
+            width: 100%; max-width: 380px;
+            box-shadow: 0 24px 60px rgba(0,0,0,0.3);
+        }
+        .login-logo { font-size: 2.5rem; font-weight: 900; text-align: center; margin-bottom: 8px; }
+        .login-logo span:first-child { color: var(--red); }
+        .login-logo span:last-child  { color: var(--blue); }
+
+        /* SIDEBAR */
+        #sidebar {
+            width: 240px; min-height: 100vh; background: #0f172a;
+            position: fixed; top: 0; left: 0; z-index: 50;
+            display: flex; flex-direction: column;
+        }
+        .sidebar-logo { padding: 24px 20px 20px; border-bottom: 1px solid #1e293b; }
+        .sidebar-logo-text { font-size: 1.5rem; font-weight: 900; }
+        .sidebar-logo-text span:first-child { color: var(--red); }
+        .sidebar-logo-text span:last-child  { color: #60a5fa; }
+        .sidebar-badge { font-size: 0.6rem; background: #1e293b; color: #94a3b8; padding: 2px 8px; border-radius: 20px; margin-top: 4px; display: inline-block; }
+        .nav-item {
+            display: flex; align-items: center; gap: 10px;
+            padding: 12px 20px; color: #94a3b8; cursor: pointer;
+            transition: all 0.2s; border-left: 3px solid transparent;
+            font-size: 0.875rem; font-weight: 500;
+        }
+        .nav-item:hover { background: #1e293b; color: white; }
+        .nav-item.active { background: #1e3a5f; color: #60a5fa; border-left-color: #60a5fa; }
+        .nav-icon { font-size: 1.1rem; width: 22px; text-align: center; }
+
+        /* MAIN */
+        #main-panel {
+            margin-left: 240px; padding: 32px;
+            min-height: 100vh;
+        }
+        .page { display: none; }
+        .page.active { display: block; }
+
+        /* CARDS */
+        .panel-card {
+            background: white; border-radius: 16px; padding: 24px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06); margin-bottom: 20px;
+        }
+        .card-title {
+            font-size: 1rem; font-weight: 700; color: #0f172a;
+            margin-bottom: 16px; padding-bottom: 12px;
+            border-bottom: 1px solid #f1f5f9;
+            display: flex; align-items: center; gap-x: 8px; gap: 8px;
+        }
+
+        /* INPUTS */
+        .form-input {
+            width: 100%; border: 1.5px solid #e2e8f0; border-radius: 10px;
+            padding: 10px 14px; font-size: 0.875rem; color: #0f172a;
+            transition: border-color 0.2s;
+            outline: none;
+        }
+        .form-input:focus { border-color: var(--blue); }
+        .form-label { font-size: 0.75rem; font-weight: 600; color: #64748b; margin-bottom: 4px; display: block; text-transform: uppercase; letter-spacing: 0.4px; }
+
+        /* BUTTONS */
+        .btn-primary {
+            background: var(--blue); color: white; font-weight: 700;
+            padding: 10px 20px; border-radius: 10px; border: none;
+            cursor: pointer; font-size: 0.875rem; transition: background 0.2s;
+        }
+        .btn-primary:hover { background: #1548a0; }
+        .btn-danger { background: #fee2e2; color: #dc2626; font-weight: 600; padding: 6px 14px; border-radius: 8px; border: none; cursor: pointer; font-size: 0.8rem; }
+        .btn-danger:hover { background: #fecaca; }
+        .btn-sm { background: #eff6ff; color: var(--blue); font-weight: 600; padding: 6px 14px; border-radius: 8px; border: none; cursor: pointer; font-size: 0.8rem; }
+        .btn-sm:hover { background: #dbeafe; }
+
+        /* TABLE */
+        .data-table { width: 100%; border-collapse: collapse; }
+        .data-table th { background: #f8fafc; padding: 10px 12px; text-align: left; font-size: 0.72rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.4px; border-bottom: 1px solid #e2e8f0; }
+        .data-table td { padding: 12px; font-size: 0.85rem; color: #374151; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
+        .data-table tr:hover td { background: #f8fafc; }
+
+        /* BRAND ROW */
+        .brand-logo-preview {
+            width: 44px; height: 44px; border-radius: 10px;
+            object-fit: cover; border: 1.5px solid #e2e8f0;
+        }
+        .brand-lm-admin {
+            width: 44px; height: 44px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 900; font-size: 0.8rem; flex-shrink: 0;
+        }
+
+        /* ALERT */
+        .alert { border-radius: 10px; padding: 12px 16px; font-size: 0.85rem; margin-bottom: 16px; }
+        .alert-success { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+        .alert-error { background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; }
+
+        /* MODAL */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px); z-index: 100;
+            display: flex; align-items: center; justify-content: center;
+            padding: 20px;
+        }
+        .modal-box {
+            background: white; border-radius: 20px; padding: 28px;
+            max-width: 520px; width: 100%; max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 24px 60px rgba(0,0,0,0.2);
+        }
+        .modal-title { font-size: 1.1rem; font-weight: 800; color: #0f172a; margin-bottom: 20px; }
+
+        /* LOGO UPLOAD */
+        .logo-upload-area {
+            border: 2px dashed #c7d2fe; border-radius: 12px; padding: 24px;
+            text-align: center; cursor: pointer; transition: all 0.2s;
+        }
+        .logo-upload-area:hover { border-color: var(--blue); background: #eff6ff; }
+        .logo-upload-area.drag-over { border-color: var(--blue); background: #dbeafe; }
+
+        /* STATS */
+        .stat-pill {
+            background: #f8fafc; border-radius: 12px; padding: 16px 20px;
+            text-align: center;
+        }
+        .stat-pill .num { font-size: 2rem; font-weight: 900; color: var(--blue); }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+    </style>
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div id="login-screen">
+    <div class="login-card">
+        <div class="login-logo"><span>AG</span><span>U</span></div>
+        <p class="text-center text-gray-500 text-sm mb-8">Admin boshqaruv paneli</p>
+        <div id="login-error" class="alert alert-error hidden">Parol noto'g'ri!</div>
+        <div class="mb-4">
+            <label class="form-label">Parol</label>
+            <input type="password" id="login-password" class="form-input" placeholder="Parolni kiriting..." onkeydown="if(event.key==='Enter')doLogin()">
+        </div>
+        <button onclick="doLogin()" class="btn-primary w-full py-3">Kirish →</button>
+        <p class="text-center text-xs text-gray-400 mt-4">Auto Gas Uzbekistan © 2026</p>
+    </div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div id="admin-panel" class="hidden">
+    <!-- Sidebar -->
+    <div id="sidebar">
+        <div class="sidebar-logo">
+            <div class="sidebar-logo-text"><span>AG</span><span>U</span></div>
+            <span class="sidebar-badge">Admin Panel</span>
+        </div>
+        <nav class="mt-4 flex-1">
+            <div class="nav-item active" onclick="showPage('dashboard')" data-page="dashboard">
+                <span class="nav-icon">📊</span> Dashboard
+            </div>
+            <div class="nav-item" onclick="showPage('brands')" data-page="brands">
+                <span class="nav-icon">🤝</span> Brandlar
+            </div>
+            <div class="nav-item" onclick="showPage('shops')" data-page="shops">
+                <span class="nav-icon">🏪</span> Do'konlar
+            </div>
+            <div class="nav-item" onclick="showPage('settings')" data-page="settings">
+                <span class="nav-icon">⚙️</span> Sozlamalar
+            </div>
+        </nav>
+        <div style="padding:20px;border-top:1px solid #1e293b;">
+            <div style="color:#94a3b8;font-size:0.75rem;margin-bottom:8px;">Tizimdan chiqish</div>
+            <button onclick="doLogout()" style="background:#1e293b;color:#94a3b8;border:none;border-radius:8px;padding:8px 14px;font-size:0.8rem;cursor:pointer;width:100%;">Chiqish</button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div id="main-panel">
+
+        <!-- DASHBOARD PAGE -->
+        <div class="page active" id="page-dashboard">
+            <h1 class="text-2xl font-bold text-gray-800 mb-2">Dashboard</h1>
+            <p class="text-gray-500 text-sm mb-6">Sayt ma'lumotlariga umumiy ko'rinish</p>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                <div class="stat-pill"><div class="num" id="stat-brands">21</div><div class="text-xs text-gray-500 mt-1">Hamkor brendlar</div></div>
+                <div class="stat-pill"><div class="num" id="stat-shops">11</div><div class="text-xs text-gray-500 mt-1">Do'konlar</div></div>
+                <div class="stat-pill"><div class="num">1</div><div class="text-xs text-gray-500 mt-1">Service markazi</div></div>
+                <div class="stat-pill"><div class="num">2009</div><div class="text-xs text-gray-500 mt-1">Tashkil etilgan</div></div>
+            </div>
+
+            <div class="panel-card">
+                <div class="card-title">📋 Tezkor amallar</div>
+                <div class="flex flex-wrap gap-3">
+                    <button class="btn-sm" onclick="showPage('brands')">🤝 Brandlarni boshqarish</button>
+                    <button class="btn-sm" onclick="showPage('shops')">🏪 Do'kon raqamlarini yangilash</button>
+                    <button class="btn-sm" onclick="showPage('settings')">⚙️ Sozlamalar</button>
+                    <a href="index.html" target="_blank" class="btn-sm" style="text-decoration:none;display:inline-block;">🌐 Saytni ko'rish</a>
+                </div>
+            </div>
+
+            <div class="panel-card">
+                <div class="card-title">💾 Saqlangan ma'lumotlar holati</div>
+                <div id="storage-status" class="text-sm text-gray-600"></div>
+            </div>
+        </div>
+
+        <!-- BRANDS PAGE -->
+        <div class="page" id="page-brands">
+            <h1 class="text-2xl font-bold text-gray-800 mb-2">Brandlar boshqaruvi</h1>
+            <p class="text-gray-500 text-sm mb-6">Hamkor brendlar ma'lumotlari, logolari va tavsiflarini yangilash</p>
+
+            <div id="brands-alert" class="hidden"></div>
+
+            <div class="panel-card">
+                <div class="card-title">🤝 Barcha brandlar (21 ta)</div>
+                <div style="overflow-x:auto;">
+                    <table class="data-table" id="brands-table">
+                        <thead>
+                            <tr>
+                                <th>Logo</th>
+                                <th>Brand nomi</th>
+                                <th>Mamlakat</th>
+                                <th>Asosiy mahsulot</th>
+                                <th>Amallar</th>
+                            </tr>
+                        </thead>
+                        <tbody id="brands-tbody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- SHOPS PAGE -->
+        <div class="page" id="page-shops">
+            <h1 class="text-2xl font-bold text-gray-800 mb-2">Do'konlar boshqaruvi</h1>
+            <p class="text-gray-500 text-sm mb-6">Har bir filial uchun telefon raqam va manzilni yangilash</p>
+
+            <div id="shops-alert" class="hidden"></div>
+
+            <div class="panel-card">
+                <div class="card-title">🏪 Barcha filiallar</div>
+                <div id="shops-list"></div>
+                <div class="mt-4 text-right">
+                    <button class="btn-primary" onclick="saveShops()">💾 O'zgarishlarni saqlash</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SETTINGS PAGE -->
+        <div class="page" id="page-settings">
+            <h1 class="text-2xl font-bold text-gray-800 mb-2">Umumiy sozlamalar</h1>
+            <p class="text-gray-500 text-sm mb-6">Sayt uchun asosiy kontakt ma'lumotlari</p>
+
+            <div id="settings-alert" class="hidden"></div>
+
+            <div class="panel-card">
+                <div class="card-title">📞 Asosiy kontakt ma'lumotlari</div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="form-label">Asosiy telefon raqami</label>
+                        <input type="text" id="s-phone" class="form-input" placeholder="+998 87 001-07-77">
+                    </div>
+                    <div>
+                        <label class="form-label">Telegram username</label>
+                        <input type="text" id="s-telegram" class="form-input" placeholder="@AutoGas_Uzbekistan">
+                    </div>
+                    <div>
+                        <label class="form-label">WhatsApp raqami</label>
+                        <input type="text" id="s-whatsapp" class="form-input" placeholder="+998 87 001-07-77">
+                    </div>
+                    <div>
+                        <label class="form-label">Instagram username</label>
+                        <input type="text" id="s-instagram" class="form-input" placeholder="@autogasuzbekistan">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="form-label">Bosh ofis manzili</label>
+                        <input type="text" id="s-address" class="form-input" placeholder="Qo'qon shahar, Burkchilik ko'chasi">
+                    </div>
+                </div>
+                <div class="mt-4 text-right">
+                    <button class="btn-primary" onclick="saveSettings()">💾 Saqlash</button>
+                </div>
+            </div>
+
+            <div class="panel-card">
+                <div class="card-title">🔑 Parolni o'zgartirish</div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="form-label">Hozirgi parol</label>
+                        <input type="password" id="pw-current" class="form-input">
+                    </div>
+                    <div>
+                        <label class="form-label">Yangi parol</label>
+                        <input type="password" id="pw-new" class="form-input">
+                    </div>
+                    <div>
+                        <label class="form-label">Yangi parolni takrorlang</label>
+                        <input type="password" id="pw-confirm" class="form-input">
+                    </div>
+                </div>
+                <div class="mt-4 text-right">
+                    <button class="btn-primary" onclick="changePassword()">🔑 Parolni yangilash</button>
+                </div>
+            </div>
+
+            <div class="panel-card">
+                <div class="card-title text-red-600">⚠️ Xavfli zona</div>
+                <p class="text-sm text-gray-500 mb-4">Barcha saqlangan ma'lumotlarni o'chirish. Bu amal ortga qaytarib bo'lmaydi!</p>
+                <button class="btn-danger" onclick="resetAllData()">🗑️ Barcha o'zgartirishlarni bekor qilish</button>
+            </div>
+        </div>
+
+    </div><!-- /main-panel -->
+</div><!-- /admin-panel -->
+
+<!-- BRAND EDIT MODAL -->
+<div id="brand-modal" class="modal-overlay hidden">
+    <div class="modal-box">
+        <div class="modal-title" id="modal-brand-title">Brand tahrirlash</div>
+
+        <div class="mb-4">
+            <label class="form-label">Logo (rasm yuklash)</label>
+            <div class="logo-upload-area" id="logo-drop-area" onclick="document.getElementById('logo-file-input').click()">
+                <div id="logo-preview-wrap">
+                    <div style="font-size:2rem;margin-bottom:8px;">🖼️</div>
+                    <div style="font-size:0.85rem;color:#64748b;">Rasm yuklash uchun bosing yoki sudrab tashlang</div>
+                    <div style="font-size:0.75rem;color:#94a3b8;margin-top:4px;">PNG, JPG, SVG (max 2MB)</div>
+                </div>
+                <img id="logo-img-preview" class="hidden" style="max-width:120px;max-height:80px;margin:0 auto;border-radius:8px;" src="" alt="">
+            </div>
+            <input type="file" id="logo-file-input" accept="image/*" class="hidden" onchange="handleLogoUpload(event)">
+            <button id="remove-logo-btn" class="btn-danger mt-2 hidden" onclick="removeLogo()">✕ Logoni o'chirish</button>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4 mb-4">
+            <div>
+                <label class="form-label">Brand nomi</label>
+                <input type="text" id="m-name" class="form-input" readonly>
+            </div>
+            <div>
+                <label class="form-label">Mamlakat</label>
+                <input type="text" id="m-country" class="form-input">
+            </div>
+        </div>
+        <div class="mb-4">
+            <label class="form-label">Shahar</label>
+            <input type="text" id="m-city" class="form-input">
+        </div>
+        <div class="mb-4">
+            <label class="form-label">Tavsif</label>
+            <textarea id="m-desc" class="form-input" rows="3" style="resize:vertical;"></textarea>
+        </div>
+        <div class="mb-4">
+            <label class="form-label">Mahsulotlar (har biri alohida qatorda)</label>
+            <textarea id="m-products" class="form-input" rows="5" style="resize:vertical;"></textarea>
+        </div>
+        <div class="mb-4">
+            <label class="form-label">Qidiruv kaliti</label>
+            <input type="text" id="m-search" class="form-input">
+        </div>
+
+        <div class="flex justify-end gap-3 pt-4 border-t border-gray-100">
+            <button class="btn-sm" onclick="closeBrandModal()">Bekor qilish</button>
+            <button class="btn-primary" onclick="saveBrandEdit()">💾 Saqlash</button>
+        </div>
+    </div>
+</div>
+
+<script src="script.js"></script>
+<script>
+// =========================================================
+// ADMIN PANEL — JavaScript
+// =========================================================
+
+const ADMIN_PASSWORD_KEY = 'agu_admin_pw';
+const DEFAULT_PASSWORD   = 'admin2026';
+
+function getStoredPassword() {
+    return localStorage.getItem(ADMIN_PASSWORD_KEY) || DEFAULT_PASSWORD;
+}
+
+function doLogin() {
+    const pw = document.getElementById('login-password').value;
+    if (pw === getStoredPassword()) {
+        document.getElementById('login-screen').classList.add('hidden');
+        document.getElementById('admin-panel').classList.remove('hidden');
+        initAdminPanel();
+    } else {
+        document.getElementById('login-error').classList.remove('hidden');
+        setTimeout(() => document.getElementById('login-error').classList.add('hidden'), 3000);
+    }
+}
+
+function doLogout() {
+    document.getElementById('login-password').value = '';
+    document.getElementById('admin-panel').classList.add('hidden');
+    document.getElementById('login-screen').classList.remove('hidden');
+}
+
+// =========================================================
+// NAVIGATION
+// =========================================================
+function showPage(name) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.getElementById('page-' + name)?.classList.add('active');
+    document.querySelector('[data-page="' + name + '"]')?.classList.add('active');
+}
+
+// =========================================================
+// DATA MANAGEMENT
+// =========================================================
+function getBrands() {
+    const stored = localStorage.getItem('agu_brands_override');
+    if (stored) {
+        const overrides = JSON.parse(stored);
+        return PARTNERS.map(p => {
+            const ov = overrides.find(o => o.name === p.name);
+            return ov ? { ...p, ...ov } : { ...p };
+        });
+    }
+    return PARTNERS.map(p => ({ ...p }));
+}
+
+function saveBrandsOverride(brandsArr) {
+    // Only store fields that differ from defaults or custom logos
+    const overrides = brandsArr.map(b => {
+        const def = PARTNERS.find(p => p.name === b.name) || {};
+        const ov = { name: b.name };
+        if (b.logo) ov.logo = b.logo;
+        if (b.country !== def.country) ov.country = b.country;
+        if (b.city !== def.city) ov.city = b.city;
+        if (b.desc !== def.desc) ov.desc = b.desc;
+        if (JSON.stringify(b.products) !== JSON.stringify(def.products)) ov.products = b.products;
+        if (b.search !== def.search) ov.search = b.search;
+        return ov;
+    }).filter(ov => Object.keys(ov).length > 1);
+    localStorage.setItem('agu_brands_override', JSON.stringify(overrides));
+}
+
+function getCities() {
+    const stored = localStorage.getItem('agu_cities_override');
+    if (stored) {
+        const overrides = JSON.parse(stored);
+        return CITIES.map(c => {
+            const ov = overrides.find(o => o.id === c.id);
+            return ov ? { ...c, ...ov } : { ...c };
+        });
+    }
+    return CITIES.map(c => ({ ...c }));
+}
+
+function saveCitiesOverride(citiesArr) {
+    const overrides = citiesArr.map(c => {
+        const def = CITIES.find(d => d.id === c.id) || {};
+        const ov = { id: c.id };
+        if (c.phone !== def.phone) ov.phone = c.phone;
+        if (c.phone2 !== def.phone2) ov.phone2 = c.phone2;
+        if (c.address !== def.address) ov.address = c.address;
+        return ov;
+    }).filter(ov => Object.keys(ov).length > 1);
+    localStorage.setItem('agu_cities_override', JSON.stringify(overrides));
+}
+
+// =========================================================
+// INIT
+// =========================================================
+function initAdminPanel() {
+    renderBrandsTable();
+    renderShopsList();
+    loadSettings();
+    updateStorageStatus();
+    updateStats();
+}
+
+function updateStats() {
+    document.getElementById('stat-brands').textContent = getBrands().length;
+    document.getElementById('stat-shops').textContent = getCities().length;
+}
+
+function updateStorageStatus() {
+    const brands = localStorage.getItem('agu_brands_override');
+    const cities = localStorage.getItem('agu_cities_override');
+    const settings = localStorage.getItem('agu_settings');
+    const lines = [
+        brands ? `✅ Brandlar: ${JSON.parse(brands).length} ta o'zgartirish saqlangan` : '⬜ Brandlar: o'zgartirishsiz (standart)',
+        cities ? `✅ Do'konlar: ${JSON.parse(cities).length} ta o'zgartirish saqlangan` : '⬜ Do'konlar: o'zgartirishsiz (standart)',
+        settings ? '✅ Sozlamalar: saqlangan' : '⬜ Sozlamalar: standart',
+    ];
+    document.getElementById('storage-status').innerHTML = lines.map(l => `<div class="mb-1">${l}</div>`).join('');
+}
+
+// =========================================================
+// BRANDS TABLE
+// =========================================================
+let editingBrandIdx = -1;
+let tempLogo = null;
+
+function renderBrandsTable() {
+    const brands = getBrands();
+    const tbody = document.getElementById('brands-tbody');
+    tbody.innerHTML = brands.map((b, i) => {
+        const logoHtml = b.logo
+            ? `<img src="${b.logo}" class="brand-logo-preview" alt="${b.name}">`
+            : `<div class="brand-lm-admin" style="background:${b.countryColor}22;border:2px solid ${b.countryColor}44;color:${b.countryColor};">${b.name.replace(/[^A-Z0-9]/g,'').substring(0,3)||b.name.substring(0,3).toUpperCase()}</div>`;
+        return `<tr>
+            <td>${logoHtml}</td>
+            <td><span style="font-weight:700;">${b.flag} ${b.name}</span></td>
+            <td><span style="background:${b.countryColor};color:white;padding:2px 8px;border-radius:12px;font-size:0.72rem;font-weight:600;">${b.country}</span></td>
+            <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#6b7280;font-size:0.8rem;">${b.products[0]}</td>
+            <td>
+                <button class="btn-sm" onclick="openBrandEdit(${i})">✏️ Tahrirlash</button>
+                ${b.logo ? `<button class="btn-danger ml-1" onclick="deleteLogo(${i})">🗑️ Logo</button>` : ''}
+            </td>
+        </tr>`;
+    }).join('');
+}
+
+function openBrandEdit(idx) {
+    const brands = getBrands();
+    const b = brands[idx];
+    editingBrandIdx = idx;
+    tempLogo = b.logo || null;
+
+    document.getElementById('modal-brand-title').textContent = `${b.flag} ${b.name} — Tahrirlash`;
+    document.getElementById('m-name').value = b.name;
+    document.getElementById('m-country').value = b.country;
+    document.getElementById('m-city').value = b.city || '';
+    document.getElementById('m-desc').value = b.desc || '';
+    document.getElementById('m-products').value = (b.products || []).join('\n');
+    document.getElementById('m-search').value = b.search || '';
+
+    // Logo preview
+    const preview = document.getElementById('logo-img-preview');
+    const removeBtn = document.getElementById('remove-logo-btn');
+    if (b.logo) {
+        preview.src = b.logo;
+        preview.classList.remove('hidden');
+        document.getElementById('logo-preview-wrap').classList.add('hidden');
+        removeBtn.classList.remove('hidden');
+    } else {
+        preview.src = '';
+        preview.classList.add('hidden');
+        document.getElementById('logo-preview-wrap').classList.remove('hidden');
+        removeBtn.classList.add('hidden');
+    }
+
+    document.getElementById('brand-modal').classList.remove('hidden');
+}
+
+function closeBrandModal() {
+    document.getElementById('brand-modal').classList.add('hidden');
+    editingBrandIdx = -1;
+    tempLogo = null;
+}
+
+function handleLogoUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) {
+        alert("Fayl hajmi 2MB dan oshmasin!");
+        return;
+    }
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        tempLogo = e.target.result;
+        const preview = document.getElementById('logo-img-preview');
+        preview.src = tempLogo;
+        preview.classList.remove('hidden');
+        document.getElementById('logo-preview-wrap').classList.add('hidden');
+        document.getElementById('remove-logo-btn').classList.remove('hidden');
+    };
+    reader.readAsDataURL(file);
+}
+
+function removeLogo() {
+    tempLogo = null;
+    document.getElementById('logo-img-preview').src = '';
+    document.getElementById('logo-img-preview').classList.add('hidden');
+    document.getElementById('logo-preview-wrap').classList.remove('hidden');
+    document.getElementById('remove-logo-btn').classList.add('hidden');
+}
+
+function deleteLogo(idx) {
+    if (!confirm("Bu brandning logosini o'chirishni tasdiqlaysizmi?")) return;
+    const brands = getBrands();
+    delete brands[idx].logo;
+    saveBrandsOverride(brands);
+    renderBrandsTable();
+    showAlert('brands-alert', "Logo o'chirildi!", true);
+}
+
+function saveBrandEdit() {
+    if (editingBrandIdx < 0) return;
+    const brands = getBrands();
+    const b = brands[editingBrandIdx];
+
+    b.country = document.getElementById('m-country').value.trim() || b.country;
+    b.city    = document.getElementById('m-city').value.trim();
+    b.desc    = document.getElementById('m-desc').value.trim();
+    b.search  = document.getElementById('m-search').value.trim();
+    b.products = document.getElementById('m-products').value.trim().split('\n').map(s => s.trim()).filter(Boolean);
+    if (tempLogo) b.logo = tempLogo;
+    else delete b.logo;
+
+    saveBrandsOverride(brands);
+    renderBrandsTable();
+    closeBrandModal();
+    showAlert('brands-alert', `✅ ${b.name} ma'lumotlari saqlandi!`, true);
+    updateStorageStatus();
+}
+
+// Drag & drop for logo
+document.getElementById('logo-drop-area')?.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    e.currentTarget.classList.add('drag-over');
+});
+document.getElementById('logo-drop-area')?.addEventListener('dragleave', (e) => {
+    e.currentTarget.classList.remove('drag-over');
+});
+document.getElementById('logo-drop-area')?.addEventListener('drop', (e) => {
+    e.preventDefault();
+    e.currentTarget.classList.remove('drag-over');
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith('image/')) {
+        const dt = new DataTransfer();
+        dt.items.add(file);
+        document.getElementById('logo-file-input').files = dt.files;
+        handleLogoUpload({ target: document.getElementById('logo-file-input') });
+    }
+});
+
+// =========================================================
+// SHOPS
+// =========================================================
+function renderShopsList() {
+    const cities = getCities();
+    const container = document.getElementById('shops-list');
+    container.innerHTML = cities.map((c, i) => `
+        <div style="border:1.5px solid #e2e8f0;border-radius:12px;padding:16px;margin-bottom:12px;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+                <span style="font-size:1.1rem;">${c.hq ? '⭐' : '🏪'}</span>
+                <span style="font-weight:700;color:#0f172a;">${c.name}</span>
+                ${c.hq ? '<span style="background:#fee2e2;color:#dc2626;font-size:0.7rem;font-weight:700;padding:2px 8px;border-radius:12px;">Bosh ofis</span>' : ''}
+                ${c.hasService ? '<span style="background:#dcfce7;color:#166534;font-size:0.7rem;font-weight:700;padding:2px 8px;border-radius:12px;">Service</span>' : ''}
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div>
+                    <label class="form-label">Telefon 1</label>
+                    <input type="text" class="form-input shop-phone1" data-id="${c.id}" value="${c.phone || ''}">
+                </div>
+                <div>
+                    <label class="form-label">Telefon 2 (ixtiyoriy)</label>
+                    <input type="text" class="form-input shop-phone2" data-id="${c.id}" value="${c.phone2 || ''}">
+                </div>
+                <div>
+                    <label class="form-label">Manzil</label>
+                    <input type="text" class="form-input shop-address" data-id="${c.id}" value="${c.address || ''}">
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function saveShops() {
+    const cities = getCities();
+    cities.forEach(c => {
+        const p1 = document.querySelector(`.shop-phone1[data-id="${c.id}"]`);
+        const p2 = document.querySelector(`.shop-phone2[data-id="${c.id}"]`);
+        const ad = document.querySelector(`.shop-address[data-id="${c.id}"]`);
+        if (p1) c.phone   = p1.value.trim();
+        if (p2) c.phone2  = p2.value.trim();
+        if (ad) c.address = ad.value.trim();
+    });
+    saveCitiesOverride(cities);
+    showAlert('shops-alert', '✅ Barcha do\'kon ma\'lumotlari saqlandi!', true);
+    updateStorageStatus();
+}
+
+// =========================================================
+// SETTINGS
+// =========================================================
+function loadSettings() {
+    const s = JSON.parse(localStorage.getItem('agu_settings') || '{}');
+    document.getElementById('s-phone').value     = s.phone     || '+998 (87) 001-07-77';
+    document.getElementById('s-telegram').value  = s.telegram  || '@AutoGas_Uzbekistan';
+    document.getElementById('s-whatsapp').value  = s.whatsapp  || '+998 87 001-07-77';
+    document.getElementById('s-instagram').value = s.instagram || '@autogasuzbekistan';
+    document.getElementById('s-address').value   = s.address   || "Qo'qon shahar, Burkchilik ko'chasi";
+}
+
+function saveSettings() {
+    const s = {
+        phone:     document.getElementById('s-phone').value.trim(),
+        telegram:  document.getElementById('s-telegram').value.trim(),
+        whatsapp:  document.getElementById('s-whatsapp').value.trim(),
+        instagram: document.getElementById('s-instagram').value.trim(),
+        address:   document.getElementById('s-address').value.trim(),
+    };
+    localStorage.setItem('agu_settings', JSON.stringify(s));
+    showAlert('settings-alert', '✅ Sozlamalar saqlandi!', true);
+    updateStorageStatus();
+}
+
+function changePassword() {
+    const cur = document.getElementById('pw-current').value;
+    const nw  = document.getElementById('pw-new').value;
+    const cf  = document.getElementById('pw-confirm').value;
+
+    if (cur !== getStoredPassword()) {
+        showAlert('settings-alert', '❌ Hozirgi parol noto\'g\'ri!', false); return;
+    }
+    if (nw.length < 6) {
+        showAlert('settings-alert', '❌ Yangi parol kamida 6 ta belgidan iborat bo\'lishi kerak!', false); return;
+    }
+    if (nw !== cf) {
+        showAlert('settings-alert', '❌ Yangi parollar mos kelmaydi!', false); return;
+    }
+    localStorage.setItem(ADMIN_PASSWORD_KEY, nw);
+    document.getElementById('pw-current').value = '';
+    document.getElementById('pw-new').value = '';
+    document.getElementById('pw-confirm').value = '';
+    showAlert('settings-alert', '✅ Parol muvaffaqiyatli o\'zgartirildi!', true);
+}
+
+function resetAllData() {
+    if (!confirm("Barcha saqlangan o'zgartirishlar o'chiriladi. Tasdiqlaysizmi?")) return;
+    localStorage.removeItem('agu_brands_override');
+    localStorage.removeItem('agu_cities_override');
+    localStorage.removeItem('agu_settings');
+    renderBrandsTable();
+    renderShopsList();
+    loadSettings();
+    updateStorageStatus();
+    showAlert('settings-alert', '✅ Barcha o\'zgartirishlar bekor qilindi. Standart ma\'lumotlar tiklandi.', true);
+}
+
+// =========================================================
+// UTILS
+// =========================================================
+function showAlert(id, msg, success) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.textContent = msg;
+    el.className = 'alert ' + (success ? 'alert-success' : 'alert-error');
+    el.classList.remove('hidden');
+    setTimeout(() => el.classList.add('hidden'), 4000);
+}
+
+// Close modal on backdrop click
+document.getElementById('brand-modal')?.addEventListener('click', (e) => {
+    if (e.target === document.getElementById('brand-modal')) closeBrandModal();
+});
+</script>
+</body>
+</html>
