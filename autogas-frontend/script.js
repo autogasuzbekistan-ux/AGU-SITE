@@ -4,61 +4,50 @@
 // =========================================================
 
 // =========================================================
-// LOADING SCREEN (GSAP)
+// LOADING SCREEN
 // =========================================================
 
-window.addEventListener('load', () => {
+function runLoadingAnimation() {
     const loadingScreen = document.getElementById('loading-screen');
-    const mainContent = document.getElementById('main-content');
-    const subtitleEl = document.getElementById('subtitle-text-loader');
+    const mainContent   = document.getElementById('main-content');
+    const logoWrap      = document.querySelector('.agu-logo-loader');
+    const subtitle      = document.getElementById('subtitle-text-loader');
 
-    const subtitleText = 'Auto Gas Uzbekistan';
-
-    // GSAP loading animation
-    if (window.gsap && loadingScreen) {
-        const tl = gsap.timeline();
-
-        // Animate "AG" letters
-        tl.from('#ag-loader', { opacity: 0, x: -60, duration: 0.6, ease: 'back.out(1.7)' })
-          .from('#u-loader', { opacity: 0, x: 60, duration: 0.6, ease: 'back.out(1.7)' }, '-=0.3')
-          .from('#reg-loader', { opacity: 0, scale: 0, duration: 0.4 }, '-=0.1');
-
-        // Typewriter subtitle
-        if (subtitleEl) {
-            let i = 0;
-            const typeInterval = setInterval(() => {
-                if (i < subtitleText.length) {
-                    const span = document.createElement('span');
-                    span.textContent = subtitleText[i];
-                    subtitleEl.appendChild(span);
-                    gsap.from(span, { opacity: 0, y: 10, duration: 0.2 });
-                    i++;
-                } else {
-                    clearInterval(typeInterval);
-                }
-            }, 80);
-        }
-
-        // Hide loading screen after animation
-        tl.to(loadingScreen, {
-            opacity: 0,
-            duration: 0.6,
-            delay: 1.4,
-            onComplete: () => {
-                loadingScreen.classList.add('hidden');
-                mainContent.style.opacity = '1';
-                initFadeObserver();
-            }
-        });
-    } else {
-        // Fallback without GSAP
-        setTimeout(() => {
-            if (loadingScreen) loadingScreen.classList.add('hidden');
-            if (mainContent) mainContent.style.opacity = '1';
-            initFadeObserver();
-        }, 800);
+    function showMain() {
+        loadingScreen.style.display = 'none';
+        mainContent.style.opacity = '1';
+        initFadeObserver();
     }
-});
+
+    if (!window.gsap) {
+        showMain();
+        return;
+    }
+
+    const tl = gsap.timeline();
+
+    // Logo bloki ko'rinadi
+    tl.to(logoWrap, { opacity: 1, duration: 0.01 })
+    // AG chapdan, U o'ngdan keladi
+      .from('#ag-loader', { x: -50, opacity: 0, duration: 0.55, ease: 'back.out(2)' })
+      .from('#u-loader',  { x:  50, opacity: 0, duration: 0.55, ease: 'back.out(2)' }, '-=0.35')
+      .from('#reg-loader',{ scale: 0, opacity: 0, duration: 0.3, ease: 'back.out(3)' }, '-=0.15')
+    // Subtitle pastdan chiqadi
+      .to(subtitle, { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' }, '-=0.1')
+    // Biroz turadi, keyin silliq yo'qoladi
+      .to(loadingScreen, { opacity: 0, duration: 0.55, delay: 0.7, ease: 'power2.inOut' })
+      .call(() => {
+          showMain();
+          gsap.from(mainContent, { opacity: 0, duration: 0.4 });
+      });
+}
+
+// GSAP CDN yuklanishini kutish
+if (document.readyState === 'complete') {
+    runLoadingAnimation();
+} else {
+    window.addEventListener('load', runLoadingAnimation);
+}
 
 // =========================================================
 // FADE-IN ON SCROLL
@@ -234,16 +223,30 @@ function showFormMessage(text, isSuccess) {
 // =========================================================
 
 const CITIES = [
-    { id: 'qoqon',     name: "AGU Qo'qon",    x: 702, y: 300, hq: true,  phone: '+998 88 107 00 10', address: "Qo'qon shahar, Burkchilik ko'chasi" },
+    {
+        id: 'qoqon', name: "AGU Qo'qon", x: 702, y: 300, hq: true,
+        phone: '+998 (87) 001-07-77',
+        phone2: '+998 (87) 002-07-77',
+        address: "Qo'qon shahar, Burkchilik ko'chasi",
+        branches: 3,
+        branchList: ["Filial 1 — Markaziy ofis", "Filial 2 — Servís markazi", "Filial 3 — Do'kon"],
+        services: ["Metan/Propan o'rnatish", "Gaz quyish stansiyasi", "Laboratoriya xizmatlari", "Diagnostika"]
+    },
+    {
+        id: 'toshkent', name: "AGU Toshkent", x: 618, y: 248, hq: false,
+        phone: '+998 XX XXX XX XX',
+        address: "Toshkent shahar",
+        branches: 2,
+        branchList: ["Filial 1", "Filial 2"]
+    },
     { id: 'andijon',   name: "AGU Andijon",   x: 762, y: 285, hq: false, phone: '+998 XX XXX XX XX', address: "Andijon shahar" },
     { id: 'namangan',  name: "AGU Namangan",  x: 736, y: 268, hq: false, phone: '+998 XX XXX XX XX', address: "Namangan shahar" },
-    { id: 'toshkent',  name: "AGU Toshkent",  x: 618, y: 248, hq: false, phone: '+998 XX XXX XX XX', address: "Toshkent shahar" },
     { id: 'guliston',  name: "AGU Guliston",  x: 588, y: 278, hq: false, phone: '+998 XX XXX XX XX', address: "Guliston shahar, Sirdaryo viloyati" },
     { id: 'samarqand', name: "AGU Samarqand", x: 510, y: 342, hq: false, phone: '+998 XX XXX XX XX', address: "Samarqand shahar" },
     { id: 'buxoro',    name: "AGU Buxoro",    x: 386, y: 336, hq: false, phone: '+998 XX XXX XX XX', address: "Buxoro shahar" },
     { id: 'qarshi',    name: "AGU Qarshi",    x: 455, y: 386, hq: false, phone: '+998 XX XXX XX XX', address: "Qarshi shahar, Qashqadaryo viloyati" },
     { id: 'denov',     name: "AGU Denov",     x: 558, y: 418, hq: false, phone: '+998 XX XXX XX XX', address: "Denov shahar, Surxondaryo viloyati" },
-    { id: 'xorazm',    name: "AGU Xorazm",    x: 210, y: 236, hq: false, phone: '+998 XX XXX XX XX', address: "Urganch shahar, Xorazm viloyati" },
+    { id: 'xorazm',    name: "AGU Xorazm",   x: 210, y: 236, hq: false, phone: '+998 XX XXX XX XX', address: "Urganch shahar, Xorazm viloyati" },
 ];
 
 // Label offset: har shahar uchun belgi ustidagi yozuv yo'nalishi
@@ -345,26 +348,40 @@ function buildCityMarkers() {
 
 function showCityCard(city) {
     const card = document.getElementById('city-card');
-    const badge = document.getElementById('city-card-badge');
-    const name = document.getElementById('city-card-name');
-    const phone = document.getElementById('city-card-phone');
-    const address = document.getElementById('city-card-address');
     if (!card) return;
 
     const color = city.hq ? '#E30613' : '#1b5bb5';
-    badge.style.background = color;
-    badge.textContent = city.hq ? '★ Bosh ofis' : 'Filial';
-    name.textContent = city.name;
-    phone.textContent = city.phone;
-    address.textContent = city.address;
+
+    document.getElementById('city-card-badge').style.background = color;
+    document.getElementById('city-card-badge').textContent = city.hq ? '★ Bosh ofis' : 'Filial';
+    document.getElementById('city-card-name').textContent = city.name;
+    document.getElementById('city-card-phone').innerHTML =
+        city.phone + (city.phone2 ? `<br><a href="tel:${city.phone2.replace(/\D/g,'')}" style="color:inherit">${city.phone2}</a>` : '');
+    document.getElementById('city-card-address').textContent = city.address;
+
+    // Filiallar soni
+    const branchEl = document.getElementById('city-card-branches');
+    if (branchEl) {
+        if (city.branches && city.branches > 1) {
+            branchEl.textContent = `${city.branches} ta filial`;
+            branchEl.classList.remove('hidden');
+        } else {
+            branchEl.classList.add('hidden');
+        }
+    }
+
+    // Xizmatlar
+    const servEl = document.getElementById('city-card-services');
+    if (servEl) {
+        if (city.services && city.services.length) {
+            servEl.innerHTML = city.services.map(s => `<li>• ${s}</li>`).join('');
+            servEl.parentElement.classList.remove('hidden');
+        } else {
+            servEl.parentElement?.classList.add('hidden');
+        }
+    }
 
     card.classList.remove('hidden');
-
-    // Highlight active marker
-    document.querySelectorAll('.city-marker circle:nth-child(2)').forEach(c => {
-        c.setAttribute('stroke', 'white');
-        c.setAttribute('stroke-width', '2');
-    });
 }
 
 document.getElementById('city-card-close')?.addEventListener('click', () => {

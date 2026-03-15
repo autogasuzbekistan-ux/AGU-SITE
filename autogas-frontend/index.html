@@ -23,10 +23,10 @@
     <!-- Loading Screen -->
     <div id="loading-screen" class="loading-screen">
         <div class="logo-container-loader">
-            <div class="agu-logo-loader">
+            <div class="agu-logo-loader" style="opacity:0;">
                 <span class="red-part" id="ag-loader">AG</span><span class="blue-part" id="u-loader">U</span><sup class="registered-loader" id="reg-loader">®</sup>
             </div>
-            <div class="subtitle-loader" id="subtitle-text-loader"></div>
+            <div class="subtitle-loader" id="subtitle-text-loader" style="opacity:0;">Auto Gas Uzbekistan</div>
         </div>
     </div>
 
@@ -96,8 +96,94 @@
     </header>
 
     <!-- Hero Section -->
-    <section id="home" class="gradient-bg text-white min-h-screen flex items-center pt-20">
-        <div class="container mx-auto px-6 py-20">
+    <section id="home" class="gradient-bg text-white min-h-screen flex items-center pt-20" style="overflow:hidden;">
+
+        <!-- Fon vektorlari: gaz uskunalari -->
+        <div class="hero-vectors" aria-hidden="true">
+            <svg viewBox="0 0 900 600" xmlns="http://www.w3.org/2000/svg" class="hero-svg-bg">
+
+                <!-- GAZ BALON (chap yuqori) -->
+                <g transform="translate(60,40) scale(1.1)" opacity="0.07">
+                    <rect x="20" y="40" width="50" height="130" rx="25" fill="white"/>
+                    <rect x="28" y="22" width="34" height="25" rx="8" fill="white"/>
+                    <rect x="35" y="10" width="20" height="16" rx="4" fill="white"/>
+                    <rect x="12" y="50" width="66" height="12" rx="4" fill="white"/>
+                    <rect x="12" y="145" width="66" height="12" rx="4" fill="white"/>
+                    <ellipse cx="45" cy="170" rx="25" ry="8" fill="white" opacity="0.6"/>
+                </g>
+
+                <!-- REDÜKTOR (chap markaziy) -->
+                <g transform="translate(30,280) scale(1.2)" opacity="0.06">
+                    <circle cx="55" cy="55" r="45" fill="white"/>
+                    <circle cx="55" cy="55" r="30" fill="none" stroke="white" stroke-width="4" opacity="0.5"/>
+                    <rect x="-15" y="48" width="25" height="14" rx="5" fill="white"/>
+                    <rect x="100" y="48" width="25" height="14" rx="5" fill="white"/>
+                    <rect x="48" y="-15" width="14" height="22" rx="5" fill="white"/>
+                    <circle cx="55" cy="55" r="10" fill="white" opacity="0.6"/>
+                </g>
+
+                <!-- INJEKTORLAR (o'ng yuqori) -->
+                <g transform="translate(750,20) scale(0.9)" opacity="0.07">
+                    <g transform="translate(0,0)">
+                        <rect x="14" y="0" width="18" height="90" rx="9" fill="white"/>
+                        <polygon points="14,88 23,115 32,88" fill="white"/>
+                        <rect x="6" y="5" width="34" height="18" rx="6" fill="white"/>
+                        <rect x="10" y="28" width="26" height="6" rx="3" fill="white" opacity="0.5"/>
+                    </g>
+                    <g transform="translate(40,15)">
+                        <rect x="14" y="0" width="18" height="90" rx="9" fill="white"/>
+                        <polygon points="14,88 23,115 32,88" fill="white"/>
+                        <rect x="6" y="5" width="34" height="18" rx="6" fill="white"/>
+                        <rect x="10" y="28" width="26" height="6" rx="3" fill="white" opacity="0.5"/>
+                    </g>
+                    <g transform="translate(80,5)">
+                        <rect x="14" y="0" width="18" height="90" rx="9" fill="white"/>
+                        <polygon points="14,88 23,115 32,88" fill="white"/>
+                        <rect x="6" y="5" width="34" height="18" rx="6" fill="white"/>
+                        <rect x="10" y="28" width="26" height="6" rx="3" fill="white" opacity="0.5"/>
+                    </g>
+                    <g transform="translate(120,10)">
+                        <rect x="14" y="0" width="18" height="90" rx="9" fill="white"/>
+                        <polygon points="14,88 23,115 32,88" fill="white"/>
+                        <rect x="6" y="5" width="34" height="18" rx="6" fill="white"/>
+                        <rect x="10" y="28" width="26" height="6" rx="3" fill="white" opacity="0.5"/>
+                    </g>
+                </g>
+
+                <!-- ECU BLOK (o'ng pastki) -->
+                <g transform="translate(680,360) scale(1.15)" opacity="0.06">
+                    <rect x="0" y="0" width="140" height="90" rx="10" fill="white"/>
+                    <rect x="-12" y="18" width="18" height="55" rx="5" fill="white"/>
+                    <rect x="134" y="18" width="18" height="55" rx="5" fill="white"/>
+                    <rect x="12" y="12" width="116" height="66" rx="6" fill="none" stroke="white" stroke-width="2" opacity="0.4"/>
+                    <rect x="22" y="22" width="35" height="8" rx="3" fill="white" opacity="0.4"/>
+                    <rect x="22" y="36" width="50" height="8" rx="3" fill="white" opacity="0.4"/>
+                    <rect x="22" y="50" width="28" height="8" rx="3" fill="white" opacity="0.4"/>
+                    <rect x="70" y="22" width="50" height="36" rx="4" fill="white" opacity="0.25"/>
+                    <circle cx="95" cy="40" r="12" fill="none" stroke="white" stroke-width="2" opacity="0.4"/>
+                </g>
+
+                <!-- KATTA BALON (o'ng markaziy) -->
+                <g transform="translate(820,160) scale(1.3)" opacity="0.05">
+                    <rect x="18" y="38" width="46" height="120" rx="23" fill="white"/>
+                    <rect x="26" y="20" width="30" height="23" rx="7" fill="white"/>
+                    <rect x="33" y="8" width="16" height="15" rx="4" fill="white"/>
+                    <rect x="10" y="48" width="62" height="11" rx="4" fill="white"/>
+                    <rect x="10" y="135" width="62" height="11" rx="4" fill="white"/>
+                </g>
+
+                <!-- TRUBKALAR (pastki markaziy) -->
+                <g transform="translate(280,500)" opacity="0.05">
+                    <path d="M0,20 Q100,0 200,20 Q300,40 400,20" fill="none" stroke="white" stroke-width="8" stroke-linecap="round"/>
+                    <path d="M0,40 Q100,20 200,40 Q300,60 400,40" fill="none" stroke="white" stroke-width="6" stroke-linecap="round"/>
+                    <circle cx="0" cy="20" r="10" fill="white"/>
+                    <circle cx="400" cy="20" r="10" fill="white"/>
+                </g>
+
+            </svg>
+        </div>
+
+        <div class="container mx-auto px-6 py-20" style="position:relative; z-index:1;">
             <div class="max-w-4xl mx-auto text-center fade-in">
                 <div class="inline-block bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2 text-sm font-medium mb-6">
                     O'zbekistonda gaz uskunalari bo'yicha yetakchi kompaniya
@@ -406,20 +492,24 @@
                     </div>
 
                     <!-- City Info Card -->
-                    <div id="city-card" class="hidden absolute top-4 right-4 bg-white rounded-2xl shadow-2xl p-5 w-64 border border-blue-100 z-10">
+                    <div id="city-card" class="hidden absolute top-4 right-4 bg-white rounded-2xl shadow-2xl p-5 w-68 border border-blue-100 z-10" style="max-width:260px;">
                         <button id="city-card-close" class="absolute top-3 right-3 text-gray-400 hover:text-gray-600">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                         </button>
-                        <div id="city-card-badge" class="inline-block text-white text-xs font-bold px-3 py-1 rounded-full mb-3"></div>
-                        <h3 id="city-card-name" class="text-xl font-bold mb-3" style="color: var(--dark-gray);"></h3>
+                        <div id="city-card-badge" class="inline-block text-white text-xs font-bold px-3 py-1 rounded-full mb-2"></div>
+                        <span id="city-card-branches" class="hidden ml-2 text-xs font-semibold px-2 py-1 rounded-full bg-orange-100 text-orange-600"></span>
+                        <h3 id="city-card-name" class="text-lg font-bold mt-1 mb-3" style="color: var(--dark-gray);"></h3>
                         <div class="space-y-2 text-sm text-gray-600">
-                            <div class="flex items-center gap-2">
-                                <svg class="w-4 h-4 flex-shrink-0" style="color: var(--secondary-orange);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
-                                <span id="city-card-phone" class="font-medium"></span>
+                            <div class="flex items-start gap-2">
+                                <svg class="w-4 h-4 flex-shrink-0 mt-0.5" style="color: var(--secondary-orange);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+                                <span id="city-card-phone" class="font-medium leading-snug"></span>
                             </div>
-                            <div class="flex items-center gap-2">
-                                <svg class="w-4 h-4 flex-shrink-0" style="color: var(--secondary-orange);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                                <span id="city-card-address"></span>
+                            <div class="flex items-start gap-2">
+                                <svg class="w-4 h-4 flex-shrink-0 mt-0.5" style="color: var(--secondary-orange);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                <span id="city-card-address" class="leading-snug"></span>
+                            </div>
+                            <div class="pt-1">
+                                <ul id="city-card-services" class="space-y-1 text-xs text-gray-500"></ul>
                             </div>
                         </div>
                     </div>
@@ -597,7 +687,8 @@
                         </div>
                         <div>
                             <h3 class="text-xl font-semibold mb-1">Telefon</h3>
-                            <a href="tel:+998881070010" class="opacity-80 hover:opacity-100 transition-opacity text-lg">+998 88 107 00 10</a>
+                            <a href="tel:+998870010777" class="opacity-80 hover:opacity-100 transition-opacity text-lg block">+998 (87) 001-07-77</a>
+                            <a href="tel:+998870020777" class="opacity-80 hover:opacity-100 transition-opacity text-lg block mt-1">+998 (87) 002-07-77</a>
                         </div>
                     </div>
 
