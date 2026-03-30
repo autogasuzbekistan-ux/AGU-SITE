@@ -15,8 +15,6 @@
     <!-- GSAP Animation Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 
-    <!-- Leaflet.js (bepul interaktiv xarita, API kalit shart emas) -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
     <!-- Custom Styles -->
     <link rel="stylesheet" href="style.css">
 </head>
@@ -464,9 +462,16 @@
 
             <div class="regions-layout">
 
-                <!-- Chap: Leaflet interaktiv xarita -->
+                <!-- Chap: Yandex Maps iframe -->
                 <div class="map-wrap" style="padding:0;overflow:hidden;">
-                    <div id="leaflet-map"></div>
+                    <iframe
+                        src="https://yandex.com/maps/?ll=64.5%2C40.8&amp;z=6&amp;l=map&amp;output=embed&amp;pt=70.9428%2C40.5288%2Cpm2rdm~69.2401%2C41.2995%2Cpm2blm~72.3442%2C40.7829%2Cpm2blm~71.6723%2C41.0011%2Cpm2blm~68.78%2C40.49%2Cpm2blm~66.9597%2C39.6542%2Cpm2blm~64.4286%2C39.7747%2Cpm2blm~65.7881%2C38.861%2Cpm2blm~67.89%2C38.2759%2Cpm2blm~60.64%2C41.55%2Cpm2blm~59.6%2C42.46%2Cpm2blm"
+                        width="100%" height="490"
+                        frameborder="0" allowfullscreen="true"
+                        style="display:block;border:0;border-radius:20px;"
+                        title="AGU filiallari xaritasi"
+                        loading="lazy">
+                    </iframe>
                 </div>
 
                 <!-- O'ng: Qidiruv + ro'yxat paneli -->
@@ -791,9 +796,16 @@
                 </div>
             </div>
 
-            <!-- To'liq ekranli xarita -->
+            <!-- To'liq ekranli Yandex Maps -->
             <div style="border-radius:20px;overflow:hidden;box-shadow:0 6px 32px rgba(27,91,181,.10);border:1px solid #e2e8f0;" class="fade-in">
-                <div id="leaflet-map-big"></div>
+                <iframe
+                    src="https://yandex.com/maps/?ll=64.5%2C40.8&amp;z=6&amp;l=map&amp;output=embed&amp;pt=70.9428%2C40.5288%2Cpm2rdm~69.2401%2C41.2995%2Cpm2blm~72.3442%2C40.7829%2Cpm2blm~71.6723%2C41.0011%2Cpm2blm~68.78%2C40.49%2Cpm2blm~66.9597%2C39.6542%2Cpm2blm~64.4286%2C39.7747%2Cpm2blm~65.7881%2C38.861%2Cpm2blm~67.89%2C38.2759%2Cpm2blm~60.64%2C41.55%2Cpm2blm~59.6%2C42.46%2Cpm2blm"
+                    width="100%" height="560"
+                    frameborder="0" allowfullscreen="true"
+                    style="display:block;border:0;"
+                    title="AGU filiallari to'liq xarita"
+                    loading="lazy">
+                </iframe>
             </div>
 
             <!-- Izoh -->
@@ -993,7 +1005,6 @@
         <span id="toast-message">Xabar yuborildi!</span>
     </div>
 
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV/XN/WPeWs=" crossorigin=""></script>
     <script src="script.js"></script>
 </body>
 </html>

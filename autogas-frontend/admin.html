@@ -519,6 +519,10 @@ tbody tr:hover td { background: #fafbfc; }
         <span class="ni">🏪</span> Do&rsquo;konlar
         <span class="nav-badge" id="nb-shops">11</span>
       </button>
+      <button class="nav-btn" data-page="products">
+        <span class="ni">🛍️</span> Mahsulotlar
+        <span class="nav-badge" id="nb-products">0</span>
+      </button>
       <div class="sb-section">Tizim</div>
       <button class="nav-btn" data-page="settings">
         <span class="ni">⚙️</span> Sozlamalar
@@ -661,6 +665,30 @@ tbody tr:hover td { background: #fafbfc; }
         <div class="shop-grid" id="shops-grid"></div>
       </section>
 
+      <!-- ── PRODUCTS ──────────────────────────────────── -->
+      <section class="page" id="page-products">
+        <div class="page-title">Kun mahsulotlari</div>
+        <div class="page-sub">
+          Har kuni reklama qilinadigan mahsulotlarni boshqarish
+        </div>
+
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+          <div class="btn-group">
+            <button class="btn btn-primary" id="add-product-btn">
+              &#43; Mahsulot qo&rsquo;shish
+            </button>
+            <button class="btn btn-secondary" id="reset-products-btn">
+              &#8635; Standartga qaytarish
+            </button>
+          </div>
+          <span style="font-size:.78rem;color:#94a3b8;">
+            &#9432; Saytda &ldquo;Kun mahsulotlari&rdquo; bo&rsquo;limida ko&rsquo;rinadi
+          </span>
+        </div>
+
+        <div id="products-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;"></div>
+      </section>
+
       <!-- ── SETTINGS ───────────────────────────────── -->
       <section class="page" id="page-settings">
         <div class="page-title">Sozlamalar</div>
@@ -788,6 +816,72 @@ tbody tr:hover td { background: #fafbfc; }
       </section>
 
     </main>
+  </div>
+</div>
+
+<!-- ────────────────────────────────────────────────── -->
+<!--  PRODUCT EDIT MODAL                                -->
+<!-- ────────────────────────────────────────────────── -->
+<div id="product-modal" class="modal-bg" role="dialog" aria-modal="true">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title" id="product-modal-title">Mahsulot qo&rsquo;shish</div>
+        <div style="font-size:.78rem;color:#64748b;margin-top:2px;">Kun mahsuloti</div>
+      </div>
+      <button class="modal-close" id="pm-close-btn">&#10005;</button>
+    </div>
+
+    <!-- Image upload -->
+    <div class="field" style="margin-bottom:16px;">
+      <label>Mahsulot rasmi</label>
+      <div id="pm-upload-area" class="upload-area">
+        <input type="file" id="pm-img-input" accept="image/*">
+        <div id="pm-upload-ph">
+          <div class="upload-icon">&#128444;&#65039;</div>
+          <div class="upload-text">Bosing yoki sudrab tashlang</div>
+          <div class="upload-hint">PNG, JPG, WEBP &mdash; max 2 MB</div>
+        </div>
+        <img id="pm-img-preview" class="logo-preview-img" src="" alt="" style="display:none;">
+      </div>
+      <div style="margin-top:6px;">
+        <button class="btn btn-danger-soft btn-sm" id="pm-remove-img-btn" style="display:none;">
+          &#10005; Rasmni o&rsquo;chirish
+        </button>
+      </div>
+    </div>
+
+    <div class="form-row cols-2">
+      <div class="field">
+        <label>Mahsulot nomi</label>
+        <input type="text" id="pm-name" placeholder="Masalan: ATIKER Reducer">
+      </div>
+      <div class="field">
+        <label>Narxi</label>
+        <input type="text" id="pm-price" placeholder="Masalan: 450 000 so&rsquo;m">
+      </div>
+    </div>
+    <div class="form-row cols-2">
+      <div class="field">
+        <label>O&rsquo;lchov birligi</label>
+        <input type="text" id="pm-unit" placeholder="dona, komplekt, metr...">
+      </div>
+      <div class="field">
+        <label>Brand</label>
+        <input type="text" id="pm-brand" placeholder="Masalan: ATIKER">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="field">
+        <label>Qisqa tavsif</label>
+        <textarea id="pm-desc" rows="3" placeholder="Mahsulot haqida qisqacha ma&rsquo;lumot..."></textarea>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-secondary" id="pm-cancel-btn">Bekor qilish</button>
+      <button class="btn btn-primary" id="pm-save-btn">&#128190; Saqlash</button>
+    </div>
   </div>
 </div>
 
@@ -990,10 +1084,11 @@ function doLogout() {
 // ── NAVIGATION ───────────────────────────────────────────────
 
 var pages = {
-  dashboard: { title: "Dashboard", sub: "/ AGU Admin" },
-  brands:    { title: "Brandlar",  sub: "/ Boshqaruv" },
-  shops:     { title: "Do\u02BCkonlar", sub: "/ Boshqaruv" },
-  settings:  { title: "Sozlamalar", sub: "/ Tizim" }
+  dashboard: { title: "Dashboard",       sub: "/ AGU Admin" },
+  brands:    { title: "Brandlar",        sub: "/ Boshqaruv" },
+  shops:     { title: "Do\u02BCkonlar",  sub: "/ Boshqaruv" },
+  products:  { title: "Mahsulotlar",     sub: "/ Boshqaruv" },
+  settings:  { title: "Sozlamalar",      sub: "/ Tizim" }
 };
 
 function nav(name) {
@@ -1089,11 +1184,13 @@ function initApp() {
   renderStorageInfo();
   renderBrandsTable();
   renderShopsGrid();
+  renderProductsGrid();
   loadSettingsForm();
   bindShopsButtons();
   bindSettingsButtons();
   bindExportImport();
   bindBrandSearch();
+  bindProductButtons();
   updateNavBadges();
 }
 
@@ -1124,6 +1221,8 @@ function updateNavBadges() {
   if (nb) nb.textContent = PARTNERS.length;
   var ns = document.getElementById("nb-shops");
   if (ns) ns.textContent = CITIES.length;
+  var np = document.getElementById("nb-products");
+  if (np) np.textContent = getProducts().length;
 }
 
 // ── STORAGE INFO ─────────────────────────────────────────────
@@ -1633,6 +1732,216 @@ function bindExportImport() {
   if (imp) imp.addEventListener("change", function() {
     importData(imp.files[0]);
     imp.value = "";
+  });
+}
+
+// ── PRODUCTS (KUN MAHSULOTLARI) ───────────────────────────────
+
+var KEY_PRODUCTS = "agu_daily_products";
+var editingProductId = null;
+var tempProductImg = null;
+
+function getProducts() {
+  var saved = ls(KEY_PRODUCTS, null);
+  if (saved && saved.length) return saved;
+  // fallback to DEFAULT_DAILY_PRODUCTS from script.js
+  if (typeof DEFAULT_DAILY_PRODUCTS !== "undefined") return DEFAULT_DAILY_PRODUCTS.slice();
+  return [];
+}
+
+function saveProducts(arr) {
+  lsSet(KEY_PRODUCTS, arr);
+}
+
+function genProductId() {
+  return "prod_" + Date.now() + "_" + Math.floor(Math.random() * 1000);
+}
+
+function renderProductsGrid() {
+  var grid = document.getElementById("products-grid");
+  if (!grid) return;
+  var prods = getProducts();
+  if (!prods.length) {
+    grid.innerHTML = "<div style=\"grid-column:1/-1;text-align:center;padding:40px;color:#94a3b8;\">&#128230; Mahsulotlar yo\u02BCq. &laquo;Mahsulot qo\u02BCshish&raquo; tugmasini bosing.</div>";
+    updateNavBadges();
+    return;
+  }
+  grid.innerHTML = prods.map(function(p) {
+    var imgHtml = p.img
+      ? "<img src=\"" + esc(p.img) + "\" style=\"width:100%;height:130px;object-fit:contain;border-radius:10px;margin-bottom:10px;background:#f8fafc;\" alt=\"" + esc(p.name) + "\">"
+      : "<div style=\"width:100%;height:130px;background:linear-gradient(135deg,#e0e7ff,#bfdbfe);border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:10px;font-size:2.5rem;\">&#128230;</div>";
+    return "<div class=\"card\" style=\"padding:14px;\">" +
+      imgHtml +
+      "<div style=\"font-weight:700;font-size:.95rem;margin-bottom:4px;color:#0f172a;\">" + esc(p.name) + "</div>" +
+      (p.brand ? "<div style=\"font-size:.75rem;color:#60a5fa;font-weight:600;margin-bottom:4px;\">" + esc(p.brand) + "</div>" : "") +
+      (p.price ? "<div style=\"font-size:.85rem;color:#16a34a;font-weight:700;margin-bottom:4px;\">&#128176; " + esc(p.price) + (p.unit ? " / " + esc(p.unit) : "") + "</div>" : "") +
+      (p.desc  ? "<div style=\"font-size:.78rem;color:#64748b;margin-bottom:10px;line-height:1.4;\">" + esc(p.desc) + "</div>" : "") +
+      "<div class=\"btn-group\" style=\"margin-top:auto;\">" +
+        "<button class=\"btn btn-secondary btn-sm\" data-edit-prod=\"" + esc(p.id) + "\">&#9999;&#65039; Tahrirlash</button>" +
+        "<button class=\"btn btn-danger-soft btn-sm\" data-del-prod=\"" + esc(p.id) + "\">&#128465; O\u02BCchirish</button>" +
+      "</div>" +
+    "</div>";
+  }).join("");
+
+  grid.querySelectorAll("[data-edit-prod]").forEach(function(btn) {
+    btn.addEventListener("click", function() { openProductModal(btn.dataset.editProd); });
+  });
+  grid.querySelectorAll("[data-del-prod]").forEach(function(btn) {
+    btn.addEventListener("click", function() { deleteProduct(btn.dataset.delProd); });
+  });
+  updateNavBadges();
+}
+
+function openProductModal(id) {
+  editingProductId = id || null;
+  tempProductImg = null;
+  var prods = getProducts();
+  var p = id ? prods.find(function(x) { return x.id === id; }) : null;
+  var el = function(i) { return document.getElementById(i); };
+  el("product-modal-title").textContent = p ? "Mahsulotni tahrirlash" : "Mahsulot qo\u02BCshish";
+  el("pm-name").value  = p ? (p.name  || "") : "";
+  el("pm-price").value = p ? (p.price || "") : "";
+  el("pm-unit").value  = p ? (p.unit  || "") : "";
+  el("pm-brand").value = p ? (p.brand || "") : "";
+  el("pm-desc").value  = p ? (p.desc  || "") : "";
+  tempProductImg = (p && p.img) ? p.img : null;
+  refreshProductImgPreview();
+  el("product-modal").classList.add("open");
+  document.body.style.overflow = "hidden";
+}
+
+function closeProductModal() {
+  var m = document.getElementById("product-modal");
+  if (m) m.classList.remove("open");
+  document.body.style.overflow = "";
+  editingProductId = null;
+  tempProductImg = null;
+}
+
+function refreshProductImgPreview() {
+  var ph  = document.getElementById("pm-upload-ph");
+  var img = document.getElementById("pm-img-preview");
+  var rmv = document.getElementById("pm-remove-img-btn");
+  if (!ph || !img || !rmv) return;
+  if (tempProductImg) {
+    ph.style.display  = "none";
+    img.src           = tempProductImg;
+    img.style.display = "block";
+    rmv.style.display = "inline-flex";
+  } else {
+    ph.style.display  = "block";
+    img.src           = "";
+    img.style.display = "none";
+    rmv.style.display = "none";
+  }
+}
+
+function handleProductImgFile(file) {
+  if (!file) return;
+  if (!file.type.startsWith("image/")) {
+    toast("Faqat rasm fayllari qabul qilinadi", "error"); return;
+  }
+  if (file.size > 2 * 1024 * 1024) {
+    toast("Fayl hajmi 2 MB dan oshmasin", "error"); return;
+  }
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    tempProductImg = e.target.result;
+    refreshProductImgPreview();
+  };
+  reader.readAsDataURL(file);
+}
+
+function saveProductModal() {
+  var el = function(i) { return document.getElementById(i); };
+  var name = (el("pm-name").value || "").trim();
+  if (!name) { toast("Mahsulot nomini kiriting", "error"); return; }
+  var prods = getProducts();
+  var p = {
+    id:    editingProductId || genProductId(),
+    name:  name,
+    price: (el("pm-price").value || "").trim(),
+    unit:  (el("pm-unit").value  || "").trim(),
+    brand: (el("pm-brand").value || "").trim(),
+    desc:  (el("pm-desc").value  || "").trim(),
+    img:   tempProductImg || ""
+  };
+  if (editingProductId) {
+    var idx = prods.findIndex(function(x) { return x.id === editingProductId; });
+    if (idx >= 0) prods[idx] = p; else prods.push(p);
+  } else {
+    prods.push(p);
+  }
+  saveProducts(prods);
+  closeProductModal();
+  renderProductsGrid();
+  toast(name + " saqlandi");
+  showSaved();
+}
+
+function deleteProduct(id) {
+  var prods = getProducts();
+  var p = prods.find(function(x) { return x.id === id; });
+  if (!p) return;
+  if (!confirm(esc(p.name) + " mahsulotini o\u02BCchirishni tasdiqlaysizmi?")) return;
+  prods = prods.filter(function(x) { return x.id !== id; });
+  saveProducts(prods);
+  renderProductsGrid();
+  toast(p.name + " o\u02BCchirildi");
+  showSaved();
+}
+
+function bindProductButtons() {
+  var addBtn   = document.getElementById("add-product-btn");
+  var resetBtn = document.getElementById("reset-products-btn");
+  var modal    = document.getElementById("product-modal");
+  var closeBtn = document.getElementById("pm-close-btn");
+  var cancelBtn= document.getElementById("pm-cancel-btn");
+  var saveBtn  = document.getElementById("pm-save-btn");
+  var imgInp   = document.getElementById("pm-img-input");
+  var rmvBtn   = document.getElementById("pm-remove-img-btn");
+  var upArea   = document.getElementById("pm-upload-area");
+
+  if (addBtn)   addBtn.addEventListener("click",   function() { openProductModal(null); });
+  if (resetBtn) resetBtn.addEventListener("click",  function() {
+    if (!confirm("Mahsulotlar standart holatga qaytarilsinmi?")) return;
+    lsDel(KEY_PRODUCTS);
+    renderProductsGrid();
+    toast("Mahsulotlar tiklandi");
+    showSaved();
+  });
+  if (closeBtn)  closeBtn.addEventListener("click",  closeProductModal);
+  if (cancelBtn) cancelBtn.addEventListener("click", closeProductModal);
+  if (saveBtn)   saveBtn.addEventListener("click",   saveProductModal);
+
+  if (rmvBtn) rmvBtn.addEventListener("click", function(e) {
+    e.stopPropagation();
+    tempProductImg = null;
+    refreshProductImgPreview();
+  });
+  if (imgInp) imgInp.addEventListener("change", function() {
+    handleProductImgFile(imgInp.files[0]);
+  });
+  if (upArea) {
+    upArea.addEventListener("dragover", function(e) {
+      e.preventDefault(); upArea.classList.add("drag-over");
+    });
+    upArea.addEventListener("dragleave", function() {
+      upArea.classList.remove("drag-over");
+    });
+    upArea.addEventListener("drop", function(e) {
+      e.preventDefault();
+      upArea.classList.remove("drag-over");
+      if (e.dataTransfer.files[0]) handleProductImgFile(e.dataTransfer.files[0]);
+    });
+  }
+  if (modal) modal.addEventListener("click", function(e) {
+    if (e.target === modal) closeProductModal();
+  });
+  document.addEventListener("keydown", function(e) {
+    if (e.key === "Escape" && modal && modal.classList.contains("open")) {
+      closeProductModal();
+    }
   });
 }
 

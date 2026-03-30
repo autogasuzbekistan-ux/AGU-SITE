@@ -617,8 +617,8 @@ html {
 }
 
 .brand-lm {
-    width: 54px;
-    height: 54px;
+    width: 72px;
+    height: 72px;
     border-radius: 14px;
     display: flex;
     align-items: center;
@@ -1017,40 +1017,6 @@ html {
     color: white;
 }
 
-/* Leaflet map height */
-#leaflet-map {
-    height: 490px;
-    width: 100%;
-    border-radius: 20px;
-    z-index: 1;
-}
-
-/* To'liq ekranli pastki xarita */
-#leaflet-map-big {
-    height: 560px;
-    width: 100%;
-    z-index: 1;
-}
-
-@media (max-width: 767px) {
-    #leaflet-map-big { height: 380px; }
-}
-
-/* Custom marker pin — no default Leaflet icon bg */
-.agu-pin { background: transparent !important; border: none !important; }
-
-/* Popup style override */
-.agu-popup .leaflet-popup-content-wrapper {
-    border-radius: 16px !important;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.18) !important;
-    padding: 0 !important;
-}
-.agu-popup .leaflet-popup-content {
-    margin: 14px 16px !important;
-}
-.agu-popup .leaflet-popup-tip {
-    background: white !important;
-}
 
 /* Make the uzbekistan map background white */
 .map-wrap {
