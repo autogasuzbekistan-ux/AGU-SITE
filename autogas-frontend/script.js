@@ -984,177 +984,163 @@ function showWorldBrands(countryKey) {
 }
 
 // =========================================================
-// LEAFLET — INTERAKTIV XARITA (CartoDB Voyager tiles)
+// SVG INTERAKTIV XARITA — tashqi CDN talab qilmaydi
 // =========================================================
 
-// Leaflet default marker rasmlarini local yo'lga yo'naltirish
-if (window.L) {
-    delete L.Icon.Default.prototype._getIconUrl;
-    L.Icon.Default.mergeOptions({
-        iconUrl:       'libs/images/marker-icon.png',
-        iconRetinaUrl: 'libs/images/marker-icon-2x.png',
-        shadowUrl:     'libs/images/marker-shadow.png'
-    });
-}
-
-function _buildLeafletMap(elId, opts) {
-    var el = document.getElementById(elId);
-    if (!el || !window.L) return null;
-
-    var cities;
+function _getActiveCitiesSvg() {
     try {
         var overrides = JSON.parse(localStorage.getItem('agu_cities_override')) || [];
-        cities = CITIES.map(function(c) {
+        return CITIES.map(function(c) {
             var ov = overrides.find(function(o) { return o.id === c.id; });
             return ov ? Object.assign({}, c, ov) : Object.assign({}, c);
         });
-    } catch (e) {
-        cities = CITIES.slice();
-    }
+    } catch (e) { return CITIES.slice(); }
+}
 
-    var map = L.map(elId, {
-        center: [41.1, 64.5],
-        zoom: opts.zoom || 6,
-        zoomControl: true,
-        scrollWheelZoom: opts.scrollWheel !== false
-    });
+function buildSvgMap(svgId, cardId) {
+    var svgEl = document.getElementById(svgId);
+    var markersG = svgEl && svgEl.querySelector('g[id^="city-markers"]');
+    if (!markersG) return;
 
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions" target="_blank">CARTO</a>',
-        subdomains: 'abcd',
-        maxZoom: 19
-    }).addTo(map);
-
-    var markerRefs = {};
+    var cities = _getActiveCitiesSvg();
+    var ns = 'http://www.w3.org/2000/svg';
 
     cities.forEach(function(city) {
-        if (!city.lat || !city.lng) return;
-
+        var cx = city.x, cy = city.y;
         var isHQ  = !!city.hq;
         var isSvc = !!city.hasService;
-        var color = isHQ ? '#E30613' : isSvc ? '#16a34a' : '#1b5bb5';
-        var size  = isHQ ? 40 : 34;
+        var color = isHQ ? '#ef4444' : '#3b82f6';
+        var r     = isHQ ? 11 : 9;
 
-        // Pin shakli: yumaloq ostidagi uchburchak
-        var pinHtml =
-            '<div style="width:' + size + 'px;height:' + (size + 10) + 'px;position:relative;filter:drop-shadow(0 3px 8px rgba(0,0,0,.32));">' +
-              '<div style="width:' + size + 'px;height:' + size + 'px;background:' + color + ';' +
-                   'border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid white;' +
-                   'display:flex;align-items:center;justify-content:center;">' +
-                '<span style="transform:rotate(45deg);color:white;font-size:' + (isHQ ? 17 : 13) + 'px;font-weight:800;line-height:1;">' +
-                  (isHQ ? '&#9733;' : (isSvc ? '&#128295;' : '&#11044;')) +
-                '</span>' +
-              '</div>' +
-            '</div>';
+        var g = document.createElementNS(ns, 'g');
+        g.setAttribute('class', 'city-pin');
+        g.setAttribute('data-id', city.id);
+        g.style.cursor = 'pointer';
 
-        var icon = L.divIcon({
-            html: pinHtml,
-            className: '',
-            iconSize:   [size, size + 10],
-            iconAnchor: [size / 2, size + 10],
-            popupAnchor:[0, -(size + 12)]
+        // Pulse halqa
+        var pulse = document.createElementNS(ns, 'circle');
+        pulse.setAttribute('cx', cx); pulse.setAttribute('cy', cy);
+        pulse.setAttribute('r', r + 4);
+        pulse.setAttribute('fill', color);
+        pulse.setAttribute('fill-opacity', '0.2');
+        pulse.innerHTML =
+            '<animate attributeName="r" values="' + (r+2) + ';' + (r+14) + ';' + (r+2) + '" dur="2.4s" repeatCount="indefinite"/>' +
+            '<animate attributeName="fill-opacity" values="0.25;0;0.25" dur="2.4s" repeatCount="indefinite"/>';
+
+        // Asosiy doira
+        var circle = document.createElementNS(ns, 'circle');
+        circle.setAttribute('cx', cx); circle.setAttribute('cy', cy);
+        circle.setAttribute('r', r);
+        circle.setAttribute('fill', color);
+        circle.setAttribute('stroke', 'white');
+        circle.setAttribute('stroke-width', '2.5');
+        circle.setAttribute('filter', svgId === 'uzbek-map' ? 'url(#pin-shadow)' : 'url(#pin-shadow2)');
+
+        // Markaz belgisi
+        var sym = document.createElementNS(ns, 'text');
+        sym.setAttribute('x', cx); sym.setAttribute('y', cy + 4);
+        sym.setAttribute('text-anchor', 'middle');
+        sym.setAttribute('font-size', isHQ ? '9' : '7');
+        sym.setAttribute('fill', 'white');
+        sym.setAttribute('font-weight', '900');
+        sym.setAttribute('pointer-events', 'none');
+        sym.textContent = isHQ ? '\u2605' : (isSvc ? '\u2692' : '\u25CF');
+
+        // Shahar nomi
+        var off = LABEL_OFFSET[city.id] || { dx: 0, dy: -16 };
+        var lbl = document.createElementNS(ns, 'text');
+        lbl.setAttribute('x', cx + off.dx);
+        lbl.setAttribute('y', cy + off.dy);
+        lbl.setAttribute('text-anchor', 'middle');
+        lbl.setAttribute('font-size', '8.5');
+        lbl.setAttribute('font-weight', '700');
+        lbl.setAttribute('fill', 'white');
+        lbl.setAttribute('font-family', 'system-ui, sans-serif');
+        lbl.setAttribute('paint-order', 'stroke');
+        lbl.setAttribute('stroke', '#0f1f42');
+        lbl.setAttribute('stroke-width', '3');
+        lbl.setAttribute('pointer-events', 'none');
+        lbl.textContent = city.name;
+
+        g.appendChild(pulse);
+        g.appendChild(circle);
+        g.appendChild(sym);
+        g.appendChild(lbl);
+        markersG.appendChild(g);
+
+        // Klik — city card ko'rsatish
+        g.addEventListener('click', function(e) {
+            e.stopPropagation();
+            _svgSetActive(svgId, city.id);
+            if (cardId) _showSvgCard(cardId, city, color);
         });
-
-        var tag = isHQ ? 'Bosh ofis' : isSvc ? 'Service + Do\u02BCkon' : 'Savdo do\u02BCkoni';
-
-        var phone2Row = city.phone2
-            ? '<div style="margin-bottom:3px;">&#128222; ' + city.phone2 + '</div>' : '';
-        var addrRow = city.address
-            ? '<div style="color:#64748b;font-size:.76rem;margin-bottom:6px;">&#128205; ' + city.address + '</div>' : '';
-        var shopRow = (city.shops && city.shops > 1)
-            ? '<div style="font-size:.74rem;color:#6366f1;margin-bottom:3px;">&#127978; ' + city.shops + ' ta do\u02BCkon</div>' : '';
-        var svcRow = city.hasService
-            ? '<div style="font-size:.74rem;color:#16a34a;margin-bottom:6px;">&#128295; Service markazi mavjud</div>' : '';
-
-        var popupHtml =
-            '<div style="font-family:system-ui,sans-serif;min-width:200px;max-width:255px;padding:2px;">' +
-              '<div style="display:flex;align-items:center;gap:7px;margin-bottom:8px;">' +
-                '<span style="font-size:.95rem;font-weight:800;color:#0f172a;">' + city.name + '</span>' +
-                '<span style="background:' + color + ';color:white;font-size:.6rem;font-weight:700;' +
-                     'padding:2px 8px;border-radius:20px;white-space:nowrap;">' + tag + '</span>' +
-              '</div>' +
-              '<div style="font-size:.8rem;color:#374151;margin-bottom:3px;">&#128222; ' + (city.phone || '&mdash;') + '</div>' +
-              phone2Row + addrRow + shopRow + svcRow +
-            '</div>';
-
-        var marker = L.marker([city.lat, city.lng], { icon: icon })
-            .bindPopup(popupHtml, { maxWidth: 280, className: 'agu-lf-popup' })
-            .addTo(map);
-
-        markerRefs[city.id] = { marker: marker, city: city };
     });
 
-    return { map: map, markerRefs: markerRefs };
+    // SVG fonga bos — cardni yop
+    svgEl.addEventListener('click', function() {
+        if (cardId) {
+            var card = document.getElementById(cardId);
+            if (card) card.classList.add('hidden');
+        }
+    });
 }
 
-function buildLeafletMap() {
-    var result = _buildLeafletMap('leaflet-map', { zoom: 6, scrollWheel: true });
-    if (!result) return;
-    var map = result.map;
-    var markerRefs = result.markerRefs;
-
-    // Panel list bilan sinxronlashtirish
-    var panelList = document.getElementById('panel-city-list');
-    if (panelList) {
-        panelList.addEventListener('click', function(e) {
-            var item = e.target.closest('[data-city-id]');
-            if (!item) return;
-            var ref = markerRefs[item.dataset.cityId];
-            if (!ref) return;
-            map.flyTo([ref.city.lat, ref.city.lng], 13, { duration: 1.0 });
-            setTimeout(function() { ref.marker.openPopup(); }, 1050);
-        });
+function _svgSetActive(svgId, cityId) {
+    var svgEl = document.getElementById(svgId);
+    if (!svgEl) return;
+    svgEl.querySelectorAll('.city-pin circle:first-of-type').forEach(function(c) {
+        c.setAttribute('stroke-width', '2.5');
+    });
+    var g = svgEl.querySelector('.city-pin[data-id="' + cityId + '"]');
+    if (g) {
+        var c = g.querySelector('circle');
+        if (c) c.setAttribute('stroke-width', '4');
     }
+    // Panel sinxronlashtirish
+    document.querySelectorAll('.panel-city-item').forEach(function(i) {
+        i.classList.toggle('active', i.getAttribute('data-city-id') === cityId);
+    });
+}
 
-    // Qidiruv
-    var searchInput = document.getElementById('city-search');
-    if (searchInput) {
-        searchInput.addEventListener('input', function() {
-            var q = this.value.trim().toLowerCase();
-            if (!q) return;
-            var found = Object.values(markerRefs).find(function(r) {
-                return r.city.name.toLowerCase().indexOf(q) !== -1;
-            });
-            if (found) {
-                map.flyTo([found.city.lat, found.city.lng], 13, { duration: 1.0 });
-                setTimeout(function() { found.marker.openPopup(); }, 1050);
-            }
-        });
+function _showSvgCard(cardId, city, color) {
+    var card = document.getElementById(cardId);
+    if (!card) return;
+    var el = function(id) { return document.getElementById(id); };
+    el('city-card-badge').style.background = color;
+    el('city-card-badge').textContent = city.hq ? '\u2605 Bosh ofis' : (city.hasService ? 'Service' : 'Savdo do\u02BCkoni');
+    el('city-card-name').textContent = city.name;
+    el('city-card-phone').innerHTML = city.phone + (city.phone2
+        ? '<br><a href="tel:' + city.phone2.replace(/\D/g,'') + '" style="color:inherit">' + city.phone2 + '</a>' : '');
+    el('city-card-address').textContent = city.address || '';
+
+    var brEl = el('city-card-branches');
+    if (brEl) {
+        var parts = [];
+        if (city.shops && city.shops > 1) parts.push(city.shops + ' ta do\u02BCkon');
+        if (city.hasService) parts.push('+ service');
+        if (parts.length) { brEl.textContent = parts.join(' '); brEl.classList.remove('hidden'); }
+        else brEl.classList.add('hidden');
     }
-
-    window._aguMap = map;
-    window._aguMarkers = markerRefs;
+    var svcWrap = el('city-card-services-wrap');
+    var svcList = el('city-card-services');
+    if (svcWrap && svcList) {
+        if (city.services && city.services.length) {
+            svcList.innerHTML = city.services.map(function(s) { return '<li>\u2022 ' + s + '</li>'; }).join('');
+            svcWrap.classList.remove('hidden');
+        } else {
+            svcWrap.classList.add('hidden');
+        }
+    }
+    card.classList.remove('hidden');
 }
 
-function buildLeafletMapBig() {
-    var result = _buildLeafletMap('leaflet-map-big', { zoom: 6, scrollWheel: false });
-    if (!result) return;
-    window._aguMapBig = result.map;
-}
-
-// =========================================================
-// INIT ON DOM READY
-// =========================================================
-
-if (document.getElementById('daily-products-grid')) {
-    renderDailyProducts();
-}
-
-// Panel list — buildCityMarkers uchun (SVG map yo'q, faqat list kerak)
-(function() {
+function buildSvgPanelList() {
     var panelList = document.getElementById('panel-city-list');
-    if (!panelList || panelList.children.length) return;
-    var cities;
-    try {
-        var overrides = JSON.parse(localStorage.getItem('agu_cities_override')) || [];
-        cities = CITIES.map(function(c) {
-            var ov = overrides.find(function(o) { return o.id === c.id; });
-            return ov ? Object.assign({}, c, ov) : Object.assign({}, c);
-        });
-    } catch (e) { cities = CITIES.slice(); }
+    if (!panelList) return;
+    var cities = _getActiveCitiesSvg();
 
     cities.forEach(function(city) {
-        var color = city.hq ? '#E30613' : '#1b5bb5';
+        var color = city.hq ? '#ef4444' : '#3b82f6';
         var btn = document.createElement('button');
         btn.className = 'panel-city-item';
         btn.setAttribute('data-city-id', city.id);
@@ -1167,41 +1153,47 @@ if (document.getElementById('daily-products-grid')) {
             '<span class="panel-city-name">' + city.name + '</span>' +
             shopBadge + svcBadge;
         btn.addEventListener('click', function() {
-            document.querySelectorAll('.panel-city-item').forEach(function(i) {
-                i.classList.remove('active');
-            });
-            btn.classList.add('active');
-            if (window._aguMap) {
-                window._aguMap.flyTo([city.lat, city.lng], 13, { duration: 1.0 });
-                setTimeout(function() {
-                    var ref = window._aguMarkers && window._aguMarkers[city.id];
-                    if (ref) ref.marker.openPopup();
-                }, 1050);
-            }
+            _svgSetActive('uzbek-map', city.id);
+            _showSvgCard('city-card', city, color);
         });
         panelList.appendChild(btn);
     });
 
-    // Qidiruv
     var searchInput = document.getElementById('city-search');
     if (searchInput) {
         searchInput.addEventListener('input', function() {
             var q = this.value.trim().toLowerCase();
             panelList.querySelectorAll('.panel-city-item').forEach(function(item) {
                 var id = item.getAttribute('data-city-id');
-                var city = CITIES.find(function(c) { return c.id === id; });
-                item.style.display = (!q || city.name.toLowerCase().indexOf(q) !== -1) ? '' : 'none';
+                var c = CITIES.find(function(x) { return x.id === id; });
+                item.style.display = (!q || (c && c.name.toLowerCase().indexOf(q) !== -1)) ? '' : 'none';
             });
         });
     }
-})();
-
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function() {
-        if (document.getElementById('leaflet-map'))     buildLeafletMap();
-        if (document.getElementById('leaflet-map-big')) buildLeafletMapBig();
-    });
-} else {
-    if (document.getElementById('leaflet-map'))     buildLeafletMap();
-    if (document.getElementById('leaflet-map-big')) buildLeafletMapBig();
 }
+
+// =========================================================
+// INIT ON DOM READY
+// =========================================================
+
+if (document.getElementById('daily-products-grid')) {
+    renderDailyProducts();
+}
+
+(function() {
+    function initMaps() {
+        if (document.getElementById('uzbek-map'))     buildSvgMap('uzbek-map', 'city-card');
+        if (document.getElementById('uzbek-map-big')) buildSvgMap('uzbek-map-big', null);
+        buildSvgPanelList();
+        var closeBtn = document.getElementById('city-card-close');
+        if (closeBtn) closeBtn.addEventListener('click', function() {
+            var c = document.getElementById('city-card');
+            if (c) c.classList.add('hidden');
+        });
+    }
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initMaps);
+    } else {
+        initMaps();
+    }
+})();

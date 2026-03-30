@@ -15,10 +15,6 @@
     <!-- GSAP Animation Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 
-    <!-- Leaflet.js — interaktiv xarita (local) -->
-    <link rel="stylesheet" href="libs/leaflet.css"/>
-    <script src="libs/leaflet.js"></script>
-
     <!-- Custom Styles -->
     <link rel="stylesheet" href="style.css">
 </head>
@@ -466,9 +462,102 @@
 
             <div class="regions-layout">
 
-                <!-- Chap: Leaflet interaktiv xarita -->
-                <div class="map-wrap" style="padding:0;overflow:hidden;min-height:490px;">
-                    <div id="leaflet-map" style="width:100%;height:490px;border-radius:20px;"></div>
+                <!-- Chap: O'zbekiston SVG interaktiv xaritasi -->
+                <div class="map-wrap" style="padding:0;overflow:visible;background:#1a2744;">
+                    <svg id="uzbek-map" viewBox="0 0 900 490"
+                         xmlns="http://www.w3.org/2000/svg"
+                         style="width:100%;height:490px;display:block;border-radius:20px;cursor:default;">
+                        <defs>
+                            <radialGradient id="mapBg" cx="55%" cy="50%" r="60%">
+                                <stop offset="0%"   stop-color="#1e3a6e"/>
+                                <stop offset="100%" stop-color="#0f1f42"/>
+                            </radialGradient>
+                            <radialGradient id="uzGlow" cx="50%" cy="50%" r="55%">
+                                <stop offset="0%"   stop-color="#2563eb" stop-opacity="0.25"/>
+                                <stop offset="100%" stop-color="#1e40af" stop-opacity="0"/>
+                            </radialGradient>
+                            <filter id="pin-shadow">
+                                <feDropShadow dx="0" dy="2" stdDeviation="3"
+                                              flood-color="#000" flood-opacity="0.45"/>
+                            </filter>
+                            <filter id="country-glow">
+                                <feGaussianBlur stdDeviation="6" result="b"/>
+                                <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+                            </filter>
+                        </defs>
+
+                        <!-- Fon -->
+                        <rect width="900" height="490" fill="url(#mapBg)" rx="20"/>
+
+                        <!-- Grid nuqtalari -->
+                        <g opacity="0.08">
+                            <line x1="0" y1="122" x2="900" y2="122" stroke="white" stroke-width="0.5"/>
+                            <line x1="0" y1="245" x2="900" y2="245" stroke="white" stroke-width="0.5"/>
+                            <line x1="0" y1="367" x2="900" y2="367" stroke="white" stroke-width="0.5"/>
+                            <line x1="180" y1="0" x2="180" y2="490" stroke="white" stroke-width="0.5"/>
+                            <line x1="360" y1="0" x2="360" y2="490" stroke="white" stroke-width="0.5"/>
+                            <line x1="540" y1="0" x2="540" y2="490" stroke="white" stroke-width="0.5"/>
+                            <line x1="720" y1="0" x2="720" y2="490" stroke="white" stroke-width="0.5"/>
+                        </g>
+
+                        <!-- O'zbekiston chegarasi -->
+                        <path d="M 62,158 L 88,132 L 128,114 L 178,100 L 228,90
+                                 L 295,82  L 368,76  L 445,76  L 518,82  L 578,92
+                                 L 632,100 L 682,96  L 728,106 L 772,118 L 808,134
+                                 L 836,152 L 850,175 L 852,200 L 845,224 L 828,240
+                                 L 808,250 L 790,258 L 778,270 L 782,288 L 800,302
+                                 L 816,318 L 822,338 L 814,356 L 796,368 L 772,378
+                                 L 742,390 L 706,406 L 666,422 L 626,436 L 582,447
+                                 L 534,453 L 482,451 L 430,444 L 374,432 L 318,416
+                                 L 264,400 L 212,380 L 168,355 L 130,325 L 100,292
+                                 L 78,258  L 62,220  Z"
+                              fill="#1e3a8a" fill-opacity="0.7"
+                              stroke="#60a5fa" stroke-width="1.5"
+                              stroke-linejoin="round"
+                              filter="url(#country-glow)"/>
+                        <!-- Ichki glow -->
+                        <path d="M 62,158 L 88,132 L 128,114 L 178,100 L 228,90
+                                 L 295,82  L 368,76  L 445,76  L 518,82  L 578,92
+                                 L 632,100 L 682,96  L 728,106 L 772,118 L 808,134
+                                 L 836,152 L 850,175 L 852,200 L 845,224 L 828,240
+                                 L 808,250 L 790,258 L 778,270 L 782,288 L 800,302
+                                 L 816,318 L 822,338 L 814,356 L 796,368 L 772,378
+                                 L 742,390 L 706,406 L 666,422 L 626,436 L 582,447
+                                 L 534,453 L 482,451 L 430,444 L 374,432 L 318,416
+                                 L 264,400 L 212,380 L 168,355 L 130,325 L 100,292
+                                 L 78,258  L 62,220  Z"
+                              fill="url(#uzGlow)"/>
+
+                        <!-- Shahar pinlari (JS tomonidan qo'shiladi) -->
+                        <g id="city-markers"></g>
+                    </svg>
+
+                    <!-- Shahar ma'lumot kartochkasi -->
+                    <div id="city-card" class="city-info-card hidden">
+                        <button id="city-card-close" class="city-card-close">&#10005;</button>
+                        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;padding-right:24px;">
+                            <span id="city-card-badge" class="city-badge">&nbsp;</span>
+                        </div>
+                        <div id="city-card-name"
+                             style="font-size:1rem;font-weight:800;color:#0f172a;margin-bottom:8px;"></div>
+                        <div id="city-card-branches"
+                             class="hidden"
+                             style="font-size:.7rem;font-weight:600;padding:2px 10px;border-radius:20px;
+                                    background:#e0e7ff;color:#1b5bb5;margin-bottom:8px;display:inline-block;"></div>
+                        <div style="font-size:.82rem;color:#374151;margin-bottom:4px;">
+                            &#128222;&nbsp;<span id="city-card-phone"></span>
+                        </div>
+                        <div style="font-size:.78rem;color:#64748b;">
+                            &#128205;&nbsp;<span id="city-card-address"></span>
+                        </div>
+                        <div id="city-card-services-wrap" class="hidden" style="margin-top:10px;">
+                            <div style="font-size:.76rem;font-weight:700;color:#0f172a;margin-bottom:5px;">
+                                Xizmatlar:
+                            </div>
+                            <ul id="city-card-services"
+                                style="font-size:.75rem;color:#374151;padding:0;margin:0;list-style:none;"></ul>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- O'ng: Qidiruv + ro'yxat paneli -->
@@ -775,9 +864,66 @@
                 <p class="text-gray-500 mt-1">O&#8217;zbekiston bo&#8217;ylab 11 ta shaharda mavjud</p>
             </div>
 
-            <!-- To'liq ekranli Leaflet xarita -->
-            <div style="border-radius:20px;overflow:hidden;box-shadow:0 6px 32px rgba(27,91,181,.10);border:1px solid #e2e8f0;" class="fade-in">
-                <div id="leaflet-map-big" style="width:100%;height:560px;"></div>
+            <!-- To'liq ekranli SVG xarita -->
+            <div style="border-radius:20px;overflow:hidden;box-shadow:0 6px 32px rgba(27,91,181,.10);" class="fade-in">
+                <svg id="uzbek-map-big" viewBox="0 0 900 490"
+                     xmlns="http://www.w3.org/2000/svg"
+                     style="width:100%;height:560px;display:block;background:#1a2744;">
+                    <defs>
+                        <radialGradient id="mapBg2" cx="55%" cy="50%" r="60%">
+                            <stop offset="0%"   stop-color="#1e3a6e"/>
+                            <stop offset="100%" stop-color="#0f1f42"/>
+                        </radialGradient>
+                        <radialGradient id="uzGlow2" cx="50%" cy="50%" r="55%">
+                            <stop offset="0%"   stop-color="#2563eb" stop-opacity="0.25"/>
+                            <stop offset="100%" stop-color="#1e40af" stop-opacity="0"/>
+                        </radialGradient>
+                        <filter id="pin-shadow2">
+                            <feDropShadow dx="0" dy="2" stdDeviation="3"
+                                          flood-color="#000" flood-opacity="0.45"/>
+                        </filter>
+                        <filter id="cg2">
+                            <feGaussianBlur stdDeviation="6" result="b"/>
+                            <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+                        </filter>
+                    </defs>
+                    <rect width="900" height="490" fill="url(#mapBg2)"/>
+                    <g opacity="0.08">
+                        <line x1="0" y1="122" x2="900" y2="122" stroke="white" stroke-width="0.5"/>
+                        <line x1="0" y1="245" x2="900" y2="245" stroke="white" stroke-width="0.5"/>
+                        <line x1="0" y1="367" x2="900" y2="367" stroke="white" stroke-width="0.5"/>
+                        <line x1="180" y1="0" x2="180" y2="490" stroke="white" stroke-width="0.5"/>
+                        <line x1="360" y1="0" x2="360" y2="490" stroke="white" stroke-width="0.5"/>
+                        <line x1="540" y1="0" x2="540" y2="490" stroke="white" stroke-width="0.5"/>
+                        <line x1="720" y1="0" x2="720" y2="490" stroke="white" stroke-width="0.5"/>
+                    </g>
+                    <path d="M 62,158 L 88,132 L 128,114 L 178,100 L 228,90
+                             L 295,82  L 368,76  L 445,76  L 518,82  L 578,92
+                             L 632,100 L 682,96  L 728,106 L 772,118 L 808,134
+                             L 836,152 L 850,175 L 852,200 L 845,224 L 828,240
+                             L 808,250 L 790,258 L 778,270 L 782,288 L 800,302
+                             L 816,318 L 822,338 L 814,356 L 796,368 L 772,378
+                             L 742,390 L 706,406 L 666,422 L 626,436 L 582,447
+                             L 534,453 L 482,451 L 430,444 L 374,432 L 318,416
+                             L 264,400 L 212,380 L 168,355 L 130,325 L 100,292
+                             L 78,258  L 62,220  Z"
+                          fill="#1e3a8a" fill-opacity="0.7"
+                          stroke="#60a5fa" stroke-width="1.5"
+                          stroke-linejoin="round"
+                          filter="url(#cg2)"/>
+                    <path d="M 62,158 L 88,132 L 128,114 L 178,100 L 228,90
+                             L 295,82  L 368,76  L 445,76  L 518,82  L 578,92
+                             L 632,100 L 682,96  L 728,106 L 772,118 L 808,134
+                             L 836,152 L 850,175 L 852,200 L 845,224 L 828,240
+                             L 808,250 L 790,258 L 778,270 L 782,288 L 800,302
+                             L 816,318 L 822,338 L 814,356 L 796,368 L 772,378
+                             L 742,390 L 706,406 L 666,422 L 626,436 L 582,447
+                             L 534,453 L 482,451 L 430,444 L 374,432 L 318,416
+                             L 264,400 L 212,380 L 168,355 L 130,325 L 100,292
+                             L 78,258  L 62,220  Z"
+                          fill="url(#uzGlow2)"/>
+                    <g id="city-markers-big"></g>
+                </svg>
             </div>
 
             <!-- Izoh -->
