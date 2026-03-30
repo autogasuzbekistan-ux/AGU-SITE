@@ -778,3 +778,217 @@ window.addEventListener('scroll', () => {
         }
     });
 });
+
+// =========================================================
+// KUN MAHSULOTLARI — DAILY PRODUCTS
+// =========================================================
+
+const DEFAULT_DAILY_PRODUCTS = [
+    {
+        id: 1, featured: true, icon: '⛽',
+        name: "ATIKER LPG To'liq O'rnatish To'plami",
+        brand: 'ATIKER (Turkiya)',
+        desc: "Zamonaviy ketma-ket inyeksiya tizimi. ECU boshqaruv bloki, bug'latgich, injektorlar — barchasi komplekt.",
+        priceFrom: "1 200 000", unit: "so'm",
+        tag: "Eng mashhur"
+    },
+    {
+        id: 2, icon: '🔧',
+        name: "PRINS VSI 2.0 LPG Tizimi",
+        brand: 'PRINS (Gollandiya)',
+        desc: "Yevropa standartidagi yuqori samarali vapour sequential injection tizimi.",
+        priceFrom: "2 200 000", unit: "so'm",
+        tag: "Premium"
+    },
+    {
+        id: 3, icon: '🛢',
+        name: "CNG Tsilindr Kompozit 70L",
+        brand: 'SINOMA (Xitoy)',
+        desc: "Karbon tolali engil tsilindr. ISO 11439 va ECE R110 sertifikatlangan.",
+        priceFrom: "850 000", unit: "so'm",
+        tag: "Iqtisodiy"
+    },
+    {
+        id: 4, icon: '⚙️',
+        name: "FAGUMIT LPG Reduktor",
+        brand: 'FAGUMIT (Polsha)',
+        desc: "Ishonchli menbranali reduktor, barqaror bosim regulyatsiyasi, uzoq xizmat muddati.",
+        priceFrom: "280 000", unit: "so'm",
+        tag: null
+    }
+];
+
+function renderDailyProducts() {
+    const grid = document.getElementById('daily-products-grid');
+    if (!grid) return;
+
+    let products;
+    try {
+        products = JSON.parse(localStorage.getItem('agu_daily_products')) || DEFAULT_DAILY_PRODUCTS;
+    } catch (e) {
+        products = DEFAULT_DAILY_PRODUCTS;
+    }
+    if (!products || !products.length) { grid.innerHTML = ''; return; }
+
+    const featured = products.find(p => p.featured) || products[0];
+    const rest     = products.filter(p => p !== featured).slice(0, 3);
+
+    const tagHtml = (tag, cls) => tag
+        ? `<span class="dp-tag ${cls || ''}">${tag}</span>`
+        : '';
+
+    const featuredHtml = `
+        <div class="daily-featured">
+            ${tagHtml(featured.tag, 'dp-tag-featured')}
+            <div class="dp-icon">${featured.icon || '📦'}</div>
+            <div class="dp-name">${featured.name}</div>
+            <div class="dp-brand">${featured.brand}</div>
+            <div class="dp-desc">${featured.desc}</div>
+            <div class="dp-price">
+                <span class="dp-from">dan </span>
+                <span class="dp-amount">${featured.priceFrom} ${featured.unit}</span>
+            </div>
+            <a href="#contact" class="dp-cta">Buyurtma berish &#8594;</a>
+        </div>`;
+
+    const cardsHtml = `<div class="daily-cards">${
+        rest.map(p => `
+            <div class="dp-card">
+                ${p.tag ? `<span class="dp-card-badge">${p.tag}</span>` : ''}
+                <div class="dp-card-icon">${p.icon || '📦'}</div>
+                <div class="dp-card-body">
+                    <div class="dp-card-name">${p.name}</div>
+                    <div class="dp-card-brand">${p.brand}</div>
+                    <div class="dp-card-desc">${p.desc}</div>
+                    <div class="dp-card-price">dan ${p.priceFrom} ${p.unit}</div>
+                    <a href="#contact" class="dp-card-cta">Bog&#8217;lanish &#8594;</a>
+                </div>
+            </div>`
+        ).join('')
+    }</div>`;
+
+    grid.innerHTML = featuredHtml + cardsHtml;
+}
+
+// =========================================================
+// MAP TABS — O'ZBEKISTON / DUNYO
+// =========================================================
+
+function initMapTabs() {
+    const tabs = document.querySelectorAll('.map-tab-btn');
+    if (!tabs.length) return;
+
+    tabs.forEach(btn => {
+        btn.addEventListener('click', function () {
+            tabs.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+
+            const pane = this.dataset.map;
+            const uzPane    = document.getElementById('map-pane-uz');
+            const worldPane = document.getElementById('map-pane-world');
+            if (uzPane)    uzPane.style.display    = pane === 'uz'    ? '' : 'none';
+            if (worldPane) worldPane.style.display = pane === 'world' ? '' : 'none';
+        });
+    });
+}
+
+// =========================================================
+// WORLD MAP — COUNTRY CLICK & BRANDS PANEL
+// =========================================================
+
+const WORLD_COUNTRY_MAP = {
+    turkey:  { name: 'Turkiya',  flag: '🇹🇷', color: '#E30613', countries: ['Turkiya'] },
+    europe:  { name: 'Yevropa', flag: '🇪🇺', color: '#1b5bb5', countries: ['Italiya', 'Niderlandiya', 'Polsha', 'Yevropa'] },
+    belarus: { name: 'Belarus', flag: '🇧🇾', color: '#166034', countries: ['Belarus'] },
+    china:   { name: 'Xitoy',   flag: '🇨🇳', color: '#c41e3a', countries: ['Xitoy'] }
+};
+
+function initWorldMap() {
+    const areas = document.querySelectorAll('.wm-country');
+    if (!areas.length) return;
+
+    areas.forEach(el => {
+        el.addEventListener('click', function () {
+            // Remove previous selection
+            document.querySelectorAll('.wm-country').forEach(e => {
+                e.classList.remove('selected-country');
+                e.style.opacity = '';
+            });
+            // Highlight clicked
+            const countryKey = this.dataset.country;
+            document.querySelectorAll(`.wm-country[data-country="${countryKey}"]`).forEach(e => {
+                e.classList.add('selected-country');
+            });
+            showWorldBrands(countryKey);
+        });
+    });
+}
+
+function showWorldBrands(countryKey) {
+    const placeholder = document.getElementById('world-brands-placeholder');
+    const content     = document.getElementById('world-brands-content');
+    if (!placeholder || !content) return;
+
+    const meta = WORLD_COUNTRY_MAP[countryKey];
+    if (!meta) return;
+
+    // Get brands for this country from PARTNERS (with admin overrides)
+    let allBrands;
+    try {
+        const overrides = JSON.parse(localStorage.getItem('agu_brands_override')) || [];
+        allBrands = PARTNERS.map(p => {
+            const ov = overrides.find(o => o.name === p.name);
+            return ov ? Object.assign({}, p, ov) : Object.assign({}, p);
+        });
+    } catch (e) {
+        allBrands = PARTNERS;
+    }
+
+    const brands = allBrands.filter(b => meta.countries.includes(b.country));
+
+    if (!brands.length) {
+        placeholder.style.display = '';
+        content.style.display = 'none';
+        return;
+    }
+
+    placeholder.style.display = 'none';
+    content.style.display = '';
+
+    content.innerHTML = `
+        <div class="wb-country-header">
+            <span class="wb-flag">${meta.flag}</span>
+            <span class="wb-country-name">${meta.name}</span>
+            <span class="wb-brand-count">${brands.length} brand</span>
+        </div>
+        <div class="wb-brand-list">
+            ${brands.map(b => {
+                const initials = b.name.replace(/[^A-Z0-9]/g, '').substring(0, 3) ||
+                                 b.name.substring(0, 3).toUpperCase();
+                const logoHtml = b.logo
+                    ? `<img src="${b.logo}" class="wb-brand-lm" style="object-fit:contain;border:1.5px solid #e2e8f0;" alt="${b.name}">`
+                    : `<div class="wb-brand-lm" style="background:${meta.color}18;color:${meta.color};border:1.5px solid ${meta.color}33;">${initials}</div>`;
+                return `
+                    <div class="wb-brand-item" onclick="document.getElementById('partners')?.scrollIntoView({behavior:'smooth'});" title="Hamkorlar bo'limiga o'tish">
+                        ${logoHtml}
+                        <div class="wb-brand-info">
+                            <div class="wb-brand-name">${b.flag} ${b.name}</div>
+                            <div class="wb-brand-product">${b.products[0] || ''}</div>
+                        </div>
+                        <span style="color:#94a3b8;font-size:0.8rem;">&#8594;</span>
+                    </div>`;
+            }).join('')}
+        </div>`;
+}
+
+// =========================================================
+// INIT ON DOM READY
+// =========================================================
+
+if (document.getElementById('daily-products-grid')) {
+    renderDailyProducts();
+}
+if (document.querySelector('.map-tab-btn')) {
+    initMapTabs();
+    initWorldMap();
+}

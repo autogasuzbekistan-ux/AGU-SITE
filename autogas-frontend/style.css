@@ -729,3 +729,426 @@ html {
         padding: 12px;
     }
 }
+
+/* =========================================================
+   KUN MAHSULOTLARI — DAILY PRODUCTS
+   ========================================================= */
+
+.daily-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: linear-gradient(135deg, #fff7ed, #ffedd5);
+    color: #c2410c;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 20px;
+    border: 1.5px solid #fed7aa;
+    letter-spacing: 0.3px;
+}
+
+.daily-all-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 22px;
+    background: white;
+    color: var(--primary-blue);
+    border: 2px solid var(--primary-blue);
+    border-radius: 24px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+.daily-all-btn:hover {
+    background: var(--primary-blue);
+    color: white;
+}
+
+.daily-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    align-items: start;
+}
+
+/* Featured card */
+.daily-featured {
+    background: linear-gradient(145deg, #0f172a 0%, #1e3a6e 100%);
+    border-radius: 20px;
+    padding: 32px 28px;
+    color: white;
+    position: relative;
+    overflow: hidden;
+    min-height: 340px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
+.daily-featured::before {
+    content: '';
+    position: absolute;
+    top: -40px;
+    right: -40px;
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgba(237,143,54,0.25) 0%, transparent 70%);
+    border-radius: 50%;
+}
+.daily-featured::after {
+    content: '';
+    position: absolute;
+    bottom: -30px;
+    left: -30px;
+    width: 150px;
+    height: 150px;
+    background: radial-gradient(circle, rgba(27,91,181,0.3) 0%, transparent 70%);
+    border-radius: 50%;
+}
+
+.dp-tag {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+    position: relative;
+    z-index: 1;
+}
+.dp-tag-featured {
+    background: var(--secondary-orange);
+    color: white;
+}
+.dp-tag-alt {
+    background: rgba(255,255,255,0.15);
+    color: rgba(255,255,255,0.9);
+    border: 1px solid rgba(255,255,255,0.2);
+}
+
+.dp-icon {
+    font-size: 2.8rem;
+    margin-bottom: 16px;
+    position: relative;
+    z-index: 1;
+    line-height: 1;
+}
+.dp-name {
+    font-size: 1.1rem;
+    font-weight: 800;
+    margin-bottom: 6px;
+    position: relative;
+    z-index: 1;
+    line-height: 1.3;
+}
+.dp-brand {
+    font-size: 0.75rem;
+    opacity: 0.7;
+    margin-bottom: 10px;
+    position: relative;
+    z-index: 1;
+}
+.dp-desc {
+    font-size: 0.82rem;
+    opacity: 0.8;
+    margin-bottom: 16px;
+    line-height: 1.5;
+    position: relative;
+    z-index: 1;
+}
+.dp-price {
+    margin-bottom: 18px;
+    position: relative;
+    z-index: 1;
+}
+.dp-from {
+    font-size: 0.75rem;
+    opacity: 0.65;
+}
+.dp-amount {
+    font-size: 1.15rem;
+    font-weight: 900;
+    color: var(--secondary-orange);
+}
+.dp-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 11px 22px;
+    background: var(--secondary-orange);
+    color: white;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    transition: all 0.2s;
+    position: relative;
+    z-index: 1;
+    width: fit-content;
+}
+.dp-cta:hover {
+    background: #d97706;
+    transform: translateY(-2px);
+}
+
+/* Regular product cards column */
+.daily-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+.dp-card {
+    background: white;
+    border: 1.5px solid #e8edf4;
+    border-radius: 16px;
+    padding: 18px 20px;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    transition: all 0.2s;
+    position: relative;
+}
+.dp-card:hover {
+    border-color: var(--primary-blue);
+    box-shadow: 0 4px 20px rgba(27,91,181,0.1);
+}
+.dp-card-icon {
+    font-size: 1.8rem;
+    line-height: 1;
+    flex-shrink: 0;
+    width: 44px;
+    height: 44px;
+    background: #f0f7ff;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.dp-card-body { flex: 1; min-width: 0; }
+.dp-card-name {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 2px;
+    line-height: 1.3;
+}
+.dp-card-brand {
+    font-size: 0.7rem;
+    color: #94a3b8;
+    margin-bottom: 4px;
+}
+.dp-card-desc {
+    font-size: 0.76rem;
+    color: #64748b;
+    line-height: 1.4;
+    margin-bottom: 8px;
+}
+.dp-card-price {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--primary-blue);
+}
+.dp-card-badge {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    font-size: 0.62rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 20px;
+    background: #eff6ff;
+    color: var(--primary-blue);
+}
+.dp-card-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--primary-blue);
+    padding: 5px 12px;
+    border: 1.5px solid #bfdbfe;
+    border-radius: 8px;
+    background: #f0f9ff;
+    transition: all 0.2s;
+    margin-top: 4px;
+}
+.dp-card-cta:hover {
+    background: var(--primary-blue);
+    color: white;
+    border-color: var(--primary-blue);
+}
+
+@media (max-width: 767px) {
+    .daily-grid { grid-template-columns: 1fr; }
+    .daily-featured { min-height: 280px; }
+}
+
+/* =========================================================
+   MAP TABS
+   ========================================================= */
+
+.map-tab-wrap {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 24px;
+}
+.map-tab-btn {
+    padding: 10px 26px;
+    border: 2px solid #e2e8f0;
+    border-radius: 28px;
+    background: white;
+    color: #64748b;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+}
+.map-tab-btn:hover:not(.active) {
+    border-color: var(--primary-blue);
+    color: var(--primary-blue);
+}
+.map-tab-btn.active {
+    background: var(--primary-blue);
+    border-color: var(--primary-blue);
+    color: white;
+}
+
+/* Make the uzbekistan map background white */
+.map-wrap {
+    background: #ffffff;
+}
+
+/* =========================================================
+   WORLD MAP PANE
+   ========================================================= */
+
+.world-layout {
+    display: grid;
+    grid-template-columns: 1fr 290px;
+    gap: 24px;
+    align-items: start;
+}
+
+.world-map-wrap {
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 6px 32px rgba(27,91,181,0.10);
+    border: 1px solid #e2e8f0;
+}
+.world-map-wrap svg {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+/* Hover effect on clickable country areas */
+.wm-country {
+    transition: opacity 0.2s;
+}
+.wm-country:hover {
+    opacity: 0.75 !important;
+}
+.wm-country.selected-country {
+    stroke-width: 2.5 !important;
+    filter: drop-shadow(0 0 6px currentColor);
+}
+
+.world-brands-panel {
+    background: white;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 18px;
+    overflow: hidden;
+    max-height: 520px;
+    overflow-y: auto;
+    position: sticky;
+    top: 80px;
+}
+
+.world-brands-empty {
+    padding: 40px 20px;
+    text-align: center;
+}
+.wb-empty-icon { font-size: 2.8rem; margin-bottom: 14px; }
+.wb-empty-title {
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: #374151;
+    margin-bottom: 6px;
+}
+.wb-empty-hint { font-size: 0.78rem; color: #94a3b8; }
+
+.wb-country-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 18px;
+    border-bottom: 1px solid #f1f5f9;
+    background: #fafbfc;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+.wb-flag { font-size: 1.5rem; }
+.wb-country-name {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: #1e293b;
+}
+.wb-brand-count {
+    margin-left: auto;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    background: #eff6ff;
+    color: var(--primary-blue);
+    border-radius: 20px;
+}
+.wb-brand-list { padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; }
+.wb-brand-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border: 1px solid #f1f5f9;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.wb-brand-item:hover {
+    border-color: #bfdbfe;
+    background: #f8fbff;
+}
+.wb-brand-lm {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.68rem;
+    font-weight: 900;
+    flex-shrink: 0;
+}
+.wb-brand-info { flex: 1; min-width: 0; }
+.wb-brand-name {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 2px;
+}
+.wb-brand-product {
+    font-size: 0.7rem;
+    color: #94a3b8;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+@media (max-width: 900px) {
+    .world-layout { grid-template-columns: 1fr; }
+    .world-brands-panel { position: static; max-height: 320px; }
+}
