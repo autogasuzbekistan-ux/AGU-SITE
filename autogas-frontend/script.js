@@ -1145,10 +1145,6 @@ function buildLeafletMap() {
 if (document.getElementById('daily-products-grid')) {
     renderDailyProducts();
 }
-if (document.querySelector('.map-tab-btn')) {
-    initMapTabs();
-    initWorldMap();
-}
 if (document.getElementById('leaflet-map')) {
     buildLeafletMap();
 }
