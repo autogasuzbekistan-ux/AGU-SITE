@@ -1139,6 +1139,109 @@ function buildLeafletMap() {
 }
 
 // =========================================================
+// LEAFLET — TO'LIQ EKRANLI PASTKI XARITA
+// =========================================================
+
+function buildLeafletMapBig() {
+    const el = document.getElementById('leaflet-map-big');
+    if (!el || !window.L) return;
+
+    let cities;
+    try {
+        const overrides = JSON.parse(localStorage.getItem('agu_cities_override')) || [];
+        cities = CITIES.map(function(c) {
+            const ov = overrides.find(function(o) { return o.id === c.id; });
+            return ov ? Object.assign({}, c, ov) : Object.assign({}, c);
+        });
+    } catch (e) {
+        cities = CITIES.slice();
+    }
+
+    const map = L.map('leaflet-map-big', {
+        center: [41.4, 64.5],
+        zoom: 6,
+        zoomControl: true,
+        scrollWheelZoom: false   // Sahifa scroll bilan xalaqit bermasin
+    });
+
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+        subdomains: 'abcd',
+        maxZoom: 19
+    }).addTo(map);
+
+    cities.forEach(function(city) {
+        if (!city.lat || !city.lng) return;
+
+        const isHQ   = !!city.hq;
+        const isSvc  = !!city.hasService;
+        const color  = isHQ ? '#E30613' : isSvc ? '#16a34a' : '#1b5bb5';
+        const size   = isHQ ? 40 : 34;
+        const symbol = isHQ ? '&#9733;' : isSvc ? '&#9881;' : '&#11044;';
+        const tag    = isHQ ? 'Bosh Ofis' : isSvc ? 'Service' : "Do'kon";
+
+        const iconHtml = `<div style="
+            position:relative;width:${size}px;height:${size+8}px;">
+            <div style="
+                width:${size}px;height:${size}px;
+                background:${color};
+                border-radius:50% 50% 50% 0;
+                transform:rotate(-45deg);
+                border:3px solid white;
+                box-shadow:0 3px 12px rgba(0,0,0,.32);
+                display:flex;align-items:center;justify-content:center;">
+                <span style="transform:rotate(45deg);color:white;font-size:${isHQ?'17':'13'}px;font-weight:700;">${symbol}</span>
+            </div>
+        </div>`;
+
+        const customIcon = L.divIcon({
+            html: iconHtml,
+            className: 'agu-pin',
+            iconSize:   [size, size + 8],
+            iconAnchor: [size / 2, size + 8],
+            popupAnchor:[0, -(size + 10)]
+        });
+
+        const gLink = `https://www.google.com/maps/search/?api=1&query=${city.lat},${city.lng}`;
+        const yLink = `https://maps.yandex.com/?pt=${city.lng},${city.lat}&z=15&l=map`;
+
+        const phone2 = city.phone2
+            ? `<div style="font-size:.76rem;color:#374151;margin-bottom:3px;">&#128222; ${city.phone2}</div>` : '';
+        const addr = city.address
+            ? `<div style="font-size:.74rem;color:#64748b;margin-bottom:10px;">&#128205; ${city.address}</div>` : '';
+
+        const popupHtml = `
+            <div style="font-family:system-ui,sans-serif;min-width:215px;max-width:265px;padding:4px 2px;">
+                <div style="display:flex;align-items:center;gap:7px;margin-bottom:8px;">
+                    <span style="font-size:.95rem;font-weight:800;color:#0f172a;">${city.name}</span>
+                    <span style="background:${color};color:white;font-size:.6rem;font-weight:700;
+                                 padding:2px 8px;border-radius:20px;white-space:nowrap;">${tag}</span>
+                </div>
+                <div style="font-size:.78rem;color:#374151;margin-bottom:3px;">&#128222; ${city.phone || '&#8212;'}</div>
+                ${phone2}${addr}
+                <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;">
+                    <a href="${gLink}" target="_blank" rel="noopener"
+                       style="display:inline-flex;align-items:center;gap:4px;font-size:.72rem;font-weight:600;
+                              padding:5px 11px;background:#eff6ff;color:#1b5bb5;
+                              border:1.5px solid #bfdbfe;border-radius:8px;text-decoration:none;">
+                        &#128506; Google Maps
+                    </a>
+                    <a href="${yLink}" target="_blank" rel="noopener"
+                       style="display:inline-flex;align-items:center;gap:4px;font-size:.72rem;font-weight:600;
+                              padding:5px 11px;background:#fff7ed;color:#c2410c;
+                              border:1.5px solid #fed7aa;border-radius:8px;text-decoration:none;">
+                        &#128506; Yandex Maps
+                    </a>
+                </div>
+            </div>`;
+
+        L.marker([city.lat, city.lng], { icon: customIcon })
+            .bindPopup(popupHtml, { maxWidth: 300, className: 'agu-popup' })
+            .addTo(map);
+    });
+}
+
+// =========================================================
 // INIT ON DOM READY
 // =========================================================
 
@@ -1147,4 +1250,7 @@ if (document.getElementById('daily-products-grid')) {
 }
 if (document.getElementById('leaflet-map')) {
     buildLeafletMap();
+}
+if (document.getElementById('leaflet-map-big')) {
+    buildLeafletMapBig();
 }

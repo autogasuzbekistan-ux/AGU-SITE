@@ -1025,6 +1025,17 @@ html {
     z-index: 1;
 }
 
+/* To'liq ekranli pastki xarita */
+#leaflet-map-big {
+    height: 560px;
+    width: 100%;
+    z-index: 1;
+}
+
+@media (max-width: 767px) {
+    #leaflet-map-big { height: 380px; }
+}
+
 /* Custom marker pin — no default Leaflet icon bg */
 .agu-pin { background: transparent !important; border: none !important; }
 
