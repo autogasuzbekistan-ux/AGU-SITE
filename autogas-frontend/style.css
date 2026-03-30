@@ -598,10 +598,10 @@ html {
 
 .brand-card {
     flex-shrink: 0;
-    width: 190px;
+    width: 210px;
     background: white;
     border-radius: 16px;
-    padding: 18px 14px 14px;
+    padding: 20px 16px 16px;
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
     border: 1.5px solid #f3f4f6;
     cursor: pointer;
@@ -617,13 +617,13 @@ html {
 }
 
 .brand-lm {
-    width: 72px;
-    height: 72px;
-    border-radius: 14px;
+    width: 96px;
+    height: 96px;
+    border-radius: 16px;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 auto 8px;
+    margin: 0 auto 10px;
 }
 
 .brand-card-flag {
@@ -1018,9 +1018,35 @@ html {
 }
 
 
-/* Make the uzbekistan map background white */
-.map-wrap {
-    background: #ffffff;
+/* Leaflet xarita konteyner */
+#leaflet-map,
+#leaflet-map-big {
+    z-index: 1;
+}
+
+/* Leaflet popup uslubi */
+.agu-lf-popup .leaflet-popup-content-wrapper {
+    border-radius: 16px !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18) !important;
+    padding: 0 !important;
+    border: 1px solid #e2e8f0;
+}
+.agu-lf-popup .leaflet-popup-content {
+    margin: 14px 16px !important;
+    font-size: 14px;
+}
+.agu-lf-popup .leaflet-popup-tip {
+    background: white !important;
+}
+
+/* Leaflet attribution — kichikroq */
+.leaflet-control-attribution {
+    font-size: 10px !important;
+}
+
+@media (max-width: 767px) {
+    #leaflet-map     { height: 340px !important; }
+    #leaflet-map-big { height: 380px !important; }
 }
 
 /* =========================================================

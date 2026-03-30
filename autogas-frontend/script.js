@@ -666,8 +666,8 @@ function buildBrandsCarousel() {
             card.className = 'brand-card';
             const initials = p.name.replace(/[^A-Z0-9]/g, '').substring(0, 3) || p.name.substring(0, 3).toUpperCase();
             const logoHtml = p.logo
-                ? `<img src="${p.logo}" style="width:72px;height:72px;object-fit:contain;border-radius:12px;margin:0 auto 8px;display:block;" alt="${p.name}">`
-                : `<div class="brand-lm" style="background:linear-gradient(135deg,${p.countryColor}1a 0%,${p.countryColor}33 100%);"><span style="color:${p.countryColor};font-weight:900;font-size:0.82rem;letter-spacing:-0.3px;">${initials}</span></div>`;
+                ? `<img src="${p.logo}" style="width:96px;height:96px;object-fit:contain;border-radius:14px;margin:0 auto 10px;display:block;" alt="${p.name}">`
+                : `<div class="brand-lm" style="background:linear-gradient(135deg,${p.countryColor}1a 0%,${p.countryColor}33 100%);"><span style="color:${p.countryColor};font-weight:900;font-size:0.9rem;letter-spacing:-0.3px;">${initials}</span></div>`;
             card.innerHTML = `
                 ${logoHtml}
                 <span class="brand-card-flag">${p.flag}</span>
@@ -984,9 +984,214 @@ function showWorldBrands(countryKey) {
 }
 
 // =========================================================
+// LEAFLET — INTERAKTIV XARITA (CartoDB Voyager tiles)
+// =========================================================
+
+function _buildLeafletMap(elId, opts) {
+    var el = document.getElementById(elId);
+    if (!el || !window.L) return null;
+
+    var cities;
+    try {
+        var overrides = JSON.parse(localStorage.getItem('agu_cities_override')) || [];
+        cities = CITIES.map(function(c) {
+            var ov = overrides.find(function(o) { return o.id === c.id; });
+            return ov ? Object.assign({}, c, ov) : Object.assign({}, c);
+        });
+    } catch (e) {
+        cities = CITIES.slice();
+    }
+
+    var map = L.map(elId, {
+        center: [41.1, 64.5],
+        zoom: opts.zoom || 6,
+        zoomControl: true,
+        scrollWheelZoom: opts.scrollWheel !== false
+    });
+
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions" target="_blank">CARTO</a>',
+        subdomains: 'abcd',
+        maxZoom: 19
+    }).addTo(map);
+
+    var markerRefs = {};
+
+    cities.forEach(function(city) {
+        if (!city.lat || !city.lng) return;
+
+        var isHQ  = !!city.hq;
+        var isSvc = !!city.hasService;
+        var color = isHQ ? '#E30613' : isSvc ? '#16a34a' : '#1b5bb5';
+        var size  = isHQ ? 40 : 34;
+
+        // Pin shakli: yumaloq ostidagi uchburchak
+        var pinHtml =
+            '<div style="width:' + size + 'px;height:' + (size + 10) + 'px;position:relative;filter:drop-shadow(0 3px 8px rgba(0,0,0,.32));">' +
+              '<div style="width:' + size + 'px;height:' + size + 'px;background:' + color + ';' +
+                   'border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid white;' +
+                   'display:flex;align-items:center;justify-content:center;">' +
+                '<span style="transform:rotate(45deg);color:white;font-size:' + (isHQ ? 17 : 13) + 'px;font-weight:800;line-height:1;">' +
+                  (isHQ ? '&#9733;' : (isSvc ? '&#128295;' : '&#11044;')) +
+                '</span>' +
+              '</div>' +
+            '</div>';
+
+        var icon = L.divIcon({
+            html: pinHtml,
+            className: '',
+            iconSize:   [size, size + 10],
+            iconAnchor: [size / 2, size + 10],
+            popupAnchor:[0, -(size + 12)]
+        });
+
+        var tag = isHQ ? 'Bosh ofis' : isSvc ? 'Service + Do\u02BCkon' : 'Savdo do\u02BCkoni';
+
+        var phone2Row = city.phone2
+            ? '<div style="margin-bottom:3px;">&#128222; ' + city.phone2 + '</div>' : '';
+        var addrRow = city.address
+            ? '<div style="color:#64748b;font-size:.76rem;margin-bottom:6px;">&#128205; ' + city.address + '</div>' : '';
+        var shopRow = (city.shops && city.shops > 1)
+            ? '<div style="font-size:.74rem;color:#6366f1;margin-bottom:3px;">&#127978; ' + city.shops + ' ta do\u02BCkon</div>' : '';
+        var svcRow = city.hasService
+            ? '<div style="font-size:.74rem;color:#16a34a;margin-bottom:6px;">&#128295; Service markazi mavjud</div>' : '';
+
+        var popupHtml =
+            '<div style="font-family:system-ui,sans-serif;min-width:200px;max-width:255px;padding:2px;">' +
+              '<div style="display:flex;align-items:center;gap:7px;margin-bottom:8px;">' +
+                '<span style="font-size:.95rem;font-weight:800;color:#0f172a;">' + city.name + '</span>' +
+                '<span style="background:' + color + ';color:white;font-size:.6rem;font-weight:700;' +
+                     'padding:2px 8px;border-radius:20px;white-space:nowrap;">' + tag + '</span>' +
+              '</div>' +
+              '<div style="font-size:.8rem;color:#374151;margin-bottom:3px;">&#128222; ' + (city.phone || '&mdash;') + '</div>' +
+              phone2Row + addrRow + shopRow + svcRow +
+            '</div>';
+
+        var marker = L.marker([city.lat, city.lng], { icon: icon })
+            .bindPopup(popupHtml, { maxWidth: 280, className: 'agu-lf-popup' })
+            .addTo(map);
+
+        markerRefs[city.id] = { marker: marker, city: city };
+    });
+
+    return { map: map, markerRefs: markerRefs };
+}
+
+function buildLeafletMap() {
+    var result = _buildLeafletMap('leaflet-map', { zoom: 6, scrollWheel: true });
+    if (!result) return;
+    var map = result.map;
+    var markerRefs = result.markerRefs;
+
+    // Panel list bilan sinxronlashtirish
+    var panelList = document.getElementById('panel-city-list');
+    if (panelList) {
+        panelList.addEventListener('click', function(e) {
+            var item = e.target.closest('[data-city-id]');
+            if (!item) return;
+            var ref = markerRefs[item.dataset.cityId];
+            if (!ref) return;
+            map.flyTo([ref.city.lat, ref.city.lng], 13, { duration: 1.0 });
+            setTimeout(function() { ref.marker.openPopup(); }, 1050);
+        });
+    }
+
+    // Qidiruv
+    var searchInput = document.getElementById('city-search');
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            var q = this.value.trim().toLowerCase();
+            if (!q) return;
+            var found = Object.values(markerRefs).find(function(r) {
+                return r.city.name.toLowerCase().indexOf(q) !== -1;
+            });
+            if (found) {
+                map.flyTo([found.city.lat, found.city.lng], 13, { duration: 1.0 });
+                setTimeout(function() { found.marker.openPopup(); }, 1050);
+            }
+        });
+    }
+
+    window._aguMap = map;
+    window._aguMarkers = markerRefs;
+}
+
+function buildLeafletMapBig() {
+    var result = _buildLeafletMap('leaflet-map-big', { zoom: 6, scrollWheel: false });
+    if (!result) return;
+    window._aguMapBig = result.map;
+}
+
+// =========================================================
 // INIT ON DOM READY
 // =========================================================
 
 if (document.getElementById('daily-products-grid')) {
     renderDailyProducts();
+}
+
+// Panel list — buildCityMarkers uchun (SVG map yo'q, faqat list kerak)
+(function() {
+    var panelList = document.getElementById('panel-city-list');
+    if (!panelList || panelList.children.length) return;
+    var cities;
+    try {
+        var overrides = JSON.parse(localStorage.getItem('agu_cities_override')) || [];
+        cities = CITIES.map(function(c) {
+            var ov = overrides.find(function(o) { return o.id === c.id; });
+            return ov ? Object.assign({}, c, ov) : Object.assign({}, c);
+        });
+    } catch (e) { cities = CITIES.slice(); }
+
+    cities.forEach(function(city) {
+        var color = city.hq ? '#E30613' : '#1b5bb5';
+        var btn = document.createElement('button');
+        btn.className = 'panel-city-item';
+        btn.setAttribute('data-city-id', city.id);
+        var svcBadge = city.hasService
+            ? '<span class="panel-city-branches" style="background:#dcfce7;color:#166534;">service</span>' : '';
+        var shopBadge = (city.shops && city.shops > 1)
+            ? '<span class="panel-city-branches">' + city.shops + ' do\u02BCkon</span>' : '';
+        btn.innerHTML =
+            '<span class="panel-city-dot" style="background:' + color + ';"></span>' +
+            '<span class="panel-city-name">' + city.name + '</span>' +
+            shopBadge + svcBadge;
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.panel-city-item').forEach(function(i) {
+                i.classList.remove('active');
+            });
+            btn.classList.add('active');
+            if (window._aguMap) {
+                window._aguMap.flyTo([city.lat, city.lng], 13, { duration: 1.0 });
+                setTimeout(function() {
+                    var ref = window._aguMarkers && window._aguMarkers[city.id];
+                    if (ref) ref.marker.openPopup();
+                }, 1050);
+            }
+        });
+        panelList.appendChild(btn);
+    });
+
+    // Qidiruv
+    var searchInput = document.getElementById('city-search');
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            var q = this.value.trim().toLowerCase();
+            panelList.querySelectorAll('.panel-city-item').forEach(function(item) {
+                var id = item.getAttribute('data-city-id');
+                var city = CITIES.find(function(c) { return c.id === id; });
+                item.style.display = (!q || city.name.toLowerCase().indexOf(q) !== -1) ? '' : 'none';
+            });
+        });
+    }
+})();
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+        if (document.getElementById('leaflet-map'))     buildLeafletMap();
+        if (document.getElementById('leaflet-map-big')) buildLeafletMapBig();
+    });
+} else {
+    if (document.getElementById('leaflet-map'))     buildLeafletMap();
+    if (document.getElementById('leaflet-map-big')) buildLeafletMapBig();
 }
