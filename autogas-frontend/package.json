@@ -6,6 +6,7 @@
     "start": "serve . -l $PORT"
   },
   "dependencies": {
+    "leaflet": "^1.9.4",
     "serve": "^14.2.3"
   }
 }

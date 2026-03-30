@@ -987,6 +987,16 @@ function showWorldBrands(countryKey) {
 // LEAFLET — INTERAKTIV XARITA (CartoDB Voyager tiles)
 // =========================================================
 
+// Leaflet default marker rasmlarini local yo'lga yo'naltirish
+if (window.L) {
+    delete L.Icon.Default.prototype._getIconUrl;
+    L.Icon.Default.mergeOptions({
+        iconUrl:       'libs/images/marker-icon.png',
+        iconRetinaUrl: 'libs/images/marker-icon-2x.png',
+        shadowUrl:     'libs/images/marker-shadow.png'
+    });
+}
+
 function _buildLeafletMap(elId, opts) {
     var el = document.getElementById(elId);
     if (!el || !window.L) return null;
