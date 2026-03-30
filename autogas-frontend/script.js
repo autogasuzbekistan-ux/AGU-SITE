@@ -227,6 +227,7 @@ function showFormMessage(text, isSuccess) {
 const CITIES = [
     {
         id: 'qoqon', name: "AGU Qo'qon", x: 702, y: 300, hq: true,
+        lat: 40.5288, lng: 70.9428,
         type: 'hq',
         phone: '+998 (87) 001-07-77',
         phone2: '+998 (87) 002-07-77',
@@ -242,20 +243,21 @@ const CITIES = [
     },
     {
         id: 'toshkent', name: "AGU Toshkent", x: 618, y: 248, hq: false,
+        lat: 41.2995, lng: 69.2401,
         type: 'shop',
         phone: '+998 XX XXX XX XX',
         address: "Toshkent shahar",
         shops: 2
     },
-    { id: 'andijon',   name: "AGU Andijon",   x: 762, y: 285, type: 'shop', hq: false, phone: '+998 XX XXX XX XX', address: "Andijon shahar", shops: 1 },
-    { id: 'namangan',  name: "AGU Namangan",  x: 736, y: 268, type: 'shop', hq: false, phone: '+998 XX XXX XX XX', address: "Namangan shahar", shops: 1 },
-    { id: 'guliston',  name: "AGU Guliston",  x: 588, y: 278, type: 'shop', hq: false, phone: '+998 XX XXX XX XX', address: "Guliston shahar, Sirdaryo viloyati", shops: 1 },
-    { id: 'samarqand', name: "AGU Samarqand", x: 510, y: 342, type: 'shop', hq: false, phone: '+998 XX XXX XX XX', address: "Samarqand shahar", shops: 1 },
-    { id: 'buxoro',    name: "AGU Buxoro",    x: 386, y: 336, type: 'shop', hq: false, phone: '+998 XX XXX XX XX', address: "Buxoro shahar", shops: 1 },
-    { id: 'qarshi',    name: "AGU Qarshi",    x: 455, y: 386, type: 'shop', hq: false, phone: '+998 XX XXX XX XX', address: "Qarshi shahar, Qashqadaryo viloyati", shops: 1 },
-    { id: 'denov',     name: "AGU Denov",     x: 558, y: 418, type: 'shop', hq: false, phone: '+998 XX XXX XX XX', address: "Denov shahar, Surxondaryo viloyati", shops: 1 },
-    { id: 'xorazm',    name: "AGU Xorazm",   x: 210, y: 236, type: 'shop', hq: false, phone: '+998 XX XXX XX XX', address: "Urganch shahar, Xorazm viloyati", shops: 1 },
-    { id: 'nukus',     name: "AGU Nukus",     x: 165, y: 190, type: 'shop', hq: false, phone: '+998 XX XXX XX XX', address: "Nukus shahar, Qoraqalpog'iston", shops: 1 },
+    { id: 'andijon',   name: "AGU Andijon",   x: 762, y: 285, lat: 40.7829, lng: 72.3442, type: 'shop', hq: false, phone: '+998 XX XXX XX XX', address: "Andijon shahar", shops: 1 },
+    { id: 'namangan',  name: "AGU Namangan",  x: 736, y: 268, lat: 41.0011, lng: 71.6723, type: 'shop', hq: false, phone: '+998 XX XXX XX XX', address: "Namangan shahar", shops: 1 },
+    { id: 'guliston',  name: "AGU Guliston",  x: 588, y: 278, lat: 40.4900, lng: 68.7800, type: 'shop', hq: false, phone: '+998 XX XXX XX XX', address: "Guliston shahar, Sirdaryo viloyati", shops: 1 },
+    { id: 'samarqand', name: "AGU Samarqand", x: 510, y: 342, lat: 39.6542, lng: 66.9597, type: 'shop', hq: false, phone: '+998 XX XXX XX XX', address: "Samarqand shahar", shops: 1 },
+    { id: 'buxoro',    name: "AGU Buxoro",    x: 386, y: 336, lat: 39.7747, lng: 64.4286, type: 'shop', hq: false, phone: '+998 XX XXX XX XX', address: "Buxoro shahar", shops: 1 },
+    { id: 'qarshi',    name: "AGU Qarshi",    x: 455, y: 386, lat: 38.8610, lng: 65.7881, type: 'shop', hq: false, phone: '+998 XX XXX XX XX', address: "Qarshi shahar, Qashqadaryo viloyati", shops: 1 },
+    { id: 'denov',     name: "AGU Denov",     x: 558, y: 418, lat: 38.2759, lng: 67.8900, type: 'shop', hq: false, phone: '+998 XX XXX XX XX', address: "Denov shahar, Surxondaryo viloyati", shops: 1 },
+    { id: 'xorazm',    name: "AGU Xorazm",   x: 210, y: 236, lat: 41.5500, lng: 60.6400, type: 'shop', hq: false, phone: '+998 XX XXX XX XX', address: "Urganch shahar, Xorazm viloyati", shops: 1 },
+    { id: 'nukus',     name: "AGU Nukus",     x: 165, y: 190, lat: 42.4600, lng: 59.6000, type: 'shop', hq: false, phone: '+998 XX XXX XX XX', address: "Nukus shahar, Qoraqalpog'iston", shops: 1 },
 ];
 
 // Label offset: har shahar uchun belgi ustidagi yozuv yo'nalishi
@@ -982,6 +984,161 @@ function showWorldBrands(countryKey) {
 }
 
 // =========================================================
+// LEAFLET INTERAKTIV XARITA — O'ZBEKISTON FILIALLARI
+// =========================================================
+
+function buildLeafletMap() {
+    const el = document.getElementById('leaflet-map');
+    if (!el || !window.L) return;
+
+    // Admin localStorage overrides qo'llash
+    let cities;
+    try {
+        const overrides = JSON.parse(localStorage.getItem('agu_cities_override')) || [];
+        cities = CITIES.map(c => {
+            const ov = overrides.find(o => o.id === c.id);
+            return ov ? Object.assign({}, c, ov) : Object.assign({}, c);
+        });
+    } catch (e) {
+        cities = CITIES.slice();
+    }
+
+    // Xaritani O'zbekiston markaziga qaratib ochish
+    const map = L.map('leaflet-map', {
+        center: [41.4, 64.5],
+        zoom: 6,
+        zoomControl: true,
+        scrollWheelZoom: true
+    });
+
+    // CartoDB Voyager tiles — chiroyli, zamonaviy ko'rinish
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+        subdomains: 'abcd',
+        maxZoom: 19
+    }).addTo(map);
+
+    const markerRefs = {};
+
+    cities.forEach(function(city) {
+        if (!city.lat || !city.lng) return;
+
+        const isHQ      = !!city.hq;
+        const isService = !!city.hasService;
+        const color  = isHQ ? '#E30613' : isService ? '#16a34a' : '#1b5bb5';
+        const size   = isHQ ? 38 : 32;
+        const symbol = isHQ ? '&#9733;' : isService ? '&#9881;' : '&#11044;';
+        const tag    = isHQ ? 'Bosh Ofis' : isService ? 'Service' : "Do'kon";
+
+        // Custom HTML marker (pin shakli)
+        const iconHtml = `
+            <div style="
+                position:relative;width:${size}px;height:${size+8}px;
+            ">
+                <div style="
+                    width:${size}px;height:${size}px;
+                    background:${color};
+                    border-radius:50% 50% 50% 0;
+                    transform:rotate(-45deg);
+                    border:3px solid white;
+                    box-shadow:0 3px 10px rgba(0,0,0,0.35);
+                    display:flex;align-items:center;justify-content:center;
+                ">
+                    <span style="
+                        transform:rotate(45deg);
+                        color:white;font-size:${isHQ?'16':'13'}px;
+                        line-height:1;font-weight:700;
+                    ">${symbol}</span>
+                </div>
+            </div>`;
+
+        const customIcon = L.divIcon({
+            html: iconHtml,
+            className: 'agu-pin',
+            iconSize:   [size, size + 8],
+            iconAnchor: [size / 2, size + 8],
+            popupAnchor:[0, -(size + 10)]
+        });
+
+        // Google Maps va Yandex Maps linklari
+        const gLink = `https://www.google.com/maps/search/?api=1&query=${city.lat},${city.lng}`;
+        const yLink = `https://maps.yandex.com/?pt=${city.lng},${city.lat}&z=15&l=map`;
+
+        const phone2Row = city.phone2
+            ? `<div style="font-size:.78rem;color:#374151;margin-bottom:3px;">&#128222; ${city.phone2}</div>`
+            : '';
+        const addrRow = city.address
+            ? `<div style="font-size:.76rem;color:#64748b;margin-bottom:10px;">&#128205; ${city.address}</div>`
+            : '';
+
+        const popupHtml = `
+            <div style="font-family:system-ui,sans-serif;min-width:210px;max-width:260px;padding:4px 2px;">
+                <div style="display:flex;align-items:center;gap:7px;margin-bottom:8px;">
+                    <span style="font-size:.95rem;font-weight:800;color:#0f172a;">${city.name}</span>
+                    <span style="background:${color};color:white;font-size:.6rem;font-weight:700;padding:2px 8px;border-radius:20px;white-space:nowrap;">${tag}</span>
+                </div>
+                <div style="font-size:.78rem;color:#374151;margin-bottom:3px;">&#128222; ${city.phone || '—'}</div>
+                ${phone2Row}
+                ${addrRow}
+                <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;">
+                    <a href="${gLink}" target="_blank" rel="noopener"
+                       style="display:inline-flex;align-items:center;gap:4px;font-size:.72rem;font-weight:600;
+                              padding:5px 11px;background:#eff6ff;color:#1b5bb5;
+                              border:1.5px solid #bfdbfe;border-radius:8px;text-decoration:none;">
+                        &#128506; Google Maps
+                    </a>
+                    <a href="${yLink}" target="_blank" rel="noopener"
+                       style="display:inline-flex;align-items:center;gap:4px;font-size:.72rem;font-weight:600;
+                              padding:5px 11px;background:#fff7ed;color:#c2410c;
+                              border:1.5px solid #fed7aa;border-radius:8px;text-decoration:none;">
+                        &#128506; Yandex Maps
+                    </a>
+                </div>
+            </div>`;
+
+        const marker = L.marker([city.lat, city.lng], { icon: customIcon })
+            .bindPopup(popupHtml, { maxWidth: 300, className: 'agu-popup' })
+            .addTo(map);
+
+        markerRefs[city.id] = { marker, city };
+    });
+
+    // Panel list items bilan sinxronlashtirish
+    // (panel list buildCityPanel() tomonidan keyinroq render qilinadi,
+    //  shuning uchun delegation orqali yozamiz)
+    const panelList = document.getElementById('panel-city-list');
+    if (panelList) {
+        panelList.addEventListener('click', function(e) {
+            const item = e.target.closest('[data-city-id]');
+            if (!item) return;
+            const ref = markerRefs[item.dataset.cityId];
+            if (!ref) return;
+            map.flyTo([ref.city.lat, ref.city.lng], 13, { duration: 1.1 });
+            setTimeout(function() { ref.marker.openPopup(); }, 1200);
+        });
+    }
+
+    // Qidiruv inputi
+    const searchInput = document.getElementById('city-search');
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            const q = this.value.trim().toLowerCase();
+            if (!q) return;
+            const found = Object.values(markerRefs).find(function(r) {
+                return r.city.name.toLowerCase().includes(q);
+            });
+            if (found) {
+                map.flyTo([found.city.lat, found.city.lng], 13, { duration: 1.1 });
+                setTimeout(function() { found.marker.openPopup(); }, 1200);
+            }
+        });
+    }
+
+    window._aguMap     = map;
+    window._aguMarkers = markerRefs;
+}
+
+// =========================================================
 // INIT ON DOM READY
 // =========================================================
 
@@ -991,4 +1148,7 @@ if (document.getElementById('daily-products-grid')) {
 if (document.querySelector('.map-tab-btn')) {
     initMapTabs();
     initWorldMap();
+}
+if (document.getElementById('leaflet-map')) {
+    buildLeafletMap();
 }
