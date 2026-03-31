@@ -892,12 +892,12 @@ function buildSvgMap(svgId, cardId) {
         lbl.setAttribute('x', cx + off.dx);
         lbl.setAttribute('y', cy + off.dy);
         lbl.setAttribute('text-anchor', 'middle');
-        lbl.setAttribute('font-size', '8.5');
-        lbl.setAttribute('font-weight', '700');
-        lbl.setAttribute('fill', 'white');
+        lbl.setAttribute('font-size', '9');
+        lbl.setAttribute('font-weight', '800');
+        lbl.setAttribute('fill', '#0f172a');
         lbl.setAttribute('font-family', 'system-ui, sans-serif');
         lbl.setAttribute('paint-order', 'stroke');
-        lbl.setAttribute('stroke', '#0f1f42');
+        lbl.setAttribute('stroke', 'white');
         lbl.setAttribute('stroke-width', '3');
         lbl.setAttribute('pointer-events', 'none');
         lbl.textContent = city.name;

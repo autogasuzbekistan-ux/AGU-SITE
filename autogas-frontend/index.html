@@ -463,26 +463,18 @@
             <div class="regions-layout">
 
                 <!-- Chap: O'zbekiston SVG interaktiv xaritasi -->
-                <div class="map-wrap" style="padding:0;overflow:visible;background:#1a2744;">
+                <div class="map-wrap" style="padding:0;overflow:visible;background:#e8f0fe;min-height:490px;">
                     <svg id="uzbek-map" viewBox="0 0 900 490"
                          xmlns="http://www.w3.org/2000/svg"
-                         style="width:100%;height:490px;display:block;border-radius:20px;cursor:default;">
+                         style="width:100%;height:490px;display:block;border-radius:20px;cursor:default;background:#dbeafe;">
                         <defs>
-                            <radialGradient id="mapBg" cx="55%" cy="50%" r="60%">
-                                <stop offset="0%"   stop-color="#1e3a6e"/>
-                                <stop offset="100%" stop-color="#0f1f42"/>
-                            </radialGradient>
-                            <radialGradient id="uzGlow" cx="50%" cy="50%" r="55%">
-                                <stop offset="0%"   stop-color="#2563eb" stop-opacity="0.25"/>
-                                <stop offset="100%" stop-color="#1e40af" stop-opacity="0"/>
-                            </radialGradient>
+                            <linearGradient id="mapBg" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%"   stop-color="#dbeafe"/>
+                                <stop offset="100%" stop-color="#bfdbfe"/>
+                            </linearGradient>
                             <filter id="pin-shadow">
                                 <feDropShadow dx="0" dy="2" stdDeviation="3"
-                                              flood-color="#000" flood-opacity="0.45"/>
-                            </filter>
-                            <filter id="country-glow">
-                                <feGaussianBlur stdDeviation="6" result="b"/>
-                                <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+                                              flood-color="#1e3a8a" flood-opacity="0.35"/>
                             </filter>
                         </defs>
 
@@ -490,14 +482,14 @@
                         <rect width="900" height="490" fill="url(#mapBg)" rx="20"/>
 
                         <!-- Grid nuqtalari -->
-                        <g opacity="0.08">
-                            <line x1="0" y1="122" x2="900" y2="122" stroke="white" stroke-width="0.5"/>
-                            <line x1="0" y1="245" x2="900" y2="245" stroke="white" stroke-width="0.5"/>
-                            <line x1="0" y1="367" x2="900" y2="367" stroke="white" stroke-width="0.5"/>
-                            <line x1="180" y1="0" x2="180" y2="490" stroke="white" stroke-width="0.5"/>
-                            <line x1="360" y1="0" x2="360" y2="490" stroke="white" stroke-width="0.5"/>
-                            <line x1="540" y1="0" x2="540" y2="490" stroke="white" stroke-width="0.5"/>
-                            <line x1="720" y1="0" x2="720" y2="490" stroke="white" stroke-width="0.5"/>
+                        <g opacity="0.15">
+                            <line x1="0" y1="122" x2="900" y2="122" stroke="#93c5fd" stroke-width="1"/>
+                            <line x1="0" y1="245" x2="900" y2="245" stroke="#93c5fd" stroke-width="1"/>
+                            <line x1="0" y1="367" x2="900" y2="367" stroke="#93c5fd" stroke-width="1"/>
+                            <line x1="180" y1="0" x2="180" y2="490" stroke="#93c5fd" stroke-width="1"/>
+                            <line x1="360" y1="0" x2="360" y2="490" stroke="#93c5fd" stroke-width="1"/>
+                            <line x1="540" y1="0" x2="540" y2="490" stroke="#93c5fd" stroke-width="1"/>
+                            <line x1="720" y1="0" x2="720" y2="490" stroke="#93c5fd" stroke-width="1"/>
                         </g>
 
                         <!-- O'zbekiston chegarasi -->
@@ -511,22 +503,11 @@
                                  L 534,453 L 482,451 L 430,444 L 374,432 L 318,416
                                  L 264,400 L 212,380 L 168,355 L 130,325 L 100,292
                                  L 78,258  L 62,220  Z"
-                              fill="#1e3a8a" fill-opacity="0.7"
-                              stroke="#60a5fa" stroke-width="1.5"
-                              stroke-linejoin="round"
-                              filter="url(#country-glow)"/>
-                        <!-- Ichki glow -->
-                        <path d="M 62,158 L 88,132 L 128,114 L 178,100 L 228,90
-                                 L 295,82  L 368,76  L 445,76  L 518,82  L 578,92
-                                 L 632,100 L 682,96  L 728,106 L 772,118 L 808,134
-                                 L 836,152 L 850,175 L 852,200 L 845,224 L 828,240
-                                 L 808,250 L 790,258 L 778,270 L 782,288 L 800,302
-                                 L 816,318 L 822,338 L 814,356 L 796,368 L 772,378
-                                 L 742,390 L 706,406 L 666,422 L 626,436 L 582,447
-                                 L 534,453 L 482,451 L 430,444 L 374,432 L 318,416
-                                 L 264,400 L 212,380 L 168,355 L 130,325 L 100,292
-                                 L 78,258  L 62,220  Z"
-                              fill="url(#uzGlow)"/>
+                              fill="#93c5fd"
+                              fill-opacity="0.55"
+                              stroke="#1d4ed8"
+                              stroke-width="2.5"
+                              stroke-linejoin="round"/>
 
                         <!-- Shahar pinlari (JS tomonidan qo'shiladi) -->
                         <g id="city-markers"></g>

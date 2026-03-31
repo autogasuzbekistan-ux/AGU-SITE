@@ -359,15 +359,17 @@ html {
 .map-wrap {
     position: relative;
     border-radius: 20px;
-    overflow: hidden;
+    overflow: visible;
     box-shadow: 0 8px 40px rgba(27, 91, 181, 0.12);
-    background: #f0f7ff;
+    background: #dbeafe;
+    min-height: 490px;
 }
 
 #uzbek-map {
     display: block;
     width: 100%;
-    height: auto;
+    height: 490px;
+    border-radius: 20px;
 }
 
 .city-marker {
