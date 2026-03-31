@@ -50,6 +50,19 @@ if (document.getElementById('loading-screen')) {
         window.addEventListener('load', runLoadingAnimation);
     }
 }
+// Xavfsizlik: 4 soniyadan keyin asosiy kontent har holda ko'rinsin
+(function() {
+    var mc = document.getElementById('main-content');
+    if (!mc) return;
+    setTimeout(function() {
+        if (mc.style.opacity !== '1') {
+            mc.style.opacity = '1';
+            var ls = document.getElementById('loading-screen');
+            if (ls) ls.style.display = 'none';
+            if (typeof initFadeObserver === 'function') initFadeObserver();
+        }
+    }, 4000);
+})();
 
 // =========================================================
 // FADE-IN ON SCROLL
@@ -837,12 +850,22 @@ function buildSvgMap(svgId, cardId) {
         // Pulse halqa
         var pulse = document.createElementNS(ns, 'circle');
         pulse.setAttribute('cx', cx); pulse.setAttribute('cy', cy);
-        pulse.setAttribute('r', r + 4);
+        pulse.setAttribute('r', String(r + 4));
         pulse.setAttribute('fill', color);
         pulse.setAttribute('fill-opacity', '0.2');
-        pulse.innerHTML =
-            '<animate attributeName="r" values="' + (r+2) + ';' + (r+14) + ';' + (r+2) + '" dur="2.4s" repeatCount="indefinite"/>' +
-            '<animate attributeName="fill-opacity" values="0.25;0;0.25" dur="2.4s" repeatCount="indefinite"/>';
+        pulse.setAttribute('pointer-events', 'none');
+        var anim1 = document.createElementNS(ns, 'animate');
+        anim1.setAttribute('attributeName', 'r');
+        anim1.setAttribute('values', (r+2) + ';' + (r+14) + ';' + (r+2));
+        anim1.setAttribute('dur', '2.4s');
+        anim1.setAttribute('repeatCount', 'indefinite');
+        var anim2 = document.createElementNS(ns, 'animate');
+        anim2.setAttribute('attributeName', 'fill-opacity');
+        anim2.setAttribute('values', '0.25;0;0.25');
+        anim2.setAttribute('dur', '2.4s');
+        anim2.setAttribute('repeatCount', 'indefinite');
+        pulse.appendChild(anim1);
+        pulse.appendChild(anim2);
 
         // Asosiy doira
         var circle = document.createElementNS(ns, 'circle');
@@ -905,13 +928,16 @@ function buildSvgMap(svgId, cardId) {
 function _svgSetActive(svgId, cityId) {
     var svgEl = document.getElementById(svgId);
     if (!svgEl) return;
-    svgEl.querySelectorAll('.city-pin circle:first-of-type').forEach(function(c) {
-        c.setAttribute('stroke-width', '2.5');
+    // Reset all main circles (second circle in each pin = index 1)
+    svgEl.querySelectorAll('.city-pin').forEach(function(pinG) {
+        var circles = pinG.querySelectorAll('circle');
+        if (circles[1]) circles[1].setAttribute('stroke-width', '2.5');
     });
     var g = svgEl.querySelector('.city-pin[data-id="' + cityId + '"]');
     if (g) {
-        var c = g.querySelector('circle');
-        if (c) c.setAttribute('stroke-width', '4');
+        var circles = g.querySelectorAll('circle');
+        var mainCircle = circles[1] || circles[0];
+        if (mainCircle) mainCircle.setAttribute('stroke-width', '5');
     }
     // Panel sinxronlashtirish
     document.querySelectorAll('.panel-city-item').forEach(function(i) {
