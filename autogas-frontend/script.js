@@ -1025,8 +1025,7 @@ if (document.getElementById('daily-products-grid')) {
 
 (function() {
     function initMaps() {
-        if (document.getElementById('uzbek-map'))     buildSvgMap('uzbek-map', 'city-card');
-        if (document.getElementById('uzbek-map-big')) buildSvgMap('uzbek-map-big', null);
+        if (document.getElementById('uzbek-map')) buildSvgMap('uzbek-map', 'city-card');
         buildSvgPanelList();
         var closeBtn = document.getElementById('city-card-close');
         if (closeBtn) closeBtn.addEventListener('click', function() {
