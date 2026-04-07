@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\Notification;
 use App\Models\Inventory;
 use App\Models\Warehouse;
+use App\Services\TelegramService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
@@ -196,6 +197,14 @@ class TransferController extends Controller
 
         // Notification - yuboruvchiga transfer tasdiqlangani haqida xabar
         Notification::transferApproved($transfer, $transfer->sender_id);
+
+        // Bugalterlar guruhiga Telegram xabar
+        (new TelegramService())->notifyTransferApproved(
+            $transfer->tracking_number,
+            $transfer->sender->name ?? '-',
+            $transfer->receiver->name ?? '-',
+            $transfer->quantity
+        );
 
         return response()->json([
             'success' => true,

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Transaction;
 use App\Models\User;
 use App\Models\Notification;
+use App\Services\TelegramService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -165,6 +166,14 @@ class TransactionController extends Controller
 
             // Notification - qabul qiluvchiga pul kelganligi haqida xabar
             Notification::moneyReceived($transaction->fresh()->load(['sender']), $receiver->id);
+
+            // Bugalterlar guruhiga Telegram xabar
+            (new TelegramService())->notifyMoneyReceived(
+                $user->name,
+                $receiver->name,
+                $validated['amount'],
+                $transaction->reference_number
+            );
 
             // Low balance warning - agar yuboruvchi balansi kam qolsa
             if ($user->balance < 100000) { // 100,000 so'm dan kam
@@ -394,6 +403,7 @@ class TransactionController extends Controller
             ]);
 
             // Notification - foydalanuvchiga balans o'zgarganligi haqida xabar
+            $telegram = new TelegramService();
             if ($validated['type'] === 'deposit') {
                 Notification::createForUser(
                     $targetUser->id,
@@ -411,6 +421,13 @@ class TransactionController extends Controller
                         ],
                     ]
                 );
+                // Bugalterlar guruhiga Telegram xabar
+                $telegram->notifyBalanceDeposit(
+                    $targetUser->name,
+                    abs($validated['amount']),
+                    $targetUser->balance,
+                    $transaction->reference_number
+                );
             } else {
                 Notification::createForUser(
                     $targetUser->id,
@@ -427,6 +444,13 @@ class TransactionController extends Controller
                             'reference_number' => $transaction->reference_number,
                         ],
                     ]
+                );
+                // Bugalterlar guruhiga Telegram xabar
+                $telegram->notifyBalanceWithdrawal(
+                    $targetUser->name,
+                    abs($validated['amount']),
+                    $targetUser->balance,
+                    $transaction->reference_number
                 );
             }
 

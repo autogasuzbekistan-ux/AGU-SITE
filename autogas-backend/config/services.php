@@ -35,4 +35,10 @@ return [
         ],
     ],
 
+    'telegram' => [
+        'bot_token'          => env('TELEGRAM_BOT_TOKEN', ''),
+        // Bugalterlar guruhining chat IDsi (manfiy son, masalan: -1001234567890)
+        'accounting_chat_id' => env('TELEGRAM_ACCOUNTING_CHAT_ID'),
+    ],
+
 ];
