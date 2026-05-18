@@ -523,6 +523,10 @@ tbody tr:hover td { background: #fafbfc; }
         <span class="ni">🛍️</span> Mahsulotlar
         <span class="nav-badge" id="nb-products">0</span>
       </button>
+      <button class="nav-btn" data-page="billboard">
+        <span class="ni">📢</span> Billboard
+        <span class="nav-badge" id="nb-billboard">0</span>
+      </button>
       <div class="sb-section">Tizim</div>
       <button class="nav-btn" data-page="settings">
         <span class="ni">⚙️</span> Sozlamalar
@@ -687,6 +691,19 @@ tbody tr:hover td { background: #fafbfc; }
         </div>
 
         <div id="products-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;"></div>
+      </section>
+
+      <!-- ── BILLBOARD ──────────────────────────────── -->
+      <section class="page" id="page-billboard">
+        <div class="page-title">Billboard</div>
+        <div class="page-sub">Saytdagi reklama slaydlarini boshqarish &mdash; har bir slayd saytda almashib ko&rsquo;rinadi</div>
+
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+          <button class="btn btn-primary" id="add-slide-btn">&#43; Slayd qo&rsquo;shish</button>
+          <span style="font-size:.78rem;color:#94a3b8;">&#9432; Faol slaydlar saytda avtomatik almashib ko&rsquo;rinadi</span>
+        </div>
+
+        <div id="slides-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px;"></div>
       </section>
 
       <!-- ── SETTINGS ───────────────────────────────── -->
@@ -881,6 +898,94 @@ tbody tr:hover td { background: #fafbfc; }
     <div class="modal-footer">
       <button class="btn btn-secondary" id="pm-cancel-btn">Bekor qilish</button>
       <button class="btn btn-primary" id="pm-save-btn">&#128190; Saqlash</button>
+    </div>
+  </div>
+</div>
+
+<!-- ────────────────────────────────────────────────── -->
+<!--  BILLBOARD SLIDE MODAL                             -->
+<!-- ────────────────────────────────────────────────── -->
+<div id="slide-modal" class="modal-bg" role="dialog" aria-modal="true" style="display:none;">
+  <div class="modal-box" style="max-width:540px;">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title" id="slide-modal-title">Slayd qo&rsquo;shish</div>
+        <div style="font-size:.78rem;color:#64748b;margin-top:2px;">Billboard slayd</div>
+      </div>
+      <button class="modal-close" id="sl-close-btn">&#10005;</button>
+    </div>
+
+    <div class="field" style="margin-bottom:16px;">
+      <label>Fon rasmi <span style="color:#94a3b8;font-weight:400;">(ixtiyoriy &mdash; gradient ustiga qo&rsquo;yiladi)</span></label>
+      <div id="sl-upload-area" class="upload-area">
+        <input type="file" id="sl-img-input" accept="image/*">
+        <div id="sl-upload-ph">
+          <div class="upload-icon">&#127776;&#65039;</div>
+          <div class="upload-text">Bosing yoki sudrab tashlang</div>
+          <div class="upload-hint">PNG, JPG, WEBP &mdash; max 3 MB</div>
+        </div>
+        <img id="sl-img-preview" class="logo-preview-img" src="" alt="" style="display:none;">
+      </div>
+      <div style="margin-top:6px;">
+        <button class="btn btn-danger-soft btn-sm" id="sl-remove-img-btn" style="display:none;">
+          &#10005; Rasmni o&rsquo;chirish
+        </button>
+      </div>
+    </div>
+
+    <div class="form-row cols-2">
+      <div class="field">
+        <label>Badge / Yorliq <span style="color:#94a3b8;font-weight:400;">(ixtiyoriy)</span></label>
+        <input type="text" id="sl-badge" placeholder="&#128293; AKSIYA">
+      </div>
+      <div class="field">
+        <label>Fon rangi</label>
+        <select id="sl-bg">
+          <option value="linear-gradient(135deg,#1b5bb5 0%,#0e3d7a 100%)">&#128309; Ko&rsquo;k (asosiy)</option>
+          <option value="linear-gradient(135deg,#0f172a 0%,#1e40af 100%)">&#127756; To&rsquo;q ko&rsquo;k</option>
+          <option value="linear-gradient(135deg,#ed8f36 0%,#c2600a 100%)">&#129505; Sariq-to&rsquo;q</option>
+          <option value="linear-gradient(135deg,#E30613 0%,#7f1d1d 100%)">&#128308; Qizil</option>
+          <option value="linear-gradient(135deg,#16a34a 0%,#14532d 100%)">&#129001; Yashil</option>
+          <option value="linear-gradient(135deg,#1e293b 0%,#0f172a 100%)">&#11035; Qora</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="field">
+        <label>Sarlavha <span style="color:#E30613;">*</span></label>
+        <input type="text" id="sl-title" placeholder="Masalan: LPG O&rsquo;rnatish — Bugun -15%">
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="field">
+        <label>Tavsif <span style="color:#94a3b8;font-weight:400;">(ixtiyoriy)</span></label>
+        <textarea id="sl-desc" rows="2" placeholder="Qisqacha tavsif matni..."></textarea>
+      </div>
+    </div>
+
+    <div class="form-row cols-2">
+      <div class="field">
+        <label>Tugma matni</label>
+        <input type="text" id="sl-cta" placeholder="Buyurtma berish">
+      </div>
+      <div class="field">
+        <label>Havola (link)</label>
+        <input type="text" id="sl-href" placeholder="#contact">
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="field" style="display:flex;align-items:center;gap:12px;">
+        <input type="checkbox" id="sl-active" checked style="width:18px;height:18px;accent-color:var(--blue);cursor:pointer;">
+        <label for="sl-active" style="margin:0;cursor:pointer;">Faol holat &mdash; <span id="sl-active-label" style="color:#16a34a;font-weight:600;">Ko&rsquo;rsatiladi</span></label>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-secondary" id="sl-cancel-btn">Bekor qilish</button>
+      <button class="btn btn-primary" id="sl-save-btn">&#128190; Saqlash</button>
     </div>
   </div>
 </div>
@@ -1081,6 +1186,230 @@ function doLogout() {
   if (lout) lout.addEventListener("click", doLogout);
 })();
 
+// ── BILLBOARD ────────────────────────────────────────────────
+
+var KEY_BILLBOARD  = "agu_billboard";
+var editingSlideId = null;
+var tempSlideImg   = null;
+
+var DEFAULT_SLIDES = [
+  {
+    id: "bb_default_1",
+    badge: "🔥 MAXSUS TAKLIF",
+    title: "LPG Oʼrnatish — Bugun -15%",
+    desc:  "ATIKER va PRINS tizimlarini oʼrnatishda maxsus chegirma. Faqat shu oy!",
+    cta:   "Buyurtma berish",
+    href:  "#contact",
+    bg:    "linear-gradient(135deg,#1b5bb5 0%,#0e3d7a 100%)",
+    img:   "",
+    active: true
+  },
+  {
+    id: "bb_default_2",
+    badge: "⚡ KAFOLAT",
+    title: "2 Yillik Xizmat Kafolati",
+    desc:  "Professional oʼrnatish, ISO sertifikatlangan uskunalar, tezkor texnik xizmat.",
+    cta:   "Bogʼllanish",
+    href:  "#contact",
+    bg:    "linear-gradient(135deg,#ed8f36 0%,#c2600a 100%)",
+    img:   "",
+    active: true
+  }
+];
+
+function getSlides() {
+  var saved = ls(KEY_BILLBOARD, null);
+  if (saved !== null) return saved;
+  return DEFAULT_SLIDES.slice();
+}
+
+function saveSlides(arr) {
+  lsSet(KEY_BILLBOARD, arr);
+  updateNavBadges();
+}
+
+function renderSlidesGrid() {
+  var grid = document.getElementById("slides-grid");
+  if (!grid) return;
+  var slides = getSlides();
+  if (!slides.length) {
+    grid.innerHTML = "<div style=\"grid-column:1/-1;text-align:center;padding:48px;color:#94a3b8;\">&#128226; Slaydlar yoʼq. &laquo;Slayd qoʼshish&raquo; tugmasini bosing.</div>";
+    updateNavBadges();
+    return;
+  }
+  grid.innerHTML = slides.map(function(s) {
+    var isActive = s.active !== false;
+    return "<div style=\"border-radius:16px;overflow:hidden;box-shadow:var(--shadow-sm);border:1px solid #e2e8f0;\">"
+      + "<div style=\"height:130px;display:flex;flex-direction:column;align-items:center;justify-content:center;"
+      + "background:" + (s.bg || "#1b5bb5") + ";position:relative;padding:16px;\">"
+      + (s.img ? "<img src=\"" + s.img + "\" style=\"position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.22;\">" : "")
+      + "<div style=\"position:relative;z-index:2;text-align:center;color:#fff;\">"
+      + (s.badge ? "<div style=\"font-size:.62rem;font-weight:700;letter-spacing:.08em;opacity:.85;margin-bottom:5px;\">" + esc(s.badge) + "</div>" : "")
+      + "<div style=\"font-size:.9rem;font-weight:800;line-height:1.25;\">" + esc(s.title) + "</div>"
+      + (s.desc ? "<div style=\"font-size:.68rem;opacity:.78;margin-top:4px;\">" + esc(s.desc.slice(0, 60)) + (s.desc.length > 60 ? "..." : "") + "</div>" : "")
+      + "</div>"
+      + "<div style=\"position:absolute;top:8px;right:8px;z-index:3;\">"
+      + "<span style=\"background:" + (isActive ? "rgba(22,163,74,.85)" : "rgba(148,163,184,.7)") + ";color:#fff;"
+      + "font-size:.6rem;font-weight:700;padding:2px 9px;border-radius:8px;\">"
+      + (isActive ? "FAOL" : "YASHIRIN") + "</span>"
+      + "</div></div>"
+      + "<div style=\"padding:12px 14px;background:#fff;\">"
+      + "<div style=\"display:flex;gap:8px;flex-wrap:wrap;\">"
+      + "<button class=\"btn btn-secondary btn-sm\" onclick=\"openSlideModal('" + s.id + "')\">&#9998; Tahrirlash</button>"
+      + "<button class=\"btn btn-danger-soft btn-sm\" onclick=\"deleteSlide('" + s.id + "')\">&#128465; Oʼchirish</button>"
+      + "<button class=\"btn btn-sm\" style=\"margin-left:auto;background:" + (isActive ? "#fef2f2" : "#f0fdf4")
+      + ";color:" + (isActive ? "#E30613" : "#16a34a") + ";border:1px solid " + (isActive ? "#fecaca" : "#bbf7d0") + ";\""
+      + " onclick=\"toggleSlide('" + s.id + "')\">"
+      + (isActive ? "&#10005; Yashirish" : "&#10003; Koʼrsatish") + "</button>"
+      + "</div></div></div>";
+  }).join("");
+  updateNavBadges();
+}
+
+function openSlideModal(id) {
+  editingSlideId = id || null;
+  tempSlideImg   = null;
+  var isEdit = !!id;
+  document.getElementById("slide-modal-title").textContent = isEdit ? "Slaydni tahrirlash" : "Slayd qoʼshish";
+
+  var s = {};
+  if (isEdit) {
+    var slides = getSlides();
+    s = slides.find(function(x) { return x.id === id; }) || {};
+  }
+
+  document.getElementById("sl-badge").value = s.badge || "";
+  document.getElementById("sl-title").value = s.title || "";
+  document.getElementById("sl-desc").value  = s.desc  || "";
+  document.getElementById("sl-cta").value   = s.cta   || "Buyurtma berish";
+  document.getElementById("sl-href").value  = s.href  || "#contact";
+
+  var bgSel = document.getElementById("sl-bg");
+  bgSel.value = s.bg || bgSel.options[0].value;
+
+  var chk = document.getElementById("sl-active");
+  chk.checked = s.active !== false;
+  _updateActiveLabel(chk.checked);
+
+  tempSlideImg = s.img || null;
+  var prev = document.getElementById("sl-img-preview");
+  var rmv  = document.getElementById("sl-remove-img-btn");
+  var ph   = document.getElementById("sl-upload-ph");
+  if (tempSlideImg) {
+    prev.src = tempSlideImg; prev.style.display = "";
+    rmv.style.display = ""; ph.style.display = "none";
+  } else {
+    prev.style.display = "none"; rmv.style.display = "none"; ph.style.display = "";
+  }
+  document.getElementById("sl-img-input").value = "";
+  document.getElementById("slide-modal").style.display = "flex";
+}
+
+function closeSlideModal() {
+  document.getElementById("slide-modal").style.display = "none";
+  editingSlideId = null;
+  tempSlideImg   = null;
+}
+
+function saveSlideModal() {
+  var title = (document.getElementById("sl-title").value || "").trim();
+  if (!title) { alert("Sarlavha kiritish shart!"); return; }
+  var slides = getSlides();
+  var patch = {
+    badge:  (document.getElementById("sl-badge").value || "").trim(),
+    title:  title,
+    desc:   (document.getElementById("sl-desc").value  || "").trim(),
+    cta:    (document.getElementById("sl-cta").value   || "").trim(),
+    href:   (document.getElementById("sl-href").value  || "").trim() || "#contact",
+    bg:     document.getElementById("sl-bg").value,
+    active: document.getElementById("sl-active").checked,
+    img:    tempSlideImg || ""
+  };
+  if (editingSlideId) {
+    var i = slides.findIndex(function(x) { return x.id === editingSlideId; });
+    if (i >= 0) slides[i] = Object.assign({}, slides[i], patch);
+    else slides.push(Object.assign({ id: editingSlideId }, patch));
+  } else {
+    patch.id = "bb_" + Date.now();
+    slides.push(patch);
+  }
+  saveSlides(slides);
+  renderSlidesGrid();
+  closeSlideModal();
+  showSaved();
+}
+
+function deleteSlide(id) {
+  if (!confirm("Slaydni oʼchirishni tasdiqlaysizmi?")) return;
+  var slides = getSlides().filter(function(s) { return s.id !== id; });
+  saveSlides(slides);
+  renderSlidesGrid();
+  showSaved();
+}
+
+function toggleSlide(id) {
+  var slides = getSlides();
+  var i = slides.findIndex(function(s) { return s.id === id; });
+  if (i < 0) return;
+  slides[i].active = !(slides[i].active !== false);
+  saveSlides(slides);
+  renderSlidesGrid();
+  showSaved();
+}
+
+function _updateActiveLabel(checked) {
+  var lbl = document.getElementById("sl-active-label");
+  if (!lbl) return;
+  lbl.textContent = checked ? "Koʼrsatiladi" : "Yashiriladi";
+  lbl.style.color = checked ? "#16a34a" : "#94a3b8";
+}
+
+function bindBillboardButtons() {
+  var addBtn = document.getElementById("add-slide-btn");
+  if (addBtn) addBtn.addEventListener("click", function() { openSlideModal(null); });
+
+  var closeBtn = document.getElementById("sl-close-btn");
+  if (closeBtn) closeBtn.addEventListener("click", closeSlideModal);
+  var cancelBtn = document.getElementById("sl-cancel-btn");
+  if (cancelBtn) cancelBtn.addEventListener("click", closeSlideModal);
+
+  var saveBtn = document.getElementById("sl-save-btn");
+  if (saveBtn) saveBtn.addEventListener("click", saveSlideModal);
+
+  var modal = document.getElementById("slide-modal");
+  if (modal) modal.addEventListener("click", function(e) {
+    if (e.target === modal) closeSlideModal();
+  });
+
+  var imgInput = document.getElementById("sl-img-input");
+  if (imgInput) imgInput.addEventListener("change", function(e) {
+    var file = e.target.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function(ev) {
+      tempSlideImg = ev.target.result;
+      var prev = document.getElementById("sl-img-preview");
+      var rmv  = document.getElementById("sl-remove-img-btn");
+      var ph   = document.getElementById("sl-upload-ph");
+      prev.src = tempSlideImg; prev.style.display = "";
+      rmv.style.display = ""; ph.style.display = "none";
+    };
+    reader.readAsDataURL(file);
+  });
+
+  var rmvBtn = document.getElementById("sl-remove-img-btn");
+  if (rmvBtn) rmvBtn.addEventListener("click", function() {
+    tempSlideImg = null;
+    document.getElementById("sl-img-preview").style.display = "none";
+    document.getElementById("sl-remove-img-btn").style.display = "none";
+    document.getElementById("sl-upload-ph").style.display = "";
+    document.getElementById("sl-img-input").value = "";
+  });
+
+  var chk = document.getElementById("sl-active");
+  if (chk) chk.addEventListener("change", function() { _updateActiveLabel(chk.checked); });
+}
+
 // ── NAVIGATION ───────────────────────────────────────────────
 
 var pages = {
@@ -1088,6 +1417,7 @@ var pages = {
   brands:    { title: "Brandlar",        sub: "/ Boshqaruv" },
   shops:     { title: "Do\u02BCkonlar",  sub: "/ Boshqaruv" },
   products:  { title: "Mahsulotlar",     sub: "/ Boshqaruv" },
+  billboard: { title: "Billboard",       sub: "/ Boshqaruv" },
   settings:  { title: "Sozlamalar",      sub: "/ Tizim" }
 };
 
@@ -1185,12 +1515,14 @@ function initApp() {
   renderBrandsTable();
   renderShopsGrid();
   renderProductsGrid();
+  renderSlidesGrid();
   loadSettingsForm();
   bindShopsButtons();
   bindSettingsButtons();
   bindExportImport();
   bindBrandSearch();
   bindProductButtons();
+  bindBillboardButtons();
   updateNavBadges();
 }
 
@@ -1223,6 +1555,12 @@ function updateNavBadges() {
   if (ns) ns.textContent = CITIES.length;
   var np = document.getElementById("nb-products");
   if (np) np.textContent = getProducts().length;
+  var nbb = document.getElementById("nb-billboard");
+  if (nbb) {
+    var slides = getSlides();
+    var active = slides.filter(function(s) { return s.active !== false; }).length;
+    nbb.textContent = active;
+  }
 }
 
 // ── STORAGE INFO ─────────────────────────────────────────────

@@ -981,6 +981,128 @@ function buildSvgPanelList() {
 }
 
 // =========================================================
+// BILLBOARD / PROMO SLIDER
+// =========================================================
+
+var DEFAULT_BILLBOARD = [
+    {
+        id: 'bb_default_1',
+        badge: '🔥 MAXSUS TAKLIF',
+        title: "LPG O'rnatish — Bugun -15%",
+        desc: "ATIKER va PRINS tizimlarini o'rnatishda maxsus chegirma. Faqat shu oy!",
+        cta: "Buyurtma berish",
+        href: "#contact",
+        bg: "linear-gradient(135deg,#1b5bb5 0%,#0e3d7a 100%)",
+        img: "",
+        active: true
+    },
+    {
+        id: 'bb_default_2',
+        badge: '⚡ KAFOLAT',
+        title: "2 Yillik Xizmat Kafolati",
+        desc: "Professional o'rnatish, ISO sertifikatlangan uskunalar, tezkor texnik xizmat.",
+        cta: "Bog'lanish",
+        href: "#contact",
+        bg: "linear-gradient(135deg,#ed8f36 0%,#c2600a 100%)",
+        img: "",
+        active: true
+    }
+];
+
+var _bbTimer = null;
+var _bbIdx   = 0;
+
+function _getBbSlides() {
+    var raw = localStorage.getItem('agu_billboard');
+    var all;
+    if (raw !== null) {
+        try { all = JSON.parse(raw); } catch(e) { all = []; }
+    } else {
+        all = DEFAULT_BILLBOARD;
+    }
+    return all.filter(function(s) { return s.active !== false; });
+}
+
+function renderBillboard() {
+    var section = document.getElementById('billboard');
+    var track   = document.getElementById('bb-track');
+    var dotsEl  = document.getElementById('bb-dots');
+    if (!section || !track || !dotsEl) return;
+
+    var slides = _getBbSlides();
+    if (!slides.length) {
+        section.style.display = 'none';
+        clearInterval(_bbTimer);
+        return;
+    }
+    section.style.display = '';
+
+    track.style.transition = 'none';
+    track.style.transform  = 'translateX(0)';
+    track.innerHTML = slides.map(function(s) {
+        return '<div class="bb-slide" style="background:' + (s.bg || 'linear-gradient(135deg,#1b5bb5,#2d3748)') + ';">'
+            + (s.img ? '<img class="bb-slide-bg-img" src="' + s.img + '" alt="">' : '')
+            + '<div class="bb-slide-inner">'
+            + (s.badge ? '<div class="bb-badge">' + s.badge + '</div>' : '')
+            + '<div class="bb-title">' + (s.title || '') + '</div>'
+            + (s.desc ? '<div class="bb-desc">' + s.desc + '</div>' : '')
+            + (s.cta  ? '<a href="' + (s.href || '#contact') + '" class="bb-cta">' + s.cta + ' &#8594;</a>' : '')
+            + '</div></div>';
+    }).join('');
+
+    dotsEl.innerHTML = slides.map(function(_, i) {
+        return '<button class="bb-dot' + (i === 0 ? ' active' : '') + '" data-i="' + i + '"></button>';
+    }).join('');
+    dotsEl.querySelectorAll('.bb-dot').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            _bbGoTo(parseInt(btn.getAttribute('data-i')));
+            _bbAutoPlay(slides.length);
+        });
+    });
+
+    var prev = document.getElementById('bb-prev');
+    var next = document.getElementById('bb-next');
+    if (prev) {
+        prev.style.display = slides.length < 2 ? 'none' : '';
+        prev.onclick = function() { _bbGoTo(_bbIdx - 1); _bbAutoPlay(slides.length); };
+    }
+    if (next) {
+        next.style.display = slides.length < 2 ? 'none' : '';
+        next.onclick = function() { _bbGoTo(_bbIdx + 1); _bbAutoPlay(slides.length); };
+    }
+
+    _bbIdx = 0;
+    setTimeout(function() {
+        track.style.transition = 'transform .55s cubic-bezier(.4,0,.2,1)';
+        _bbApply(slides.length);
+        _bbAutoPlay(slides.length);
+    }, 30);
+}
+
+function _bbApply(total) {
+    var track = document.getElementById('bb-track');
+    if (track) track.style.transform = 'translateX(-' + (_bbIdx * 100) + '%)';
+    document.querySelectorAll('#bb-dots .bb-dot').forEach(function(d, i) {
+        d.classList.toggle('active', i === _bbIdx);
+    });
+}
+
+function _bbGoTo(i) {
+    var total = _getBbSlides().length;
+    _bbIdx = (i + total) % total;
+    _bbApply(total);
+}
+
+function _bbAutoPlay(total) {
+    clearInterval(_bbTimer);
+    if (total < 2) return;
+    _bbTimer = setInterval(function() {
+        _bbIdx = (_bbIdx + 1) % total;
+        _bbApply(total);
+    }, 4500);
+}
+
+// =========================================================
 // INIT ON DOM READY
 // =========================================================
 
@@ -988,10 +1110,17 @@ if (document.getElementById('daily-products-grid')) {
     renderDailyProducts();
 }
 
-// Admin boshqa tabda mahsulot o'zgartirganda frontend avtomatik yangilanadi
+if (document.getElementById('billboard')) {
+    renderBillboard();
+}
+
+// Admin boshqa tabda o'zgartirsa — frontend avtomatik yangilanadi
 window.addEventListener('storage', function(e) {
     if (e.key === 'agu_daily_products') {
         renderDailyProducts();
+    }
+    if (e.key === 'agu_billboard') {
+        renderBillboard();
     }
 });
 

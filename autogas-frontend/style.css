@@ -772,3 +772,152 @@ body {
 @media (max-width: 767px) {
     #uzbek-map { height: 300px !important; }
 }
+
+/* ============================================================
+   BILLBOARD / PROMO SLIDER
+   ============================================================ */
+
+.bb-slide {
+    min-width: 100%;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 340px;
+    padding: 64px 24px 80px;
+    overflow: hidden;
+}
+
+.bb-slide-bg-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: .28;
+    pointer-events: none;
+}
+
+.bb-slide-inner {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    color: #fff;
+    max-width: 680px;
+    margin: 0 auto;
+}
+
+.bb-badge {
+    display: inline-block;
+    background: rgba(255,255,255,.18);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,.3);
+    color: #fff;
+    font-size: .72rem;
+    font-weight: 800;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    padding: 5px 16px;
+    border-radius: 20px;
+    margin-bottom: 16px;
+}
+
+.bb-title {
+    font-size: clamp(1.6rem, 4vw, 2.8rem);
+    font-weight: 800;
+    line-height: 1.15;
+    margin-bottom: 14px;
+    text-shadow: 0 2px 18px rgba(0,0,0,.28);
+}
+
+.bb-desc {
+    font-size: clamp(.9rem, 2vw, 1.08rem);
+    opacity: .88;
+    margin-bottom: 28px;
+    max-width: 520px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.65;
+}
+
+.bb-cta {
+    display: inline-block;
+    background: var(--secondary-orange, #ed8f36);
+    color: #fff;
+    font-weight: 700;
+    font-size: .95rem;
+    padding: 13px 34px;
+    border-radius: 12px;
+    text-decoration: none;
+    box-shadow: 0 4px 20px rgba(0,0,0,.2);
+    transition: background .2s, transform .2s, box-shadow .2s;
+}
+
+.bb-cta:hover {
+    background: #d97706;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(0,0,0,.28);
+}
+
+.bb-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    background: rgba(255,255,255,.15);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,.25);
+    color: #fff;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    font-size: 1.15rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background .2s, transform .2s;
+}
+
+.bb-arrow:hover {
+    background: rgba(255,255,255,.28);
+    transform: translateY(-50%) scale(1.08);
+}
+
+.bb-arrow-prev { left: 20px; }
+.bb-arrow-next { right: 20px; }
+
+.bb-dots {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+    z-index: 10;
+}
+
+.bb-dot {
+    height: 8px;
+    width: 8px;
+    border-radius: 4px;
+    background: rgba(255,255,255,.4);
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    transition: background .28s, width .28s;
+}
+
+.bb-dot.active {
+    background: #fff;
+    width: 26px;
+}
+
+@media (max-width: 640px) {
+    .bb-slide { min-height: 240px; padding: 48px 16px 68px; }
+    .bb-arrow { width: 38px; height: 38px; font-size: .9rem; }
+    .bb-arrow-prev { left: 10px; }
+    .bb-arrow-next { right: 10px; }
+}
