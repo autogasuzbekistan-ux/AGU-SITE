@@ -1439,7 +1439,7 @@ function saveBrandModal() {
   );
   renderStats();
   renderStorageInfo();
-  toast(name + " ma\u02BClumorlari saqlandi");
+  toast(name + " ma\u02BClumotlari saqlandi");
   showSaved();
 }
 
@@ -1549,18 +1549,18 @@ function saveShops() {
     if (Object.keys(ov).length > 1) overrides.push(ov);
   });
   if (lsSet(KEY_CITIES, overrides)) {
-    toast("Barcha do\u02BCkon ma\u02BClumorlari saqlandi");
+    toast("Barcha do\u02BCkon ma\u02BClumotlari saqlandi");
     renderStorageInfo();
     showSaved();
   }
 }
 
 function resetShops() {
-  if (!confirm("Do\u02BCkon ma\u02BClumorlari standart holatga qaytarilsinmi?")) return;
+  if (!confirm("Do\u02BCkon ma\u02BClumotlari standart holatga qaytarilsinmi?")) return;
   lsDel(KEY_CITIES);
   renderShopsGrid();
   renderStorageInfo();
-  toast("Do\u02BCkon ma\u02BClumorlari tiklandi");
+  toast("Do\u02BCkon ma\u02BClumotlari tiklandi");
   showSaved();
 }
 
@@ -1683,7 +1683,7 @@ function exportData() {
   a.download = "agu-admin-backup-" + new Date().toISOString().slice(0,10) + ".json";
   a.click();
   URL.revokeObjectURL(url);
-  toast("Ma\u02BClumorlari eksport qilindi");
+  toast("Ma\u02BClumotlari eksport qilindi");
 }
 
 function importData(file) {
@@ -1701,7 +1701,7 @@ function importData(file) {
       loadSettingsForm();
       renderStats();
       renderStorageInfo();
-      toast("Ma\u02BClumorlari import qilindi");
+      toast("Ma\u02BClumotlari import qilindi");
       showSaved();
     } catch (err) {
       toast("Import xatosi: " + err.message, "error");
@@ -1715,9 +1715,11 @@ function resetAll() {
   lsDel(KEY_BRANDS);
   lsDel(KEY_CITIES);
   lsDel(KEY_SETTINGS);
+  lsDel(KEY_PRODUCTS);
   renderBrandsTable();
   renderShopsGrid();
   loadSettingsForm();
+  renderProductsGrid();
   renderStats();
   renderStorageInfo();
   toast("Barcha o\u02BCzgartirishlar standartga qaytarildi");
@@ -1857,14 +1859,18 @@ function saveProductModal() {
   var name = (el("pm-name").value || "").trim();
   if (!name) { toast("Mahsulot nomini kiriting", "error"); return; }
   var prods = getProducts();
+  var existing = editingProductId ? prods.find(function(x) { return x.id === editingProductId; }) : null;
   var p = {
-    id:    editingProductId || genProductId(),
-    name:  name,
-    price: (el("pm-price").value || "").trim(),
-    unit:  (el("pm-unit").value  || "").trim(),
-    brand: (el("pm-brand").value || "").trim(),
-    desc:  (el("pm-desc").value  || "").trim(),
-    img:   tempProductImg || ""
+    id:       editingProductId || genProductId(),
+    name:     name,
+    price:    (el("pm-price").value || "").trim(),
+    unit:     (el("pm-unit").value  || "").trim(),
+    brand:    (el("pm-brand").value || "").trim(),
+    desc:     (el("pm-desc").value  || "").trim(),
+    img:      tempProductImg || "",
+    icon:     (existing && existing.icon) ? existing.icon : "📦",
+    tag:      (existing && existing.tag)  ? existing.tag  : "",
+    featured: existing ? (existing.featured || false) : (prods.length === 0)
   };
   if (editingProductId) {
     var idx = prods.findIndex(function(x) { return x.id === editingProductId; });

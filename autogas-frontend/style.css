@@ -23,12 +23,8 @@ body {
 }
 
 /* =========================================================
-   SMOOTH SCROLL VA FOCUS
+   FOCUS
    ========================================================= */
-html {
-    scroll-behavior: smooth;
-}
-
 *:focus {
     outline: 2px solid var(--secondary-orange);
     outline-offset: 2px;
@@ -234,32 +230,6 @@ html {
 }
 
 /* =========================================================
-   PARTNERS LOGOLAR
-   ========================================================= */
-.partner-logo {
-    max-width: 100%;
-    filter: grayscale(100%);
-    opacity: 0.6;
-    transition: all 0.4s ease;
-}
-
-/* Karta (group) hover qilinganda rasm rangli va katta bo'ladi */
-.group:hover .partner-logo {
-    filter: grayscale(0%);
-    opacity: 1;
-    transform: scale(1.1);
-}
-
-/* Rasm yuklanmasa matn ko'rsatish */
-.partner-logo-fallback {
-    display: none;
-    font-size: 1.5rem;
-    font-weight: 800;
-    color: var(--primary-blue);
-    letter-spacing: 2px;
-}
-
-/* =========================================================
    FAQ ACCORDION
    ========================================================= */
 .faq-item .faq-question {
@@ -372,8 +342,8 @@ html {
     border-radius: 20px;
 }
 
-.city-marker {
-    transition: opacity 0.2s;
+.city-pin {
+    cursor: pointer;
 }
 
 .city-info-card {
@@ -987,177 +957,11 @@ html {
     .daily-featured { min-height: 280px; }
 }
 
-/* =========================================================
-   MAP TABS
-   ========================================================= */
-
-.map-tab-wrap {
-    display: flex;
-    justify-content: center;
-    gap: 8px;
-    margin-bottom: 24px;
-}
-.map-tab-btn {
-    padding: 10px 26px;
-    border: 2px solid #e2e8f0;
-    border-radius: 28px;
-    background: white;
-    color: #64748b;
-    font-size: 0.88rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    font-family: inherit;
-}
-.map-tab-btn:hover:not(.active) {
-    border-color: var(--primary-blue);
-    color: var(--primary-blue);
-}
-.map-tab-btn.active {
-    background: var(--primary-blue);
-    border-color: var(--primary-blue);
-    color: white;
-}
-
-
-/* SVG xaritalar */
-#uzbek-map,
-#uzbek-map-big {
+/* SVG xarita */
+#uzbek-map {
     display: block;
 }
 
 @media (max-width: 767px) {
-    #uzbek-map     { height: 300px !important; }
-    #uzbek-map-big { height: 380px !important; }
-}
-
-/* =========================================================
-   WORLD MAP PANE
-   ========================================================= */
-
-.world-layout {
-    display: grid;
-    grid-template-columns: 1fr 290px;
-    gap: 24px;
-    align-items: start;
-}
-
-.world-map-wrap {
-    border-radius: 18px;
-    overflow: hidden;
-    box-shadow: 0 6px 32px rgba(27,91,181,0.10);
-    border: 1px solid #e2e8f0;
-}
-.world-map-wrap svg {
-    display: block;
-    width: 100%;
-    height: auto;
-}
-
-/* Hover effect on clickable country areas */
-.wm-country {
-    transition: opacity 0.2s;
-}
-.wm-country:hover {
-    opacity: 0.75 !important;
-}
-.wm-country.selected-country {
-    stroke-width: 2.5 !important;
-    filter: drop-shadow(0 0 6px currentColor);
-}
-
-.world-brands-panel {
-    background: white;
-    border: 1.5px solid #e2e8f0;
-    border-radius: 18px;
-    overflow: hidden;
-    max-height: 520px;
-    overflow-y: auto;
-    position: sticky;
-    top: 80px;
-}
-
-.world-brands-empty {
-    padding: 40px 20px;
-    text-align: center;
-}
-.wb-empty-icon { font-size: 2.8rem; margin-bottom: 14px; }
-.wb-empty-title {
-    font-size: 0.92rem;
-    font-weight: 700;
-    color: #374151;
-    margin-bottom: 6px;
-}
-.wb-empty-hint { font-size: 0.78rem; color: #94a3b8; }
-
-.wb-country-header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 16px 18px;
-    border-bottom: 1px solid #f1f5f9;
-    background: #fafbfc;
-    position: sticky;
-    top: 0;
-    z-index: 2;
-}
-.wb-flag { font-size: 1.5rem; }
-.wb-country-name {
-    font-size: 0.95rem;
-    font-weight: 800;
-    color: #1e293b;
-}
-.wb-brand-count {
-    margin-left: auto;
-    font-size: 0.7rem;
-    font-weight: 700;
-    padding: 2px 8px;
-    background: #eff6ff;
-    color: var(--primary-blue);
-    border-radius: 20px;
-}
-.wb-brand-list { padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; }
-.wb-brand-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 12px;
-    border: 1px solid #f1f5f9;
-    border-radius: 12px;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-.wb-brand-item:hover {
-    border-color: #bfdbfe;
-    background: #f8fbff;
-}
-.wb-brand-lm {
-    width: 40px;
-    height: 40px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.68rem;
-    font-weight: 900;
-    flex-shrink: 0;
-}
-.wb-brand-info { flex: 1; min-width: 0; }
-.wb-brand-name {
-    font-size: 0.82rem;
-    font-weight: 700;
-    color: #1e293b;
-    margin-bottom: 2px;
-}
-.wb-brand-product {
-    font-size: 0.7rem;
-    color: #94a3b8;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-@media (max-width: 900px) {
-    .world-layout { grid-template-columns: 1fr; }
-    .world-brands-panel { position: static; max-height: 320px; }
+    #uzbek-map { height: 300px !important; }
 }
