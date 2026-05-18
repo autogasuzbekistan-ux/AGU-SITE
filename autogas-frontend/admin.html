@@ -1100,11 +1100,30 @@ function ls(key, fallback) {
 
 function lsSet(key, value) {
   try { localStorage.setItem(key, JSON.stringify(value)); return true; }
-  catch (e) { toast("localStorage xatosi: " + e.message, "error"); return false; }
+  catch (e) {
+    toast("Xotira toʼldi! Katta rasmlarni qoʼshmaslik yoki eski maʼlumotlarni oʼchiring.", "error");
+    return false;
+  }
 }
 
 function lsDel(key) {
   try { localStorage.removeItem(key); } catch (e) {}
+}
+
+// Rasmni siqish: canvas orqali o'lcham va sifat kamaytirish
+function compressImage(dataUrl, maxWidth, quality, cb) {
+  var img = new Image();
+  img.onload = function() {
+    var w = img.naturalWidth;
+    var h = img.naturalHeight;
+    if (w > maxWidth) { h = Math.round(h * maxWidth / w); w = maxWidth; }
+    var c = document.createElement("canvas");
+    c.width = w; c.height = h;
+    c.getContext("2d").drawImage(img, 0, 0, w, h);
+    cb(c.toDataURL("image/jpeg", quality));
+  };
+  img.onerror = function() { cb(dataUrl); };
+  img.src = dataUrl;
 }
 
 function getPassword() {
@@ -1388,12 +1407,14 @@ function bindBillboardButtons() {
     if (!file) return;
     var reader = new FileReader();
     reader.onload = function(ev) {
-      tempSlideImg = ev.target.result;
-      var prev = document.getElementById("sl-img-preview");
-      var rmv  = document.getElementById("sl-remove-img-btn");
-      var ph   = document.getElementById("sl-upload-ph");
-      prev.src = tempSlideImg; prev.style.display = "";
-      rmv.style.display = ""; ph.style.display = "none";
+      compressImage(ev.target.result, 1280, 0.72, function(compressed) {
+        tempSlideImg = compressed;
+        var prev = document.getElementById("sl-img-preview");
+        var rmv  = document.getElementById("sl-remove-img-btn");
+        var ph   = document.getElementById("sl-upload-ph");
+        prev.src = tempSlideImg; prev.style.display = "";
+        rmv.style.display = ""; ph.style.display = "none";
+      });
     };
     reader.readAsDataURL(file);
   });
@@ -1740,13 +1761,12 @@ function handleLogoFile(file) {
   if (!file.type.startsWith("image/")) {
     toast("Faqat rasm fayllari qabul qilinadi", "error"); return;
   }
-  if (file.size > 2 * 1024 * 1024) {
-    toast("Fayl hajmi 2 MB dan oshmasin", "error"); return;
-  }
   var reader = new FileReader();
   reader.onload = function(e) {
-    tempLogo = e.target.result;
-    refreshLogoPreview();
+    compressImage(e.target.result, 320, 0.82, function(compressed) {
+      tempLogo = compressed;
+      refreshLogoPreview();
+    });
   };
   reader.readAsDataURL(file);
 }
@@ -2183,13 +2203,12 @@ function handleProductImgFile(file) {
   if (!file.type.startsWith("image/")) {
     toast("Faqat rasm fayllari qabul qilinadi", "error"); return;
   }
-  if (file.size > 2 * 1024 * 1024) {
-    toast("Fayl hajmi 2 MB dan oshmasin", "error"); return;
-  }
   var reader = new FileReader();
   reader.onload = function(e) {
-    tempProductImg = e.target.result;
-    refreshProductImgPreview();
+    compressImage(e.target.result, 800, 0.75, function(compressed) {
+      tempProductImg = compressed;
+      refreshProductImgPreview();
+    });
   };
   reader.readAsDataURL(file);
 }
