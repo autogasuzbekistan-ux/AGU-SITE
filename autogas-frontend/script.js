@@ -493,8 +493,12 @@ function buildBrandsCarousel() {
         activeBrands.forEach(function(p) {
             var item = document.createElement('div');
             item.className = 'bq-item';
-            item.innerHTML = '<span class="bq-flag">' + p.flag + '</span>'
-                           + '<span class="bq-name">' + p.name + '</span>';
+
+            var visual = p.logo
+                ? '<img src="' + p.logo + '" class="bq-logo" alt="' + p.name + '">'
+                : '<span class="bq-flag">' + p.flag + '</span>';
+
+            item.innerHTML = visual + '<span class="bq-name">' + p.name + '</span>';
             track.appendChild(item);
 
             var sep = document.createElement('span');

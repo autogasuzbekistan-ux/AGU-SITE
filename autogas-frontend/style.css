@@ -426,6 +426,16 @@ body {
 
 .bq-flag { font-size: 1.1rem; line-height: 1; }
 
+.bq-logo {
+    width: 36px;
+    height: 36px;
+    object-fit: contain;
+    border-radius: 8px;
+    border: 1px solid #f1f5f9;
+    background: #fff;
+    flex-shrink: 0;
+}
+
 .bq-name {
     font-size: .9rem;
     font-weight: 800;
