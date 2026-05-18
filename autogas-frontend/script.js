@@ -718,6 +718,72 @@ function _getActiveCitiesSvg() {
     } catch (e) { return CITIES.slice(); }
 }
 
+function buildCityCards() {
+    var grid = document.getElementById('city-cards-grid');
+    if (!grid) return;
+
+    var cities = getActiveCities();
+    var hq   = cities.find(function(c) { return c.hq; });
+    var rest = cities.filter(function(c) { return !c.hq; });
+
+    function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+    function hqHtml(c) {
+        var svcs = (c.services || []).map(function(s) {
+            return '<span style="display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.18);'
+                 + 'border-radius:20px;padding:3px 11px;font-size:.75rem;font-weight:600;color:#fff;">'
+                 + esc(s) + '</span>';
+        }).join('');
+        return '<div class="cc-hq">'
+            + '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;">'
+            +   '<div>'
+            +     '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">'
+            +       '<span style="background:rgba(255,255,255,.25);border-radius:8px;padding:3px 10px;'
+            +              'font-size:.7rem;font-weight:800;color:#fff;letter-spacing:.5px;">HQ</span>'
+            +       '<span style="background:rgba(255,255,255,.25);border-radius:8px;padding:3px 10px;'
+            +              'font-size:.7rem;font-weight:800;color:#fff;letter-spacing:.5px;">SERVICE</span>'
+            +     '</div>'
+            +     '<div style="font-size:1.35rem;font-weight:900;color:#fff;margin-bottom:4px;">' + esc(c.name) + '</div>'
+            +     '<div style="font-size:.85rem;color:rgba(255,255,255,.85);margin-bottom:2px;">&#128222; ' + esc(c.phone || '') + '</div>'
+            +     '<div style="font-size:.8rem;color:rgba(255,255,255,.75);">&#128205; ' + esc(c.address || '') + '</div>'
+            +   '</div>'
+            +   '<div style="display:flex;flex-wrap:wrap;gap:6px;align-items:flex-start;">' + svcs + '</div>'
+            + '</div>'
+            + '</div>';
+    }
+
+    function cardHtml(c) {
+        var shops = c.shops || 1;
+        return '<div class="cc-card" data-name="' + esc(c.name).toLowerCase() + '">'
+            + '<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">'
+            +   '<span style="width:10px;height:10px;border-radius:50%;background:#3b82f6;'
+            +          'flex-shrink:0;box-shadow:0 0 0 3px #dbeafe;"></span>'
+            +   '<span style="font-size:.98rem;font-weight:800;color:#0f172a;">' + esc(c.name) + '</span>'
+            +   '<span style="margin-left:auto;font-size:.68rem;font-weight:700;padding:2px 9px;'
+            +          'background:#eff6ff;color:#1b5bb5;border-radius:20px;">'
+            +     shops + ' do\'kon'
+            +   '</span>'
+            + '</div>'
+            + '<div style="font-size:.82rem;color:#374151;margin-bottom:4px;">&#128222; ' + esc(c.phone || '') + '</div>'
+            + '<div style="font-size:.78rem;color:#64748b;">&#128205; ' + esc(c.address || '') + '</div>'
+            + '</div>';
+    }
+
+    grid.innerHTML = (hq ? hqHtml(hq) : '')
+        + '<div class="cc-grid">' + rest.map(cardHtml).join('') + '</div>';
+
+    var searchInp = document.getElementById('city-search');
+    if (searchInp) {
+        searchInp.addEventListener('input', function() {
+            var q = this.value.toLowerCase().trim();
+            var cards = grid.querySelectorAll('.cc-card');
+            cards.forEach(function(card) {
+                card.style.display = (!q || card.dataset.name.includes(q)) ? '' : 'none';
+            });
+        });
+    }
+}
+
 function buildSvgMap(svgId, cardId) {
     var svgEl = document.getElementById(svgId);
     var markersG = svgEl && svgEl.querySelector('g[id^="city-markers"]');
@@ -916,13 +982,7 @@ if (document.getElementById('daily-products-grid')) {
 
 (function() {
     function initMaps() {
-        if (document.getElementById('uzbek-map')) buildSvgMap('uzbek-map', 'city-card');
-        buildSvgPanelList();
-        var closeBtn = document.getElementById('city-card-close');
-        if (closeBtn) closeBtn.addEventListener('click', function() {
-            var c = document.getElementById('city-card');
-            if (c) c.classList.add('hidden');
-        });
+        buildCityCards();
     }
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', initMaps);
