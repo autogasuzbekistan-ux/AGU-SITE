@@ -2,7 +2,7 @@
   "name": "agu-site",
   "version": "1.0.0",
   "scripts": {
-    "start": "serve autogas-frontend -l $PORT"
+    "start": "serve autogas-frontend --listen tcp://0.0.0.0:${PORT:-3000} --no-clipboard"
   },
   "dependencies": {
     "serve": "^14.2.3"
