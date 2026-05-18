@@ -485,28 +485,22 @@ function getActiveCities() {  // legacy alias — kept for external compatibilit
 }
 
 function buildBrandsCarousel() {
-    const track = document.getElementById('brands-track');
+    var track = document.getElementById('brands-track');
     if (!track) return;
-    const activeBrands = getActiveBrands();
+    var activeBrands = getActiveBrands();
 
-    // Render cards twice for seamless infinite loop
-    [0, 1].forEach(() => {
-        activeBrands.forEach(p => {
-            const card = document.createElement('div');
-            card.className = 'brand-card';
-            const initials = p.name.replace(/[^A-Z0-9]/g, '').substring(0, 3) || p.name.substring(0, 3).toUpperCase();
-            const logoHtml = p.logo
-                ? `<img src="${p.logo}" style="width:96px;height:96px;object-fit:contain;border-radius:14px;margin:0 auto 10px;display:block;" alt="${p.name}">`
-                : `<div class="brand-lm" style="background:linear-gradient(135deg,${p.countryColor}1a 0%,${p.countryColor}33 100%);"><span style="color:${p.countryColor};font-weight:900;font-size:0.9rem;letter-spacing:-0.3px;">${initials}</span></div>`;
-            card.innerHTML = `
-                ${logoHtml}
-                <span class="brand-card-flag">${p.flag}</span>
-                <div class="brand-card-name">${p.name}</div>
-                <span class="brand-card-country" style="background:${p.countryColor};">${p.country}</span>
-                <div class="brand-card-products">${p.products[0]}</div>
-            `;
-            card.addEventListener('click', () => openBrandModal(p));
-            track.appendChild(card);
+    [0, 1].forEach(function() {
+        activeBrands.forEach(function(p) {
+            var item = document.createElement('div');
+            item.className = 'bq-item';
+            item.innerHTML = '<span class="bq-flag">' + p.flag + '</span>'
+                           + '<span class="bq-name">' + p.name + '</span>';
+            track.appendChild(item);
+
+            var sep = document.createElement('span');
+            sep.className = 'bq-sep';
+            sep.textContent = '·';
+            track.appendChild(sep);
         });
     });
 }
