@@ -651,14 +651,24 @@ const DEFAULT_DAILY_PRODUCTS = [
 function renderDailyProducts() {
     const grid = document.getElementById('daily-products-grid');
     if (!grid) return;
+    const section = document.getElementById('daily-products');
 
+    const raw = localStorage.getItem('agu_daily_products');
     let products;
-    try {
-        products = JSON.parse(localStorage.getItem('agu_daily_products')) || DEFAULT_DAILY_PRODUCTS;
-    } catch (e) {
+    if (raw !== null) {
+        try { products = JSON.parse(raw); } catch(e) { products = []; }
+    } else {
         products = DEFAULT_DAILY_PRODUCTS;
     }
-    if (!products || !products.length) { grid.innerHTML = ''; return; }
+
+    // Admin barcha mahsulotlarni o'chirgan — bo'limni yashiramiz
+    if (!products || !products.length) {
+        if (section) section.style.display = 'none';
+        grid.innerHTML = '';
+        return;
+    }
+    if (section) section.style.display = '';
+
 
     const featured = products.find(p => p.featured) || products[0];
     const rest     = products.filter(p => p !== featured).slice(0, 3);
@@ -977,6 +987,13 @@ function buildSvgPanelList() {
 if (document.getElementById('daily-products-grid')) {
     renderDailyProducts();
 }
+
+// Admin boshqa tabda mahsulot o'zgartirganda frontend avtomatik yangilanadi
+window.addEventListener('storage', function(e) {
+    if (e.key === 'agu_daily_products') {
+        renderDailyProducts();
+    }
+});
 
 (function() {
     function initMaps() {

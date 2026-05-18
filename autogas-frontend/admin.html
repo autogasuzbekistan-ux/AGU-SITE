@@ -1745,9 +1745,10 @@ var tempProductImg = null;
 
 function getProducts() {
   var saved = ls(KEY_PRODUCTS, null);
-  if (saved && saved.length) return saved;
-  // fallback to DEFAULT_DAILY_PRODUCTS from script.js
-  if (typeof DEFAULT_DAILY_PRODUCTS !== "undefined") return DEFAULT_DAILY_PRODUCTS.slice();
+  // Agar kalit mavjud bo'lsa (hatto bo'sh massiv bo'lsa ham) — shuni ishlat
+  if (saved !== null) return saved;
+  // Kalit umuman yo'q — birinchi kirishda default mahsulotlarni ko'rsat
+  if (typeof DEFAULT_DAILY_PRODUCTS !== 'undefined') return DEFAULT_DAILY_PRODUCTS.slice();
   return [];
 }
 
