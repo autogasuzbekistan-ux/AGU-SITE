@@ -731,6 +731,10 @@ tbody tr:hover td { background: #fafbfc; }
                   <input type="tel" id="s-phone" placeholder="+998 87 001-07-77">
                 </div>
                 <div class="field">
+                  <label>Qo&rsquo;shimcha telefon</label>
+                  <input type="tel" id="s-phone2" placeholder="+998 87 002-07-77">
+                </div>
+                <div class="field">
                   <label>Telegram username</label>
                   <input type="text" id="s-telegram" placeholder="@AutoGas_Uzbekistan">
                 </div>
@@ -1934,6 +1938,7 @@ function bindShopsButtons() {
 
 var DEFAULT_SETTINGS = {
   phone:     "+998 (87) 001-07-77",
+  phone2:    "+998 (87) 002-07-77",
   telegram:  "@AutoGas_Uzbekistan",
   whatsapp:  "+998 87 001-07-77",
   instagram: "@autogasuzbekistan",
@@ -1944,6 +1949,7 @@ function loadSettingsForm() {
   var s = ls(KEY_SETTINGS, DEFAULT_SETTINGS);
   var el = function(id) { return document.getElementById(id); };
   if (el("s-phone"))     el("s-phone").value     = s.phone     || DEFAULT_SETTINGS.phone;
+  if (el("s-phone2"))    el("s-phone2").value    = s.phone2    || DEFAULT_SETTINGS.phone2;
   if (el("s-telegram"))  el("s-telegram").value  = s.telegram  || DEFAULT_SETTINGS.telegram;
   if (el("s-whatsapp"))  el("s-whatsapp").value  = s.whatsapp  || DEFAULT_SETTINGS.whatsapp;
   if (el("s-instagram")) el("s-instagram").value = s.instagram || DEFAULT_SETTINGS.instagram;
@@ -1954,6 +1960,7 @@ function saveSettings() {
   var el = function(id) { return document.getElementById(id); };
   var s = {
     phone:     (el("s-phone")     ? el("s-phone").value.trim()     : ""),
+    phone2:    (el("s-phone2")    ? el("s-phone2").value.trim()    : ""),
     telegram:  (el("s-telegram")  ? el("s-telegram").value.trim()  : ""),
     whatsapp:  (el("s-whatsapp")  ? el("s-whatsapp").value.trim()  : ""),
     instagram: (el("s-instagram") ? el("s-instagram").value.trim() : ""),

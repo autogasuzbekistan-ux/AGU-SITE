@@ -981,6 +981,38 @@ function buildSvgPanelList() {
 }
 
 // =========================================================
+// SOZLAMALAR — CONTACT INFO SYNC
+// =========================================================
+
+function applySettings() {
+    var raw = localStorage.getItem('agu_settings');
+    if (!raw) return;
+    var s;
+    try { s = JSON.parse(raw); } catch(e) { return; }
+
+    function tel(num) { return 'tel:+' + num.replace(/\D/g, '').replace(/^998/, '998'); }
+    function tgHandle(t) { return (t || '').replace(/^@/, ''); }
+
+    var addr = document.getElementById('cs-address');
+    if (addr && s.address) addr.textContent = s.address;
+
+    var p1 = document.getElementById('cs-phone1');
+    if (p1 && s.phone) { p1.textContent = s.phone; p1.href = tel(s.phone); }
+
+    var p2 = document.getElementById('cs-phone2');
+    if (p2) {
+        if (s.phone2) { p2.textContent = s.phone2; p2.href = tel(s.phone2); p2.style.display = ''; }
+        else p2.style.display = 'none';
+    }
+
+    var tg = document.getElementById('cs-telegram');
+    if (tg && s.telegram) {
+        tg.textContent = s.telegram.startsWith('@') ? s.telegram : '@' + s.telegram;
+        tg.href = 'https://t.me/' + tgHandle(s.telegram);
+    }
+}
+
+// =========================================================
 // BILLBOARD / PROMO SLIDER
 // =========================================================
 
@@ -1114,6 +1146,9 @@ if (document.getElementById('billboard')) {
     renderBillboard();
 }
 
+// Kontakt ma'lumotlarini localStorage dan yuklash
+applySettings();
+
 // Admin boshqa tabda o'zgartirsa — frontend avtomatik yangilanadi
 window.addEventListener('storage', function(e) {
     if (e.key === 'agu_daily_products') {
@@ -1121,6 +1156,12 @@ window.addEventListener('storage', function(e) {
     }
     if (e.key === 'agu_billboard') {
         renderBillboard();
+    }
+    if (e.key === 'agu_settings') {
+        applySettings();
+    }
+    if (e.key === 'agu_cities_override') {
+        buildCityCards();
     }
 });
 
