@@ -82,9 +82,9 @@ body {
 
 .registered-loader {
     font-size: 28px;
-    vertical-align: top;
+    vertical-align: super;
     line-height: 1;
-    margin-top: 8px;
+    margin-top: 0;
     color: #1B3A6B;
     display: inline-block;
     font-weight: 400;
@@ -105,8 +105,7 @@ body {
     font-family: 'Arial Black', 'Arial Bold', Arial, sans-serif;
     font-size: 2.4rem;
     font-weight: 900;
-    display: inline-flex;
-    align-items: baseline;
+    display: inline-block;
     line-height: 1;
     letter-spacing: 1px;
 }
@@ -119,7 +118,7 @@ body {
     font-size: 0.6rem;
     font-weight: 400;
     color: #1B3A6B;
-    margin-top: -2px;
+    margin-top: 1px;
     display: block;
     white-space: nowrap;
     letter-spacing: 2px;
@@ -128,19 +127,15 @@ body {
 }
 
 .registered-main {
-    font-size: 0.62rem;
-    vertical-align: top;
-    line-height: 1;
-    margin-top: 0.22rem;
+    font-size: 0.52em;
+    vertical-align: super;
     color: #1B3A6B;
-    display: inline-block;
     font-weight: 400;
     font-family: Arial, sans-serif;
 }
 
 /* Mobile logo */
 .logo-container-main.mobile .agu-logo-main { font-size: 1.9rem; }
-.logo-container-main.mobile .registered-main { font-size: 0.5rem; }
 .logo-container-main.mobile .subtitle-main { font-size: 0.5rem; letter-spacing: 1.5px; }
 
 /* Footer logo */
@@ -156,10 +151,16 @@ body {
 .logo-footer-bb-inner {
     background: #1B5BB5;
     border-radius: 10px;
-    padding: 8px 18px 6px;
+    padding: 8px 18px 10px;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    line-height: 1;
+}
+
+.logo-footer-bb-top {
     display: inline-flex;
     align-items: baseline;
-    line-height: 1;
 }
 
 .logo-footer-bb-text {
@@ -182,11 +183,11 @@ body {
 
 .logo-footer-bb-sub {
     font-family: 'Helvetica Neue', Arial, sans-serif;
-    font-size: 0.6rem;
+    font-size: 0.55rem;
     font-weight: 700;
     color: #fff;
     letter-spacing: 1.5px;
-    margin-top: 5px;
+    margin-top: 4px;
     text-align: center;
     white-space: nowrap;
 }
