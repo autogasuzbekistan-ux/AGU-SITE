@@ -37,13 +37,12 @@ body {
 .loading-screen {
     position: fixed;
     inset: 0;
-    background: #ffffff;
+    background: #1B5BB5;
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
     z-index: 9999;
-    /* transition GSAP tomonidan boshqariladi */
 }
 
 .logo-container-loader {
@@ -61,16 +60,16 @@ body {
     letter-spacing: 2px;
 }
 
-.agu-logo-loader .red-part  { color: #CC2229; }
-.agu-logo-loader .blue-part { color: #1B3A6B; }
+.agu-logo-loader .red-part  { color: #ffffff; }
+.agu-logo-loader .blue-part { color: #ffffff; }
 
 .subtitle-loader {
-    font-family: 'Helvetica Neue', Arial, sans-serif;
-    font-size: 24px;
-    font-weight: 400;
-    color: #1B3A6B;
-    letter-spacing: 4px;
-    margin-top: -15px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+    font-size: 20px;
+    font-weight: 600;
+    color: #ffffff;
+    letter-spacing: 3px;
+    margin-top: 8px;
     display: block;
     white-space: nowrap;
     min-height: 32px;
@@ -84,7 +83,7 @@ body {
 .registered-loader {
     font-size: 26px;
     vertical-align: top;
-    color: #1B3A6B;
+    color: #ffffff;
     display: inline-block;
     font-weight: 400;
     font-family: Arial, sans-serif;
