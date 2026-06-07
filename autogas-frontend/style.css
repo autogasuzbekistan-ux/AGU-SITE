@@ -52,20 +52,23 @@ body {
 }
 
 .agu-logo-loader {
-    font-family: Arial, sans-serif;
+    font-family: 'Arial Black', Arial, sans-serif;
     font-size: 90px;
-    font-weight: 800;
-    display: inline-block;
+    font-weight: 900;
+    display: inline-flex;
+    align-items: baseline;
+    letter-spacing: 2px;
 }
 
-.agu-logo-loader .red-part { color: #E30613; }
-.agu-logo-loader .blue-part { color: #0B3373; }
+.agu-logo-loader .red-part  { color: #CC2229; }
+.agu-logo-loader .blue-part { color: #1B3A6B; }
 
 .subtitle-loader {
     font-family: 'Helvetica Neue', Arial, sans-serif;
     font-size: 24px;
-    font-weight: 700;
-    color: #0B3373;
+    font-weight: 400;
+    color: #1B3A6B;
+    letter-spacing: 4px;
     margin-top: -15px;
     display: block;
     white-space: nowrap;
@@ -78,53 +81,67 @@ body {
 }
 
 .registered-loader {
-    font-size: 40px;
+    font-size: 28px;
     vertical-align: top;
     line-height: 1;
-    color: #0B3373;
+    margin-top: 8px;
+    color: #1B3A6B;
     display: inline-block;
+    font-weight: 400;
+    font-family: Arial, sans-serif;
 }
 
 /* =========================================================
    LOGO (HEADER VA FOOTER)
    ========================================================= */
 .logo-container-main {
-    text-align: left;
+    text-align: center;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .agu-logo-main {
-    font-family: Arial, sans-serif;
-    font-size: 2.25rem;
-    font-weight: 800;
-    display: inline-block;
+    font-family: 'Arial Black', 'Arial Bold', Arial, sans-serif;
+    font-size: 2.4rem;
+    font-weight: 900;
+    display: inline-flex;
+    align-items: baseline;
     line-height: 1;
+    letter-spacing: 1px;
 }
 
-.agu-logo-main .red-part { color: var(--accent-red); }
-.agu-logo-main .blue-part { color: #0B3373; }
+.agu-logo-main .red-part  { color: #CC2229; }
+.agu-logo-main .blue-part { color: #1B3A6B; }
 
 .subtitle-main {
     font-family: 'Helvetica Neue', Arial, sans-serif;
-    font-size: 0.65rem;
-    font-weight: 700;
-    color: #0B3373;
-    margin-top: -5px;
+    font-size: 0.6rem;
+    font-weight: 400;
+    color: #1B3A6B;
+    margin-top: -2px;
     display: block;
     white-space: nowrap;
-    letter-spacing: 0.5px;
+    letter-spacing: 2px;
+    text-align: center;
+    text-transform: none;
 }
 
 .registered-main {
-    font-size: 1rem;
+    font-size: 0.62rem;
     vertical-align: top;
     line-height: 1;
-    color: #0B3373;
+    margin-top: 0.22rem;
+    color: #1B3A6B;
     display: inline-block;
+    font-weight: 400;
+    font-family: Arial, sans-serif;
 }
 
 /* Mobile logo */
-.logo-container-main.mobile .agu-logo-main { font-size: 1.875rem; }
-.logo-container-main.mobile .registered-main { font-size: 0.875rem; }
+.logo-container-main.mobile .agu-logo-main { font-size: 1.9rem; }
+.logo-container-main.mobile .registered-main { font-size: 0.5rem; }
+.logo-container-main.mobile .subtitle-main { font-size: 0.5rem; letter-spacing: 1.5px; }
 
 /* Footer logo */
 .logo-container-main.footer .subtitle-main { color: #a0aec0; }
