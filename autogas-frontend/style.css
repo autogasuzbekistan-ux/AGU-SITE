@@ -56,8 +56,8 @@ body {
     font-family: 'Arial Black', Arial, sans-serif;
     font-size: 90px;
     font-weight: 900;
-    display: inline-flex;
-    align-items: baseline;
+    display: inline-block;
+    line-height: 1;
     letter-spacing: 2px;
 }
 
