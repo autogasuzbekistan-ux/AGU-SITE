@@ -83,13 +83,12 @@ body {
 
 .registered-loader {
     font-size: 26px;
-    position: relative;
-    top: -38px;
+    vertical-align: top;
     color: #1B3A6B;
     display: inline-block;
     font-weight: 400;
     font-family: Arial, sans-serif;
-    line-height: 0;
+    line-height: 1;
 }
 
 /* =========================================================

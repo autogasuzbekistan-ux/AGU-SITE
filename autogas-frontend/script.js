@@ -31,7 +31,7 @@ function runLoadingAnimation() {
     // AG chapdan, U o'ngdan keladi
       .from('#ag-loader', { x: -50, opacity: 0, duration: 0.55, ease: 'back.out(2)' })
       .from('#u-loader',  { x:  50, opacity: 0, duration: 0.55, ease: 'back.out(2)' }, '-=0.35')
-      .from('#reg-loader',{ scale: 0, opacity: 0, duration: 0.3, ease: 'back.out(3)' }, '-=0.15')
+      .fromTo('#reg-loader',{ scale: 0, opacity: 0, y: 0 },{ scale: 1, opacity: 1, y: -38, duration: 0.3, ease: 'back.out(2)' }, '-=0.15')
     // Subtitle pastdan chiqadi
       .fromTo(subtitle, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' }, '-=0.1')
     // Biroz turadi, keyin silliq yo'qoladi
