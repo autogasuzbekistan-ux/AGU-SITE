@@ -753,6 +753,24 @@ tbody tr:hover td { background: #fafbfc; }
                   <input type="text" id="s-address">
                 </div>
               </div>
+              <div class="form-row cols-2">
+                <div class="field">
+                  <label>Ish kunlari</label>
+                  <input type="text" id="s-hours-days1" placeholder="Dushanba – Shanba">
+                </div>
+                <div class="field">
+                  <label>Ish saatlari</label>
+                  <input type="text" id="s-hours-time1" placeholder="08:00 – 18:00">
+                </div>
+                <div class="field">
+                  <label>Dam olish kuni</label>
+                  <input type="text" id="s-hours-days2" placeholder="Yakshanba">
+                </div>
+                <div class="field">
+                  <label>Dam olish vaqti</label>
+                  <input type="text" id="s-hours-time2" placeholder="Dam olish kuni">
+                </div>
+              </div>
               <div style="text-align:right;">
                 <button class="btn btn-primary" id="save-settings-btn">
                   &#128190; Sozlamalarni saqlash
@@ -1937,34 +1955,46 @@ function bindShopsButtons() {
 // ── SETTINGS ─────────────────────────────────────────────────
 
 var DEFAULT_SETTINGS = {
-  phone:     "+998 (87) 001-07-77",
-  phone2:    "+998 (87) 002-07-77",
-  telegram:  "@AutoGas_Uzbekistan",
-  whatsapp:  "+998 87 001-07-77",
-  instagram: "@autogasuzbekistan",
-  address:   "Qo\u02BCqon shahar, Burkchilik ko\u02BChasi"
+  phone:        "+998 (87) 001-07-77",
+  phone2:       "+998 (87) 002-07-77",
+  telegram:     "@AutoGas_Uzbekistan",
+  whatsapp:     "",
+  instagram:    "",
+  address:      "Qo\u02BCqon shahar, Burkchilik ko\u02BCchasi",
+  hoursDays1:   "Dushanba \u2013 Shanba",
+  hoursTime1:   "08:00 \u2013 18:00",
+  hoursDays2:   "Yakshanba",
+  hoursTime2:   "Dam olish kuni"
 };
 
 function loadSettingsForm() {
   var s = ls(KEY_SETTINGS, DEFAULT_SETTINGS);
   var el = function(id) { return document.getElementById(id); };
-  if (el("s-phone"))     el("s-phone").value     = s.phone     || DEFAULT_SETTINGS.phone;
-  if (el("s-phone2"))    el("s-phone2").value    = s.phone2    || DEFAULT_SETTINGS.phone2;
-  if (el("s-telegram"))  el("s-telegram").value  = s.telegram  || DEFAULT_SETTINGS.telegram;
-  if (el("s-whatsapp"))  el("s-whatsapp").value  = s.whatsapp  || DEFAULT_SETTINGS.whatsapp;
-  if (el("s-instagram")) el("s-instagram").value = s.instagram || DEFAULT_SETTINGS.instagram;
-  if (el("s-address"))   el("s-address").value   = s.address   || DEFAULT_SETTINGS.address;
+  if (el("s-phone"))        el("s-phone").value        = s.phone        || DEFAULT_SETTINGS.phone;
+  if (el("s-phone2"))       el("s-phone2").value       = s.phone2       || DEFAULT_SETTINGS.phone2;
+  if (el("s-telegram"))     el("s-telegram").value     = s.telegram     || DEFAULT_SETTINGS.telegram;
+  if (el("s-whatsapp"))     el("s-whatsapp").value     = s.whatsapp     || DEFAULT_SETTINGS.whatsapp;
+  if (el("s-instagram"))    el("s-instagram").value    = s.instagram    || DEFAULT_SETTINGS.instagram;
+  if (el("s-address"))      el("s-address").value      = s.address      || DEFAULT_SETTINGS.address;
+  if (el("s-hours-days1"))  el("s-hours-days1").value  = s.hoursDays1   || DEFAULT_SETTINGS.hoursDays1;
+  if (el("s-hours-time1"))  el("s-hours-time1").value  = s.hoursTime1   || DEFAULT_SETTINGS.hoursTime1;
+  if (el("s-hours-days2"))  el("s-hours-days2").value  = s.hoursDays2   || DEFAULT_SETTINGS.hoursDays2;
+  if (el("s-hours-time2"))  el("s-hours-time2").value  = s.hoursTime2   || DEFAULT_SETTINGS.hoursTime2;
 }
 
 function saveSettings() {
   var el = function(id) { return document.getElementById(id); };
   var s = {
-    phone:     (el("s-phone")     ? el("s-phone").value.trim()     : ""),
-    phone2:    (el("s-phone2")    ? el("s-phone2").value.trim()    : ""),
-    telegram:  (el("s-telegram")  ? el("s-telegram").value.trim()  : ""),
-    whatsapp:  (el("s-whatsapp")  ? el("s-whatsapp").value.trim()  : ""),
-    instagram: (el("s-instagram") ? el("s-instagram").value.trim() : ""),
-    address:   (el("s-address")   ? el("s-address").value.trim()   : "")
+    phone:      (el("s-phone")        ? el("s-phone").value.trim()        : ""),
+    phone2:     (el("s-phone2")       ? el("s-phone2").value.trim()       : ""),
+    telegram:   (el("s-telegram")     ? el("s-telegram").value.trim()     : ""),
+    whatsapp:   (el("s-whatsapp")     ? el("s-whatsapp").value.trim()     : ""),
+    instagram:  (el("s-instagram")    ? el("s-instagram").value.trim()    : ""),
+    address:    (el("s-address")      ? el("s-address").value.trim()      : ""),
+    hoursDays1: (el("s-hours-days1")  ? el("s-hours-days1").value.trim()  : ""),
+    hoursTime1: (el("s-hours-time1")  ? el("s-hours-time1").value.trim()  : ""),
+    hoursDays2: (el("s-hours-days2")  ? el("s-hours-days2").value.trim()  : ""),
+    hoursTime2: (el("s-hours-time2")  ? el("s-hours-time2").value.trim()  : "")
   };
   if (lsSet(KEY_SETTINGS, s)) {
     toast("Sozlamalar saqlandi");

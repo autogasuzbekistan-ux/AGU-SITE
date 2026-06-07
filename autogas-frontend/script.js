@@ -990,26 +990,54 @@ function applySettings() {
     var s;
     try { s = JSON.parse(raw); } catch(e) { return; }
 
-    function tel(num) { return 'tel:+' + num.replace(/\D/g, '').replace(/^998/, '998'); }
+    function tel(num) { return 'tel:+' + num.replace(/\D/g, ''); }
     function tgHandle(t) { return (t || '').replace(/^@/, ''); }
+    function set(id, val) { var el = document.getElementById(id); if (el && val) el.textContent = val; }
+    function href(id, url) { var el = document.getElementById(id); if (el && url) el.href = url; }
 
-    var addr = document.getElementById('cs-address');
-    if (addr && s.address) addr.textContent = s.address;
+    // Manzil
+    set('cs-address', s.address);
 
+    // Telefon
     var p1 = document.getElementById('cs-phone1');
     if (p1 && s.phone) { p1.textContent = s.phone; p1.href = tel(s.phone); }
-
     var p2 = document.getElementById('cs-phone2');
     if (p2) {
         if (s.phone2) { p2.textContent = s.phone2; p2.href = tel(s.phone2); p2.style.display = ''; }
         else p2.style.display = 'none';
     }
 
-    var tg = document.getElementById('cs-telegram');
-    if (tg && s.telegram) {
-        tg.textContent = s.telegram.startsWith('@') ? s.telegram : '@' + s.telegram;
-        tg.href = 'https://t.me/' + tgHandle(s.telegram);
+    // Telegram — contact va footer
+    if (s.telegram) {
+        var tgText = s.telegram.startsWith('@') ? s.telegram : '@' + s.telegram;
+        var tgUrl  = 'https://t.me/' + tgHandle(s.telegram);
+        var tgEl = document.getElementById('cs-telegram');
+        if (tgEl) { tgEl.textContent = tgText; tgEl.href = tgUrl; }
+        href('footer-telegram', tgUrl);
     }
+
+    // Instagram — footer
+    if (s.instagram) {
+        var igHandle = s.instagram.replace(/^@/, '');
+        href('footer-instagram', 'https://instagram.com/' + igHandle);
+    }
+
+    // WhatsApp
+    var waBlock = document.getElementById('cs-whatsapp-block');
+    var waLink  = document.getElementById('cs-whatsapp');
+    if (s.whatsapp) {
+        var waNum = s.whatsapp.replace(/\D/g, '');
+        if (waBlock) waBlock.style.cssText = '';
+        if (waLink)  { waLink.textContent = s.whatsapp; waLink.href = 'https://wa.me/' + waNum; }
+    } else {
+        if (waBlock) waBlock.style.display = 'none';
+    }
+
+    // Ish vaqti
+    set('cs-hours-days1', s.hoursDays1);
+    set('cs-hours-time1', s.hoursTime1);
+    set('cs-hours-days2', s.hoursDays2);
+    set('cs-hours-time2', s.hoursTime2);
 }
 
 // =========================================================
@@ -1162,6 +1190,10 @@ window.addEventListener('storage', function(e) {
     }
     if (e.key === 'agu_cities_override') {
         buildCityCards();
+    }
+    if (e.key === 'agu_brands_override') {
+        var t = document.getElementById('brands-track');
+        if (t) { t.innerHTML = ''; buildBrandsCarousel(); }
     }
 });
 
